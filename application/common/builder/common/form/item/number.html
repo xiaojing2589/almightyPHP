@@ -1,0 +1,25 @@
+{// 数字组件 }
+<input
+        type="number"
+        class="form-control {$form.class}"
+        name="{$form.name}"
+        placeholder="{$form.placeholder}"
+        value="{$form.value}"
+<?php
+            if($form['min'] !== false){
+              echo 'min="'.$form['min'].'"';
+            }
+        ?>
+
+<?php
+            if($form['max'] !== false){
+              echo 'max="'.$form['max'].'"';
+            }
+        ?>
+
+<?php
+            if($form['step'] !== false){
+              echo 'step="'.$form['step'].'"';
+            }
+        ?>
+/>

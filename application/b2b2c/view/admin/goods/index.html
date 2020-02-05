@@ -1,0 +1,743 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="content"}
+<div class="row" id="{$_pag_id}">
+    <div class="col-md-12">
+        <div class="portlet light portlet-fit portlet-datatable bordered custom-portlet">
+
+            {// 开始 高级搜索}
+            {notempty name="_advanced_search_setting"}
+            <form class="senior-search-high-form page-quick-sidebar-wrapper">
+                <div class="gj_search page-quick-sidebar">
+                    <div class="search-gao-list" id="searchBarOpen" style="right: 0px;">
+                        <i class="fa fa-search-plus"></i>高级搜索
+                    </div>
+                    <div class="search-gao-bar" style="right: -350px;width: 0px;">
+                        <div class="handle-btn" id="searchBarClose">
+                            <i class="fa fa-search-minus"></i>收起边栏
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 page-quick-sidebar-alerts">
+                                <div class="page-quick-sidebar-alerts-list">
+                                    <div class="form-body">
+                                        {foreach name="_advanced_search_setting" item="form" key="keys" }
+                                        <div class="form-group">
+                                            <label>{$form.title}：</label>
+                                            {include file="../application/common/builder/common/form/layout.html" /}
+                                        </div>
+                                        {/foreach}
+                                    </div>
+                                    <div class="form-actions right">
+                                        <button type="button" class="btn blue submit-senior-search">查询</button>
+                                        <button type="button" class="btn default">重置</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {/notempty}
+            {// 结束 高级搜索}
+
+
+            {// 开始 头部}
+            <div class="portlet-title">
+
+                {// 开始 标题}
+                <div class="caption">
+                    {notempty name="return_url"}
+                    <a class="btn btn-circle btn-icon-only btn-grees" href="{$return_url}" title="返回">
+                        <i class="fa fa-reply font-green"></i>
+                    </a>
+                    {else/}&nbsp;&nbsp;
+                    <span class="font-green"><i class="fa fa-table"></i></span>
+                    {/notempty}
+
+                    {notempty name="page_title"} &nbsp;&nbsp;&nbsp;
+                    <span class="caption-subject font-green sbold uppercase">{$page_title}</span>
+                    {/notempty}
+
+                </div>
+                {// 结束 标题}
+
+                {// 开始 标题栏按钮}
+                <div class="actions">
+                    <a class="btn btn-circle btn-icon-only btn-default title-refresh-but" href="javascript:;">
+                        <i class="icon-refresh"></i>
+                    </a>
+                    <a class="btn btn-circle btn-icon-only btn-default fullscreen" href="javascript:;"></a>
+                </div>
+                {// 结束 标题栏按钮}
+
+            </div>
+            {// 结束 头部}
+
+            <div class="portlet-body">
+
+                {// 页面提示信息}
+                {notempty name="explanation"}
+                <div class="js-explanation margin-bottom-10">
+                    <div class="ex_tit">
+                        <i class="fa fa-lightbulb-o sc_icon"></i>
+                        <h4>操作提示</h4>
+                        <span class="explanationZoom">
+                                <i class="fa fa-minus"></i>
+                            </span>
+                    </div>
+                    <ul>
+                        {foreach name="explanation" item="explanation_v" key="explanation_k" }
+                        <li><i class="fa fa-caret-right text-info"></i>{$explanation_v}</li>
+                        {/foreach}
+                    </ul>
+                </div>
+                {/notempty}
+
+                {// 分组}
+                <div class="tabbable-line">
+
+                    {// 开始 标签}
+                    <ul class="nav nav-tabs ">
+                        {foreach name="group" item="group_value" key="group_key"}
+                        <li {notempty name="group_value.default" }class="active" {
+                        /notempty}>
+                        <a href="{$group_value.url}">{$group_value.title|htmlspecialchars}</a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                    {// 结束 标签}
+
+                    <div class="tab-content">
+                        <div class="tab-pane active">
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    {// 开始 表格头部搜索}
+                                    {empty name="_advanced_search_setting"}
+                                    {notempty name="_search_setting"}
+                                    <div class="pull-right search-bar" style="width: 280px">
+                                        <div class="input-group">
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn blue dropdown-toggle"
+                                                        data-toggle="dropdown" aria-expanded="false">
+                                                    {volist name="_search_setting" id="field"}
+                                                    {notempty name="$field.default"}
+                                                    <span class="default-search-field" data-field="{$field.field}">{$field.title|htmlspecialchars}</span>
+                                                    {/notempty}
+                                                    {/volist}
+                                                    <i class="fa fa-angle-down"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    {volist name="_search_setting" id="field"}
+                                                    <li>
+                                                        <a href="javascript:;" data-field="{$field.field}"
+                                                           class="search-keyword-field">
+                                                            {$field.title|htmlspecialchars} </a>
+                                                    </li>
+                                                    {/volist}
+                                                </ul>
+                                            </div>
+                                            <input type="text" class="form-control search-keyword">
+                                            <span class="input-group-btn">
+                                                    <button class="btn blue refresh-but" type="button"><i
+                                                            class="fa fa-search"></i>搜索</button>
+                                                 </span>
+                                        </div>
+                                    </div>
+                                    {/notempty}
+                                    {/empty}
+                                    {// 结束 表格头部搜索}
+
+                                    {// 开始 表格头部按钮}
+                                    {notempty name="$_top_buttons"}
+                                    <div class="btn-group btn-group-solid">
+                                        {volist name="_top_buttons" id="top_bt"}
+                                        <a
+                                                type="button"
+                                                href="javascript:;"
+                                                {// class}
+                                        {notempty name="$top_bt.class"}
+                                        class="top-button {$top_bt.class}{notempty name="$top_bt.batch"}
+                                        top-batch{/notempty}"
+                                        {/notempty}
+                                        {// 跳转地址}
+                                        {notempty name="$top_bt.href"}
+                                        data-url="{$top_bt.href}"
+                                        {/notempty}
+                                        {// 是否不可点击}
+                                        {notempty name="$top_bt.disabled"}
+                                        disabled
+                                        {/notempty}
+                                        {// 传输参数}
+                                        {notempty name="$top_bt.query_data"}
+                                        data-querydata='{$top_bt.query_data}'
+                                        {/notempty}
+                                        {// 传输方式}
+                                        data-jump="{$top_bt.jump_way}"
+                                        {// 是否批量}
+                                        {notempty name="$top_bt.batch"}
+                                        data-batch="1"
+                                        {/notempty}
+                                        {// 请求类型}
+                                        data-query_type="{$top_bt.query_type}"
+                                        {// 类型}
+                                        data-type="{$top_bt.type}"
+                                        >
+                                        {notempty name="$top_bt.icon"}
+                                        <i class="{$top_bt.icon}"></i>
+                                        {/notempty}
+                                        {$top_bt.title}
+                                        </a>
+                                        {/volist}
+                                    </div>
+                                    {/notempty}
+                                    {// 结束 表格头部按钮}
+
+                                </div>
+                            </div>
+                            <div class="clearfix margin-bottom-10"></div>
+                            {// 表格}
+                            <table id="{$_table_id}" class="fit-body"></table>
+                        </div>
+                    </div>
+                </div>
+                {// 结束 带标签表格}
+
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="page_script"}
+<script>
+    $(document).ready(function () {
+
+        // 设置字段
+        var columns = [
+            {
+                "field": "goods_commonid",
+                "title": "SKU",
+                "align": "center",
+                "width": 50
+            },
+            {
+                "field": "goods_name",
+                "title": "商品名称",
+                "align": "center",
+                "formatter": function (value, row, index) {
+                    var html = '';
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">' + row.goods_name + '</span></div>';
+                    return html;
+                }
+            },
+            {
+                "field": "goods_image",
+                "title": "商品图片",
+                "align": "center",
+                "width": 50,
+                "formatter": function (value, row, index) {
+                    var html = '';
+                    html = '<img src="' + row.goods_image + '" class="table_avatar_image" style="width: 50px; height: 50px" data-original-title="">';
+                    return html;
+                }
+            },
+            {
+                "field": "goods_video",
+                "title": "商品视频",
+                "align": "center",
+                "width": 50
+            },
+            {
+
+                "field": "goods_price",
+                "title": "价格/运费(元)",
+                "align": "center",
+                "valign": "top",
+                "width": 140,
+                "formatter": function (value, row, index) {
+                    var html = '';
+
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">市场价：</span>';
+                    if (row.goods_marketprice <= 0) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">' + row.goods_marketprice + '</span>';
+                    }
+                    if (row.goods_marketprice > 0) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">' + row.goods_marketprice + '</span>';
+                    }
+                    html += '</div> ';
+
+
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">成本价：</span>';
+                    if (row.goods_costprice <= 0) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">' + row.goods_costprice + '</span>';
+                    }
+                    if (row.goods_costprice > 0) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">' + row.goods_costprice + '</span>';
+                    }
+                    html += '</div> ';
+
+
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">销售价：</span>';
+                    if (row.goods_price <= 0) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">' + row.goods_price + '</span>';
+                    }
+                    if (row.goods_price > 0) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">' + row.goods_price + '</span>';
+                    }
+                    html += '</div> ';
+
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">运费价：</span>';
+                    if (row.goods_freight <= 0) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">' + row.goods_freight + '</span>';
+                    }
+                    if (row.goods_freight > 0) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">' + row.goods_freight + '</span>';
+                    }
+                    html += '</div> ';
+
+
+                    return html;
+                }
+            },
+            {
+                "field": "goods_state",
+                "title": "状态",
+                "align": "left",
+                "valign": "top",
+                "width": 160,
+                "formatter": function (value, row, index) {
+                    var html = '';
+
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">商品状态：</span>';
+                    if (row.goods_state == 0) {
+                        html += '<span class="caption-subject font-yellow-crusta bold uppercase">仓库中</span>';
+                    }
+                    if (row.goods_state == 1) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">出售中</span>';
+                    }
+                    if (row.goods_state == 10) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">违规下架</span>';
+                    }
+                    html += '</div> ';
+
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">审核状态：</span>';
+                    if (row.goods_verify == 0) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">未通过</span>';
+                    }
+                    if (row.goods_verify == 1) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">通过</span>';
+                    }
+                    if (row.goods_verify == 10) {
+                        html += '<span class="caption-subject font-yellow-crusta bold uppercase">审核中</span>';
+                    }
+                    html += '</div> ';
+
+
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">过期允许退款：</span>';
+                    if (row.virtual_invalid_refund == 0) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">不允许</span>';
+                    }
+                    if (row.virtual_invalid_refund == 1) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">允许</span>';
+                    }
+                    html += '</div> ';
+
+
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">虚拟商品：</span>';
+                    if (row.is_virtual == 0) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">否</span>';
+                    }
+                    if (row.is_virtual == 1) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">是</span>';
+                    }
+                    html += '</div> ';
+
+                    return html;
+                }
+            },
+            {
+                "field": "gc_name",
+                "title": "分类/品牌",
+                "align": "left",
+                "valign": "top",
+                "formatter": function (value, row, index) {
+                    var html = '';
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">分类：</span><span class="caption-subject font-blue-sharp bold uppercase">' + row.gc_name + '</span></div>';
+                    html += '<div><span class="caption-subject font-blue-sharp bold uppercase">品牌：</span><span class="caption-subject font-blue-sharp bold uppercase">' + row.brand_name + '</span></div>';
+                    return html;
+                }
+            },
+            {
+                "field": "store_name",
+                "title": "店铺",
+                "align": "center",
+                "formatter": function (value, row, index) {
+                    var html = '';
+                    html += '<span class="caption-subject font-blue-sharp bold uppercase">' + row.store_name + '</span>';
+                    return html;
+                }
+            },
+            {
+                "field": "is_own_shop",
+                "title": "是否自营",
+                "align": "center",
+                "width": 50,
+                "formatter": function (value, row, index) {
+                    var html = '';
+                    if (row.is_own_shop == 1) {
+                        html += '<span class="caption-subject font-blue-sharp bold uppercase">是</span>';
+                    } else {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">否</span>';
+                    }
+                    return html;
+                }
+            },
+            {
+                "field": "goods_storage",
+                "title": "库存",
+                "align": "center",
+                "width": 50,
+                "formatter": function (value, row, index) {
+                    var html = '';
+                    if (row.goods_storage <= 0) {
+                        html += '<span class="caption-subject font-red-sunglo bold uppercase">' + row.goods_storage + '</span>';
+                    }
+                    if (row.goods_storage > 0) {
+                        html += '<span class="caption-subject font-green-meadow bold uppercase">' + row.goods_storage + '</span>';
+                    }
+                    return html;
+                }
+            },
+            {
+                "field": "peration", // 字段
+                "title": "操作", // 字段名
+                "align": "center", // 设置该列数据如何对齐，’left’, ‘right’, ‘center’
+                "width": 300,
+                // The cell 的事件监听，当你使用formatter function的时候,有三个参数: event: the jQuery event. value: 该cell的值 row: 该行的数据 index: 该行的序号
+                "events": {
+                    // 查看SKU
+                    "click .goods_see": function (ev, value, row, index) {
+                        var url = $(ev.target).data('url');
+                        window.location.href = url + '?goods_commonid=' + row.goods_commonid
+                    },
+                    // 审核
+                    "click .goods_verify": function (ev, value, row, index) {
+                        var url = $(ev.target).data('url');
+                        window.location.href = url + '?goods_commonid=' + row.goods_commonid
+                    },
+                    // 下架
+                    "click .goods_state": function (ev, value, row, index) {
+                        var url = $(ev.target).data('url');
+                        window.location.href = url + '?goods_commonid=' + row.goods_commonid
+                    },
+                    // 删除
+                    "click .goods_del": function (ev, value, row, index) {
+                        var url = $(ev.target).data('url');
+                        window.location.href = url + '?goods_commonid=' + row.name
+                    }
+                },
+                // 格式化单元格内容，function(value, row, index), value：该cell本来的值，row：该行数据，index：该行序号（从0开始）
+                "formatter": function (value, row, index) {
+                    var html = '';
+
+                    // 禁售
+                    if (row.goods_state == {:
+                    config('b2b2c.STATE10')
+                } &&
+                    row.goods_verify == {
+                :
+                    config('b2b2c.VERIFY1')
+                })
+                    {
+                        html += '<button type="button" class="btn red btn-xs goods_del" data-url="{:url('
+                        goods / del
+                        ')}"><i class="fa fa-trash"></i> 删除 </button>';
+                    }
+
+                    // 等待审核
+                    if (row.goods_verify != {:
+                    config('b2b2c.VERIFY1')
+                })
+                    {
+                        html += '<button type="button" class = "btn btn-xs btn-warning goods_verify" data-url="{:url('
+                        goods / verify
+                        ')}"><i class="fa fa-check"></i> 审核 </button>';
+                    }
+
+                    // 正常商品
+                    if (row.goods_state == {:
+                    config('b2b2c.STATE1')
+                })
+                    {
+                        html += '<button type="button" class = "btn btn-xs btn-danger goods_state" data-url="{:url('
+                        goods / state
+                        ')}"><i class="fa fa-ban"></i> 下架 </button>';
+                    }
+
+                    html += '<button type="button" class = "btn btn-success btn-xs goods_see" data-url="{:url('
+                    goods / seesku
+                    ')}"><i class="fa fa-eye"></i> 查看商品SKU </button>';
+
+                    return html;
+                }
+            }
+        ];
+
+        // 获取表格对象
+        var tableObj = $('#{$_pag_id}').find('#{$_table_id}');
+
+        /**
+         * 刷新方法
+         * @author 仇仇天
+         */
+        var refreshMethod = function () {
+            tableObj.bootstrapTable('refreshOptions', {pageNumber: 1});
+        }
+
+        var $getQueryParams = {}; // 筛选的参数
+
+        /**
+         * 搜索处理函数
+         * @author 仇仇天
+         */
+        var queryParams = function (params) {
+            // 搜索框选择的选项字段
+            var $searchKeyword = $('.search-keyword').val();
+            if ($searchKeyword != '') {
+                params.searchKeyword = $searchKeyword; // 要搜索的关键词
+            }
+            params.page = this.pageNumber; // 当前第几页
+            params.list_rows = params.limit; // 每页显示多少
+
+            // 高级搜索
+            var senior_search_high_form = $('.senior-search-high-form');
+            var senior_search_high_form_arr = senior_search_high_form.serializeArray();
+            var senior_search_high_form_obj = {};
+            $.each(senior_search_high_form_arr, function (i, field) {
+                if (senior_search_high_form_obj[this.name]) {
+                    if ($.isArray(senior_search_high_form_obj[this.name])) {
+                        senior_search_high_form_obj[this.name].push(this.value);
+                    } else {
+                        senior_search_high_form_obj[this.name] = [senior_search_high_form_obj[this.name], this.value];
+                    }
+                } else {
+                    senior_search_high_form_obj[this.name] = this.value;
+                }
+                return senior_search_high_form_obj;
+            });
+            Object.assign(params, senior_search_high_form_obj);
+
+            //自定义参数
+            var queryParams = {$_queryParams | raw
+        }
+            ;
+            queryParams = queryParams ? queryParams : {};
+            Object.assign(params, queryParams);
+            $getQueryParams = params;
+
+            return params;
+        }
+
+        // 设置搜索框数据
+        $('.search-keyword-field').click(function () {
+            var $field = $(this).data('field');
+            var $title = $(this).html();
+            $('.default-search-field').data('field', $field);
+            $('.default-search-field').html($title);
+        });
+
+        // 刷新按钮触发
+        $('.title-refresh-but').click(function () {
+            refreshMethod();
+        });
+
+        // 搜索按钮
+        $('.refresh-but').click(function () {
+            refreshMethod();
+        });
+
+        // 高级搜素展开
+        $('#searchBarOpen').click(function () {
+            $('.search-gao-list').animate({'right': '-40px'}, 200,
+                function () {
+                    $('.search-gao-bar').animate({'right': '0', 'width': '350'}, 300);
+                }
+            );
+        });
+
+        // 高级搜索收起
+        $('#searchBarClose').click(function () {
+            $('.search-gao-bar').animate({'right': -350, 'width': '0'}, 300,
+                function () {
+                    $('.search-gao-list').animate({'right': '0'}, 200);
+                }
+            );
+        });
+
+        //高级搜索点击触发
+        $('.submit-senior-search').on('click', function () {
+            refreshMethod();
+        });
+
+        // 顶部按钮触发
+        $('.top-button').on('click', function () {
+
+            // 自身元素对象
+            var _this = $(this);
+
+            // 传输参数
+            var send_data = {};
+
+            // 获取选中数据
+            var checkData = tableObj.bootstrapTable('getSelections');
+
+            // 针对树表格
+            $.each(checkData, function (i, v) {
+                delete v._nodes // 删除子节点数据
+                delete v._parent // 删除父节点数据
+            });
+
+            if (checkData) {
+                send_data.batch_data = checkData;
+            }
+
+
+            // 提交地址
+            var url = _this.data('url');
+
+            // 状态
+            var status = _this.attr('disabled');
+
+            // 提交方式
+            var jump = _this.data('jump');
+
+            // 是否批量按钮
+            var batch = _this.data('batch');
+
+            // 传输参数
+            var query_data = _this.data('querydata');
+
+            // 请求类型
+            var query_type = _this.data('query_type');
+
+            // 类型
+            var type = _this.data('type');
+
+            // 合并传输参数
+            if (query_data) {
+                // query_data = JSON.parse(query_data);
+                Object.assign(send_data, query_data);
+            }
+
+            // 导出
+            if (type == 'export') {
+                layer.open({
+                    title: '导出',
+                    type: 1,
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['420px', '100px'], //宽高
+                    content: '<div class="progress progress-striped active">' +
+                        '<div class="progress-bar progress-bar-danger" name="ssasdasd" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">' +
+                        '<span> 20% Complete </span>' +
+                        '</div>' +
+                        '</div>'
+                });
+                Object.assign(send_data, $getQueryParams);
+                exportAjax(url, send_data);
+                return false;
+            }
+
+
+            if (jump == 'ajax') {
+                if (!status) {
+                    layer.load(2);
+                    $.ajax({
+                        type: query_type,
+                        url: url,
+                        data: send_data,
+                        dataType: 'JSON',
+                        success: function (res) {
+                            layer.closeAll('loading');
+                            if (res.code == 1) {
+                                layer.msg(res.msg, {icon: 6});
+                                $('.top-batch').attr('disabled', true);
+                                refreshMethod();
+                            } else if (res.code === 0) {
+                                layer.msg(res.msg, {icon: 5});
+                            }
+                        }
+                    });
+                }
+            } else {
+                App.funSimulationForm(url, send_data, query_type);
+            }
+        });
+
+        function exportAjax(url, send_data) {
+            $.ajax({
+                type: 'post',
+                url: "export",
+                data: send_data,
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.data.status == 1) {
+                        send_data.page = send_data.page + 1;
+                        if (res.data.percentage <= 10) {
+                            $('div[name="ssasdasd"]').removeClass();
+                            $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-danger');
+                        }
+                        if (res.data.percentage > 10 && res.data.percentage <= 50) {
+                            $('div[name="ssasdasd"]').removeClass();
+                            $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-warning');
+                        }
+                        if (res.data.percentage > 50 && res.data.percentage <= 80) {
+                            $('div[name="ssasdasd"]').removeClass();
+                            $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-info');
+                        }
+                        if (res.data.percentage > 80 && res.data.percentage <= 100) {
+                            $('div[name="ssasdasd"]').removeClass();
+                            $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-success');
+                        }
+
+                        $('div[name="ssasdasd"]').find('span').html(res.data.percentage + '%');
+                        $('div[name="ssasdasd"]').width(res.data.percentage + '%');
+                        send_data.temp = res.data.temp;
+                        exportAjax(url, send_data);
+                    } else {
+                        $('div[name="ssasdasd"]').removeClass();
+                        $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-success');
+                        $('div[name="ssasdasd"]').find('span').html(res.data.percentage + '% (完成)');
+                        $('div[name="ssasdasd"]').width(res.data.percentage + '%');
+                        window.location = 'export?download=1&temp=' + res.data.temp;
+                        layer.closeAll();
+                    }
+                }
+            });
+        }
+
+        // 表格参数初始化
+        var tableinfo = {
+            url: '{:url("goods/index")}', // 请求后台的URL（*）用于从远程站点请求数据的URL 请注意，所需的服务器响应格式会有所不同，具体取决于是否'sidePagination'指定了该选项。
+            method: 'get', // 请求远程数据的方法类型。
+            contentType: 'application/json', // 请求远程数据类型,请求远程数据的contentType，例如：application/x-www-form-urlencoded。
+            dataType: 'json', // 请求远程数据类型,您希望从服务器返回的数据类型。
+            cache: false, // 是否使用缓存,是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+            queryParamsType: 'limit', // 设置'limit'以使用RESTFul类型发送查询参数。
+            queryParams: queryParams, // 传递参数（*）,当queryParamsType时limit 参数包含limit、offset、order、search、sort当否则它包含pageSize, pageNumber, searchText, sortName, sortOrder,返回 false则中断请求（return false）
+            dataField: 'data',// 数据字段
+            classes: 'table table-bordered table-hover', // 设置表类，表的类名。可以使用'table'，'table-bordered'，'table-hover'，'table-striped'，'table-dark'，'table-sm'和'table-borderless'。默认情况下，表格是有界的。
+            columns: columns, // 设置字段
+            pagination: true,// 设置为 true 会在表格底部显示分页条
+            pageSize: 20, // 每页的记录行数
+            sidePagination: 'server',
+            pageList: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 100], // 可供选择的每页的行数
+            resizable: true, // 列是否可调整大小
+        }
+
+        // 初始化表格
+        tableObj.bootstrapTable(tableinfo);
+
+    });
+</script>
+{/block}

@@ -1,0 +1,15 @@
+<div class="kt-radio-inline">
+    {foreach name="form.option" item="form_radio" key="keys_radio" }
+    <label class="kt-radio kt-radio--bold kt-radio--brand">
+        <input
+                type="radio"
+                class="{$form.class}"
+                name="{$form.field ? $form.field : $info.name}"
+                value="{$form_radio.value}"
+                {if condition="$form.value eq $form_radio.value" }checked{/if}
+        >
+        {$form_radio.title}
+        <span></span>
+    </label>
+    {/foreach}
+</div>

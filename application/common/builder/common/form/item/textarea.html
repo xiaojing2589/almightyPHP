@@ -1,0 +1,7 @@
+{// 多行文本组件 }
+<textarea
+        class="form-control js-textarea {$form.class}"
+        name="{$form.name}"
+        {notempty name="$form.rows" }rows="{$form.rows}" {/notempty}
+{notempty name="$form.cols"}cols="{$form.cols}"{/notempty}
+>{$form.value}</textarea>

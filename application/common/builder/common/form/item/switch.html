@@ -1,0 +1,14 @@
+{// 开关组件 }
+<div class="btn-group btn-make-switch {notempty name="
+     $form.option.size"}{$form.option.size}{/notempty}" ole="group" aria-label="Small button group" data-toggle="buttons">
+<button class="btn btn-outline-info on-button {if condition=" $form.value eq $form.option.on_value"} active{/if}">
+<input type="radio" name="{$form.name}" class="toggle use-switch-radio {$form.class}" value="{$form.option.on_value}"
+       {if condition="$form.value eq $form.option.on_value" }checked{/if}>
+{$form.option.on_text}
+</button>
+<button class="btn btn-outline-info off-button {if condition=" $form.value eq $form.option.off_value"} active{/if}">
+<input type="radio" name="{$form.name}" class="toggle use-switch-radio {$form.class}" value="{$form.option.off_value}"
+       {if condition="$form.value eq $form.option.off_value" }checked{/if}>
+{$form.option.off_text}
+</button>
+</div>

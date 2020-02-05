@@ -1,0 +1,176 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="content"}
+<div style="margin: 10px;">
+
+    <div class="portlet light bordered">
+
+        <div class="portlet-title">
+            <div class="caption">
+                {notempty name="return_url"}
+                <a class="btn btn-circle btn-icon-only btn-grees" href="{$return_url}" title="返回">
+                    <i class="fa fa-reply font-green"></i>
+                </a> &nbsp;&nbsp;
+                {/notempty}
+                <span class="caption-subject font-green bold uppercase"> {$page_title} </span>
+            </div>
+        </div>
+
+        {// 页面提示信息}
+        {notempty name="explanation"}
+        <div class="js-explanation margin-bottom-10">
+            <div class="ex_tit">
+                <i class="fa fa-lightbulb-o sc_icon"></i>
+                <h4>操作提示</h4>
+                <span class="explanationZoom">
+                <i class="fa fa-minus"></i>
+            </span>
+            </div>
+            <ul>
+                {foreach name="explanation" item="explanation_v" key="explanation_k" }
+                <li><i class="fa fa-caret-right text-info"></i>{$explanation_v}</li>
+                {/foreach}
+            </ul>
+        </div>
+        {/notempty}
+
+        <div class="portlet-body form">
+            <form class="form-horizontal" action="{$form_url}" enctype="multipart/form-data">
+                {foreach name="form_hidden_data" item="form_data_value" key="form_data_key" }
+                <input name="{$form_data_value.name}" value="{$form_data_value.value}" type="hidden">
+                {/foreach}
+                <div class="form-body">
+
+                    <div class="form-group">
+                        <?php  $form = $form_items['type_name'];?>
+                        <label class="control-label col-md-3">{notempty name="form.require"}<span class="required"
+                                                                                                  aria-required="true"> * </span>{/notempty}{$form.title}：</label>
+                        <div class="col-md-6">
+                            {include file="../application/common/builder/common/form/layout.html" /}
+                            <span class="help-block"> {$form.tips|raw|clear_js}</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <?php  $form = $form_items['gc_id'];?>
+                        <label class="control-label col-md-3">{notempty name="form.require"}<span class="required"
+                                                                                                  aria-required="true"> * </span>{/notempty}{$form.title}：</label>
+                        <div class="col-md-6">
+                            {include file="../application/common/builder/common/form/layout.html" /}
+                            <span class="help-block"> {$form.tips|raw|clear_js}</span>
+                        </div>
+                    </div>
+
+                    <div id="result"></div>
+
+                </div>
+                <div class="form-actions">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-offset-3 col-md-9">
+                                    {notempty name="_submit_button_show"}
+                                    <button type="button" class="btn green form-submit">提交</button>
+                                    {/notempty}
+                                    {notempty name="_button_button_show"}
+                                    <button type="reset" class="btn default">重置</button>
+                                    {/notempty}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{literal}
+<!--配置下拉框-->
+<script id="type_custom" type="text/x-jsrender">
+    <div class="form-group">
+        <label class="control-label col-md-3">添加属性：</label>
+        <div class="col-md-6 type_custom_dome">
+            <button class="btn blue btn-block margin-bottom-5 type_custom_add" type="button">新增
+                <span class="glyphicon glyphicon-plus"></span>
+            </button>
+            {{for config}}
+                <div class="input-group type_custom_config margin-bottom-5">
+                    <label class="input-group-addon">标题</label>
+                    <input class="form-control" type="text" name="select_title[]" value="{{:title}}">
+                    <label class="input-group-addon">值</label>
+                    <input class="form-control" type="text" name="select_value[]" value="{{:value}}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info type_custom_del" type="button" title="删除">
+                            <span class="fa fa-trash-o"></span>
+                        </button>
+                    </span>
+                </div>
+            {{/for}}
+        </div>
+    </div>
+
+</script>
+{/literal}
+
+{/block}
+
+{block name="page_script"}
+<script>
+    $(function () {
+        var config_data_config_value = {};
+        var value_template = $.templates("#type_custom");
+        var value_html_output = value_template.render(config_data_config_value);
+        $("#result").html(value_html_output);
+
+        // 下拉选框配置新增
+        $('.form-horizontal').on('click', '.type_custom_add', function () {
+            var htmls = '<div class="input-group select_config margin-bottom-5">' +
+                '<label class="input-group-addon">名称</label>' +
+                '<input class="form-control" type="text" name="select_title[]" />' +
+                '<label class="input-group-addon">值</label>' +
+                '<input class="form-control" type="text" name="select_value[]" />' +
+                '<span class="input-group-btn">' +
+                '<button class="btn btn-info select_config_del" type="button" title="删除">' +
+                '<span class="fa fa-trash-o"></span>' +
+                '</button>' +
+                '</span>' +
+                '</div>';
+            $('.type_custom_dome').append(htmls);
+        });
+
+        // 下拉选框配置删除
+        $('.form-horizontal').on('click', '.type_custom_del', function () {
+            $(this).parent('.input-group-btn').parent('.type_custom_config').remove();
+        });
+
+
+        $('.form-submit').on('click', function () {
+            var form = $('.form-horizontal');
+            var file_name = $('input[name="name"]')[0].files[0];
+            var formData = new FormData();
+            formData.append("name", file_name);
+            layer.load(2)
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                async: false,
+                cache: false,
+                contentType: false, //不设置内容类型
+                processData: false, //不处理数据
+                dataType: 'json',
+                data: formData,
+                success: function (res) {
+                    layer.closeAll('loading');
+                    if (res.code == 1) {
+                        App.funTips('success', res.msg, res.wait, res.url, res.data);
+                    } else if (res.code === 0) {
+                        App.funTips('error', res.msg, res.wait, res.url, res.data);
+                    }
+                }
+            });
+        });
+    });
+</script>
+{/block}

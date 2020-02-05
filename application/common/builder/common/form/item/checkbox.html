@@ -1,0 +1,40 @@
+<div class="kt-checkbox-inline">
+    {foreach name="form.option" item="form_checkbox" key="keys_checkbox" }
+    <label class="kt-checkbox kt-checkbox--bold kt-checkbox--brand">
+        {notempty name="form_checkbox.filed"}
+        <input
+                type="checkbox"
+                class="{$form.class}"
+                name="{$form_checkbox.filed}"
+                value="{$form_checkbox.value}"
+        <?php
+            if(!empty($form['value'])){
+                if(in_array($form_checkbox['value'],$form['value'])){
+                    echo 'checked';
+                }
+            }
+        ?>
+        >
+        {else /}
+        <input
+                type="checkbox"
+                class="{$form.class}"
+                name="{$form.field}[]"
+                value="{$form_checkbox.value}"
+        <?php
+            if(!empty($form['value'])){
+                if(!is_array($form['value'])){
+                    $form['value'] = explode(',',$form['value']);
+                }
+                if(in_array($form_checkbox['value'],$form['value'])){
+                    echo 'checked';
+                }
+            }
+        ?>
+        >
+        {/notempty}
+        {$form_checkbox.title}
+        <span></span>
+    </label>
+    {/foreach}
+</div>
