@@ -1,7 +1,7 @@
 {//  下拉框2}
 <select
         class="bs-select2 form-control {$form.class}"
-        name="{$form.name}{notempty name=" form.multiple"}[]{/notempty}"
+        name="{$form.name}{notempty name="form.multiple"}[]{/notempty}"
 data-width="{$form.width}"
 data-allow-clear="{$form.allow_clear}"
 {notempty name="form.on_select"}data-onselect={$form.on_select}{/notempty}
@@ -12,8 +12,7 @@ data-allow-clear="{$form.allow_clear}"
 {foreach name="form.option" item="form_optgroup" key="keys_form_optgroup" }
 <optgroup label="{$form_optgroup.title}">
     {foreach name="form_optgroup.option" item="form_select" key="keys_form_select" }
-    <option value="{$form_select.value}" {in name="$form_select.value" value="$form.value" }selected="selected" {
-    /in}>
+    <option value="{$form_select.value}" {in name="$form_select.value" value="$form.value"}selected="selected"{/in}>
     {:html_entity_decode($form_select.title)}
     </option>
     {/foreach}
@@ -21,14 +20,14 @@ data-allow-clear="{$form.allow_clear}"
 {/foreach}
 {else /}
 {foreach name="form.option" item="form_select" key="keys_form_select" }
-<option value="{$form_select.value}" {in name="$form_select.value" value="$form.value" }selected="selected" {/in}>
+<option value="{$form_select.value}" {in name="$form_select.value" value="$form.value"}selected="selected"{/in}>
 {:html_entity_decode($form_select.title)}
 </option>
 {/foreach}
 {/notempty}
 {else /}
 {foreach name="form.option" item="form_select" key="keys_form_select" }
-<option value="{$form_select.value}" {$form_select.value== $form.value ? 'selected = "selected"' : ''}>
+<option value="{$form_select.value}" {$form_select.value == $form.value ? 'selected = "selected"' : ''}>
 {:html_entity_decode($form_select.title)}
 </option>
 {/foreach}
