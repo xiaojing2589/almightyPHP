@@ -7,8 +7,7 @@ use app\common\model\AdminIcon as AdminIconModel;
 use app\common\model\AdminRole as AdminRoleModel;
 
 /**
- * @describe 后台公共控制器
- * @author 仇仇天
+ * 后台公共控制器
  */
 class Admin extends Common
 {
@@ -48,8 +47,8 @@ class Admin extends Common
 
     /**
      * 检查是 否登录/锁定，没有登录则跳转到登录页面
-     * @return mixed
      * @author 仇仇天
+     * @return mixed
      */
     final protected function isLogin()
     {

@@ -40,8 +40,7 @@
                 <ul class="nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-brand">
                     {foreach name="group" item="group_value" key="group_key"}
                     <li class="nav-item">
-                        <a class="nav-link {notempty name=" group_value.default"}active{/notempty}"
-                        href="{$group_value.url}" role="tab">{$group_value.title|htmlspecialchars}</a>
+                        <a class="nav-link {notempty name="group_value.default"}active{/notempty}" href="{$group_value.url}" role="tab">{$group_value.title|htmlspecialchars}</a>
                     </li>
                     {/foreach}
                 </ul>
@@ -56,40 +55,27 @@
                             <div class="accordion accordion-light  accordion-svg-icon" id="accordionExample7">
                                 <div class="card use-card">
                                     <div class="card-header" id="headingOne7">
-                                        <div class="card-title use-card-title" data-toggle="collapse"
-                                             data-target="#collapseOne7" aria-expanded="true"
-                                             aria-controls="collapseOne7">
-                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                 xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
-                                                 viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+                                        <div class="card-title use-card-title" data-toggle="collapse" data-target="#collapseOne7" aria-expanded="true" aria-controls="collapseOne7">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
                                                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                    <polygon id="Shape" points="0 0 24 0 24 24 0 24"/>
-                                                    <path d="M12.2928955,6.70710318 C11.9023712,6.31657888 11.9023712,5.68341391 12.2928955,5.29288961 C12.6834198,4.90236532 13.3165848,4.90236532 13.7071091,5.29288961 L19.7071091,11.2928896 C20.085688,11.6714686 20.0989336,12.281055 19.7371564,12.675721 L14.2371564,18.675721 C13.863964,19.08284 13.2313966,19.1103429 12.8242777,18.7371505 C12.4171587,18.3639581 12.3896557,17.7313908 12.7628481,17.3242718 L17.6158645,12.0300721 L12.2928955,6.70710318 Z"
-                                                          id="Path-94" fill="#000000" fill-rule="nonzero"/>
-                                                    <path d="M3.70710678,15.7071068 C3.31658249,16.0976311 2.68341751,16.0976311 2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 L8.29289322,8.29289322 C8.67147216,7.91431428 9.28105859,7.90106866 9.67572463,8.26284586 L15.6757246,13.7628459 C16.0828436,14.1360383 16.1103465,14.7686056 15.7371541,15.1757246 C15.3639617,15.5828436 14.7313944,15.6103465 14.3242754,15.2371541 L9.03007575,10.3841378 L3.70710678,15.7071068 Z"
-                                                          id="Path-94" fill="#000000" fill-rule="nonzero" opacity="0.3"
-                                                          transform="translate(9.000003, 11.999999) rotate(-270.000000) translate(-9.000003, -11.999999) "/>
+                                                    <polygon id="Shape" points="0 0 24 0 24 24 0 24" />
+                                                    <path d="M12.2928955,6.70710318 C11.9023712,6.31657888 11.9023712,5.68341391 12.2928955,5.29288961 C12.6834198,4.90236532 13.3165848,4.90236532 13.7071091,5.29288961 L19.7071091,11.2928896 C20.085688,11.6714686 20.0989336,12.281055 19.7371564,12.675721 L14.2371564,18.675721 C13.863964,19.08284 13.2313966,19.1103429 12.8242777,18.7371505 C12.4171587,18.3639581 12.3896557,17.7313908 12.7628481,17.3242718 L17.6158645,12.0300721 L12.2928955,6.70710318 Z" id="Path-94" fill="#000000" fill-rule="nonzero" />
+                                                    <path d="M3.70710678,15.7071068 C3.31658249,16.0976311 2.68341751,16.0976311 2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 L8.29289322,8.29289322 C8.67147216,7.91431428 9.28105859,7.90106866 9.67572463,8.26284586 L15.6757246,13.7628459 C16.0828436,14.1360383 16.1103465,14.7686056 15.7371541,15.1757246 C15.3639617,15.5828436 14.7313944,15.6103465 14.3242754,15.2371541 L9.03007575,10.3841378 L3.70710678,15.7071068 Z" id="Path-94" fill="#000000" fill-rule="nonzero" opacity="0.3" transform="translate(9.000003, 11.999999) rotate(-270.000000) translate(-9.000003, -11.999999) " />
                                                 </g>
                                             </svg>
                                         </div>
                                     </div>
-                                    <div id="collapseOne7" class="collapse show" aria-labelledby="headingOne7"
-                                         data-parent="#accordionExample7">
+                                    <div id="collapseOne7" class="collapse show" aria-labelledby="headingOne7" data-parent="#accordionExample7">
                                         <div class="card-body use-card-body">
 
                                             <form class="kt-form kt-form--label-right senior-search-high-form">
-                                                {foreach name="_advanced_search_setting" item="form_A" key="form_A_keys"
-                                                }
+                                                {foreach name="_advanced_search_setting" item="form_A" key="form_A_keys" }
                                                 <div class="form-group row form-group-marginless kt-margin-t-20">
                                                     {foreach name="form_A" item="form_B" key="form_B_keys" }
                                                     {foreach name="form_B" item="form" key="keys" }
                                                     <label class="col-lg-1 col-form-label">{$form.title}:</label>
-                                                    <div class="{if condition=" $_advanced_list_number== 1 ||
-                                                         $_advanced_list_number== 2
-                                                    "}col-lg-5{else /}{if condition="$_advanced_list_number ==
-                                                    3"}col-lg-3{else /}col-lg-2{/if}{/if}">
-                                                    {include
-                                                    file="../application/common/builder/common/form/layout.html" /}
+                                                    <div class="{if condition="$_advanced_list_number == 1 || $_advanced_list_number == 2"}col-lg-5{else /}{if condition="$_advanced_list_number == 3"}col-lg-3{else /}col-lg-2{/if}{/if}">
+                                                    {include file="../application/common/builder/common/form/layout.html" /}
                                                 </div>
                                                 {/foreach}
                                                 {/foreach}
@@ -98,8 +84,7 @@
                                         <div class="form-group row form-group-marginless kt-margin-t-20">
                                             <label class="col-lg-1 col-form-label"></label>
                                             <div class="col-lg-2">
-                                                <button type="button"
-                                                        class="btn btn-primary btn-brand--icon submit-senior-search">
+                                                <button type="button" class="btn btn-primary btn-brand--icon submit-senior-search">
                                                                 <span>
                                                                     <i class="la la-search"></i>
                                                                     <span>搜索</span>
@@ -130,11 +115,9 @@
                                                 <button
                                                         type="button"
                                                         href="javascript:;"
-                                                        {
-                                                // class}
+                                                        {// class}
                                                 {notempty name="$top_bt.class"}
-                                                class="top-button {$top_bt.class}{notempty name="$top_bt.batch"}
-                                                top-batch{/notempty}"
+                                                class="top-button {$top_bt.class}{notempty name="$top_bt.batch"} top-batch{/notempty}"
                                                 {/notempty}
                                                 {// 跳转地址}
                                                 {notempty name="$top_bt.href"}
@@ -191,19 +174,14 @@
                                         <div class="input-group-prepend">
                                             {volist name="_search_setting" id="field"}
                                             {notempty name="$field.default"}
-                                            <button type="button"
-                                                    class="btn btn-info btn-elevate dropdown-toggle default-search-field"
-                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                                    data-condition="{$field.condition}" data-field="{$field.field}">
+                                            <button type="button" class="btn btn-info btn-elevate dropdown-toggle default-search-field" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-condition="{$field.condition}" data-field="{$field.field}">
                                                 {$field.title|htmlspecialchars}
                                             </button>
                                             {/notempty}
                                             {/volist}
                                             <div class="dropdown-menu">
                                                 {volist name="_search_setting" id="field"}
-                                                <a class="dropdown-item search-keyword-field"
-                                                   data-field="{$field.field}" data-condition="{$field.condition}"
-                                                   href="javascript:;">
+                                                <a class="dropdown-item search-keyword-field" data-field="{$field.field}" data-condition="{$field.condition}" href="javascript:;">
                                                     {$field.title|htmlspecialchars}
                                                 </a>
                                                 {/volist}
@@ -211,7 +189,7 @@
                                         </div>
                                         <input type="text" class="form-control search-keyword">
                                         <div class="input-group-append">
-                                            <button class="btn btn-info btn-elevate search-submit-button" type="button">
+                                            <button class="btn btn-info btn-elevate search-submit-button" type="button" >
                                                 搜索
                                             </button>
                                         </div>
@@ -242,11 +220,9 @@
                                                 <button
                                                         type="button"
                                                         href="javascript:;"
-                                                        {
-                                                // class}
+                                                        {// class}
                                                 {notempty name="$top_bt.class"}
-                                                class="top-button {$top_bt.class}{notempty name="$top_bt.batch"}
-                                                top-batch{/notempty}"
+                                                class="top-button {$top_bt.class}{notempty name="$top_bt.batch"} top-batch{/notempty}"
                                                 {/notempty}
                                                 {// 跳转地址}
                                                 {notempty name="$top_bt.href"}
@@ -303,19 +279,14 @@
                                         <div class="input-group-prepend">
                                             {volist name="_search_setting" id="field"}
                                             {notempty name="$field.default"}
-                                            <button type="button"
-                                                    class="btn btn-info btn-elevate dropdown-toggle default-search-field"
-                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                                    data-condition="{$field.condition}" data-field="{$field.field}">
+                                            <button type="button" class="btn btn-info btn-elevate dropdown-toggle default-search-field" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-condition="{$field.condition}"  data-field="{$field.field}">
                                                 {$field.title|htmlspecialchars}
                                             </button>
                                             {/notempty}
                                             {/volist}
                                             <div class="dropdown-menu">
                                                 {volist name="_search_setting" id="field"}
-                                                <a class="dropdown-item search-keyword-field"
-                                                   data-field="{$field.field}" data-condition="{$field.condition}"
-                                                   href="javascript:;">
+                                                <a class="dropdown-item search-keyword-field" data-field="{$field.field}" data-condition="{$field.condition}" href="javascript:;">
                                                     {$field.title|htmlspecialchars}
                                                 </a>
                                                 {/volist}
@@ -323,7 +294,7 @@
                                         </div>
                                         <input type="text" class="form-control search-keyword">
                                         <div class="input-group-append">
-                                            <button class="btn btn-info btn-elevate search-submit-button" type="button">
+                                            <button class="btn btn-info btn-elevate search-submit-button" type="button" >
                                                 搜索
                                             </button>
                                         </div>
@@ -360,23 +331,17 @@
                 <div class="accordion accordion-light  accordion-svg-icon" id="accordionExample7">
                     <div class="card use-card">
                         <div class="card-header" id="headingOne7">
-                            <div class="card-title use-card-title" data-toggle="collapse" data-target="#collapseOne7"
-                                 aria-expanded="true" aria-controls="collapseOne7">
-                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                     width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+                            <div class="card-title use-card-title" data-toggle="collapse" data-target="#collapseOne7" aria-expanded="true" aria-controls="collapseOne7">
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
                                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                        <polygon id="Shape" points="0 0 24 0 24 24 0 24"/>
-                                        <path d="M12.2928955,6.70710318 C11.9023712,6.31657888 11.9023712,5.68341391 12.2928955,5.29288961 C12.6834198,4.90236532 13.3165848,4.90236532 13.7071091,5.29288961 L19.7071091,11.2928896 C20.085688,11.6714686 20.0989336,12.281055 19.7371564,12.675721 L14.2371564,18.675721 C13.863964,19.08284 13.2313966,19.1103429 12.8242777,18.7371505 C12.4171587,18.3639581 12.3896557,17.7313908 12.7628481,17.3242718 L17.6158645,12.0300721 L12.2928955,6.70710318 Z"
-                                              id="Path-94" fill="#000000" fill-rule="nonzero"/>
-                                        <path d="M3.70710678,15.7071068 C3.31658249,16.0976311 2.68341751,16.0976311 2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 L8.29289322,8.29289322 C8.67147216,7.91431428 9.28105859,7.90106866 9.67572463,8.26284586 L15.6757246,13.7628459 C16.0828436,14.1360383 16.1103465,14.7686056 15.7371541,15.1757246 C15.3639617,15.5828436 14.7313944,15.6103465 14.3242754,15.2371541 L9.03007575,10.3841378 L3.70710678,15.7071068 Z"
-                                              id="Path-94" fill="#000000" fill-rule="nonzero" opacity="0.3"
-                                              transform="translate(9.000003, 11.999999) rotate(-270.000000) translate(-9.000003, -11.999999) "/>
+                                        <polygon id="Shape" points="0 0 24 0 24 24 0 24" />
+                                        <path d="M12.2928955,6.70710318 C11.9023712,6.31657888 11.9023712,5.68341391 12.2928955,5.29288961 C12.6834198,4.90236532 13.3165848,4.90236532 13.7071091,5.29288961 L19.7071091,11.2928896 C20.085688,11.6714686 20.0989336,12.281055 19.7371564,12.675721 L14.2371564,18.675721 C13.863964,19.08284 13.2313966,19.1103429 12.8242777,18.7371505 C12.4171587,18.3639581 12.3896557,17.7313908 12.7628481,17.3242718 L17.6158645,12.0300721 L12.2928955,6.70710318 Z" id="Path-94" fill="#000000" fill-rule="nonzero" />
+                                        <path d="M3.70710678,15.7071068 C3.31658249,16.0976311 2.68341751,16.0976311 2.29289322,15.7071068 C1.90236893,15.3165825 1.90236893,14.6834175 2.29289322,14.2928932 L8.29289322,8.29289322 C8.67147216,7.91431428 9.28105859,7.90106866 9.67572463,8.26284586 L15.6757246,13.7628459 C16.0828436,14.1360383 16.1103465,14.7686056 15.7371541,15.1757246 C15.3639617,15.5828436 14.7313944,15.6103465 14.3242754,15.2371541 L9.03007575,10.3841378 L3.70710678,15.7071068 Z" id="Path-94" fill="#000000" fill-rule="nonzero" opacity="0.3" transform="translate(9.000003, 11.999999) rotate(-270.000000) translate(-9.000003, -11.999999) " />
                                     </g>
                                 </svg>
                             </div>
                         </div>
-                        <div id="collapseOne7" class="collapse show" aria-labelledby="headingOne7"
-                             data-parent="#accordionExample7">
+                        <div id="collapseOne7" class="collapse show" aria-labelledby="headingOne7" data-parent="#accordionExample7">
                             <div class="card-body use-card-body">
 
                                 <form class="kt-form kt-form--label-right senior-search-high-form">
@@ -385,10 +350,7 @@
                                     <div class="form-group row form-group-marginless kt-margin-t-20">
                                         {foreach name="form_B" item="form" key="keys" }
                                         <label class="col-form-label col-lg-1">{$form.title}:</label>
-                                        <div class="{if condition=" $_advanced_list_number== 1 ||
-                                             $_advanced_list_number== 2
-                                        "}col-lg-5{else /}{if condition="$_advanced_list_number == 3"}col-lg-3{else
-                                        /}col-lg-2{/if}{/if}">
+                                        <div class="{if condition="$_advanced_list_number == 1 || $_advanced_list_number == 2"}col-lg-5{else /}{if condition="$_advanced_list_number == 3"}col-lg-3{else /}col-lg-2{/if}{/if}">
                                         {include file="../application/common/builder/common/form/layout.html" /}
                                     </div>
                                     {/foreach}
@@ -429,11 +391,9 @@
                                     <button
                                             type="button"
                                             href="javascript:;"
-                                            {
-                                    // class}
+                                            {// class}
                                     {notempty name="$top_bt.class"}
-                                    class="top-button {$top_bt.class}{notempty name="$top_bt.batch"}
-                                    top-batch{/notempty}"
+                                    class="top-button {$top_bt.class}{notempty name="$top_bt.batch"} top-batch{/notempty}"
                                     {/notempty}
                                     {// 跳转地址}
                                     {notempty name="$top_bt.href"}
@@ -490,18 +450,14 @@
                             <div class="input-group-prepend">
                                 {volist name="_search_setting" id="field"}
                                 {notempty name="$field.default"}
-                                <button type="button"
-                                        class="btn btn-info btn-elevate dropdown-toggle default-search-field"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                        data-condition="{$field.condition}" data-field="{$field.field}">
+                                <button type="button" class="btn btn-info btn-elevate dropdown-toggle default-search-field" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-condition="{$field.condition}" data-field="{$field.field}">
                                     {$field.title|htmlspecialchars}
                                 </button>
                                 {/notempty}
                                 {/volist}
                                 <div class="dropdown-menu">
                                     {volist name="_search_setting" id="field"}
-                                    <a class="dropdown-item search-keyword-field" data-field="{$field.field}"
-                                       data-condition="{$field.condition}" href="javascript:;">
+                                    <a class="dropdown-item search-keyword-field" data-field="{$field.field}" data-condition="{$field.condition}" href="javascript:;">
                                         {$field.title|htmlspecialchars}
                                     </a>
                                     {/volist}
@@ -509,7 +465,7 @@
                             </div>
                             <input type="text" class="form-control search-keyword">
                             <div class="input-group-append">
-                                <button class="btn btn-info btn-elevate search-submit-button" type="button">
+                                <button class="btn btn-info btn-elevate search-submit-button" type="button" >
                                     搜索
                                 </button>
                             </div>
@@ -541,11 +497,9 @@
                                     <button
                                             type="button"
                                             href="javascript:;"
-                                            {
-                                    // class}
+                                            {// class}
                                     {notempty name="$top_bt.class"}
-                                    class="top-button {$top_bt.class}{notempty name="$top_bt.batch"}
-                                    top-batch{/notempty}"
+                                    class="top-button {$top_bt.class}{notempty name="$top_bt.batch"} top-batch{/notempty}"
                                     {/notempty}
                                     {// 跳转地址}
                                     {notempty name="$top_bt.href"}
@@ -603,18 +557,14 @@
                             <div class="input-group-prepend">
                                 {volist name="_search_setting" id="field"}
                                 {notempty name="$field.default"}
-                                <button type="button"
-                                        class="btn btn-info btn-elevate dropdown-toggle default-search-field"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                        data-condition="{$field.condition}" data-field="{$field.field}">
+                                <button type="button" class="btn btn-info btn-elevate dropdown-toggle default-search-field" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-condition="{$field.condition}" data-field="{$field.field}">
                                     {$field.title|htmlspecialchars}
                                 </button>
                                 {/notempty}
                                 {/volist}
                                 <div class="dropdown-menu">
                                     {volist name="_search_setting" id="field"}
-                                    <a class="dropdown-item search-keyword-field" data-field="{$field.field}"
-                                       data-condition="{$field.condition}" href="javascript:;">
+                                    <a class="dropdown-item search-keyword-field" data-field="{$field.field}" data-condition="{$field.condition}" href="javascript:;">
                                         {$field.title|htmlspecialchars}
                                     </a>
                                     {/volist}
@@ -622,7 +572,7 @@
                             </div>
                             <input type="text" class="form-control search-keyword">
                             <div class="input-group-append">
-                                <button class="btn btn-info btn-elevate search-submit-button" type="button">
+                                <button class="btn btn-info btn-elevate search-submit-button" type="button" >
                                     搜索
                                 </button>
                             </div>
@@ -679,9 +629,7 @@
         var tableObj = _pag.find('#{$_table_id}');
 
         // 列数据
-        var columns = {$_columns | raw
-    }
-        ;
+        var columns = {$_columns|raw};
 
         // 筛选的参数
         var $getQueryParams = {};
@@ -776,7 +724,7 @@
              * @param query_type  传输类型 get/post
              */
             var requestJump = function (query_jump, url, data, query_type) {
-                if (ispopup) {
+                if(ispopup){
 
                     // 标识弹窗模式展示
                     data.ispopup = 1;
@@ -791,8 +739,8 @@
                         type: query_type,
                         url: url,
                         data: data,
-                        dataType: "html",
-                        success: function (result) {
+                        dataType : "html",
+                        success: function(result) {
                             //返回的结果页面
                             var htmlCont = result;
                             layer.open({
@@ -802,28 +750,28 @@
                                 maxmin: true,
                                 //点击遮罩关闭层
                                 shadeClose: false,
-                                area: ['80%', '90%'],
+                                area : ['80%' , '90%'],
                                 btn: ['确定', '取消'],
-                                yes: function (index, layero) {
+                                yes: function(index, layero){
 
                                     // 提交
-                                    $('.' + data.popup_form).submit();
+                                    $('.'+data.popup_form).submit();
 
                                     //如果设定了yes回调，需进行手工关闭
                                     layer.close(index);
 
                                     // 刷新表格
-                                    refreshMethod({pageNumber: null});
+                                    refreshMethod({pageNumber:null});
                                 },
                                 //将结果页面放入layer弹出层中
                                 content: htmlCont,
-                                success: function (layero, index) {
+                                success: function(layero, index){
                                 }
                             });
                         }
                     });
 
-                } else {
+                }else{
                     // 表单提交方式
                     if (query_jump == 'form') {
                         Base.funSimulationForm(url, data, query_type);
@@ -841,13 +789,13 @@
                             success: function (res) {
                                 Base.funUnLoad();
                                 if (res.code == 0) {
-                                    Base.funMessage(res.msg, 'error');
+                                    Base.funMessage(res.msg,'error');
                                 } else {
                                     Base.funMessage(res.msg);
                                 }
-                                refreshMethod({pageNumber: null});
+                                refreshMethod({pageNumber:null});
                             },
-                            error: function () {
+                            error:function(){
                                 Base.funUnLoad();
                             }
                         });
@@ -857,11 +805,11 @@
 
             // 是否确认提示按钮
             if (confirm) {
-                Base.funMessage(confirm, 'warning', null, {
-                    showCancelButton: true,
-                    cancelButtonText: '取消',
-                    timer: null,
-                    preConfirm: function () {
+                Base.funMessage(confirm,'warning',null,{
+                    showCancelButton:true,
+                    cancelButtonText:'取消',
+                    timer:null ,
+                    preConfirm:function(){
                         requestJump(query_jump, url, data, query_type);
                     }
                 });
@@ -944,9 +892,7 @@
 
 
             // 自定义筛选参数
-            var queryParams = {$_queryParams | raw
-        }
-            ;
+            var queryParams = {$_queryParams|raw};
 
             // 定义合并自定义参数变量
             queryParams = queryParams ? queryParams : {};
@@ -975,7 +921,7 @@
 
             $('.default-search-field').data('field', $field);
 
-            $('.default-search-field').data('condition', $condition);
+            $('.default-search-field').data('condition',$condition);
 
             $('.default-search-field').html($title);
 
@@ -1051,8 +997,7 @@
                 var extendData = '<?php echo htmlspecialchars_decode($_editable_data); ?>';
                 extendData = extendData ? $.parseJSON(extendData) : {};
                 Object.assign(dataAll, extendData);
-            } catch (err) {
-            }
+            } catch (err) {}
 
             Base.funLoad();
             $.ajax({
@@ -1063,15 +1008,15 @@
                 success: function (data, status) {
                     Base.funUnLoad();
                     if (data.code == 0) {
-                        Base.funMessage(data.msg, 'error');
+                        Base.funMessage(data.msg,'error');
                     } else {
                         Base.funMessage(data.msg);
                     }
-                    refreshMethod({pageNumber: null});
+                    refreshMethod({pageNumber:null});
                 },
                 error: function () {
                     Base.funUnLoad();
-                    Base.funMessage('服务器错误！', 'error');
+                    Base.funMessage('服务器错误！','error');
                 },
             });
         }
@@ -1105,13 +1050,10 @@
 
                 // 扩展参数设置
                 try {
-                    var extendData = {$_columns | raw
-                }
-                    ;
+                    var extendData = {$_columns|raw};
                     extendData = extendData ? $.parseJSON(extendData) : {};
                     Object.assign(dataAll, extendData);
-                } catch (err) {
-                }
+                } catch (err) {}
 
                 // 刷新当前表格视图
                 // tableObj.bootstrapTable('resetView');
@@ -1133,16 +1075,16 @@
                     success: function (data, status) {
                         Base.funUnLoad();
                         if (data.code == 0) {
-                            Base.funMessage(data.msg, 'error');
+                            Base.funMessage(data.msg,'error');
                             el.editable('setValue', oldValue);
                         } else {
                             Base.funMessage(data.msg);
                         }
-                        refreshMethod({pageNumber: null});
+                        refreshMethod({pageNumber:null});
                     },
                     error: function () {
                         Base.funUnLoad();
-                        Base.funMessage('服务器错误！', 'error');
+                        Base.funMessage('服务器错误！','error');
                     }
                 });
             }
@@ -1226,11 +1168,11 @@
             }
 
             // 上是否有自定义方法
-            if (functions) {
+            if(functions){
                 // 调用方法
                 js_function_arr[functions]();
                 //  是否终止后续代码
-                if (functionsend) {
+                if(functionsend){
                     return false;
                 }
             }
@@ -1245,7 +1187,7 @@
              */
             var requestJump = function (query_jump, url, data, query_type) {
 
-                if (ispopup) {
+                if(ispopup){
 
                     // 标识弹窗模式展示
                     data.ispopup = 1;
@@ -1260,8 +1202,8 @@
                         type: query_type,
                         url: url,
                         data: data,
-                        dataType: "html",
-                        success: function (result) {
+                        dataType : "html",
+                        success: function(result) {
                             //返回的结果页面
                             var htmlCont = result;
                             layer.open({
@@ -1271,28 +1213,28 @@
                                 maxmin: true,
                                 //点击遮罩关闭层
                                 shadeClose: false,
-                                area: ['80%', '90%'],
+                                area : ['80%' , '90%'],
                                 btn: ['确定', '取消'],
-                                yes: function (index, layero) {
+                                yes: function(index, layero){
 
                                     // 提交
-                                    $('.' + data.popup_form).submit();
+                                    $('.'+data.popup_form).submit();
 
                                     //如果设定了yes回调，需进行手工关闭
                                     layer.close(index);
 
                                     // 刷新表格
-                                    refreshMethod({pageNumber: null});
+                                    refreshMethod({pageNumber:null});
                                 },
                                 //将结果页面放入layer弹出层中
                                 content: htmlCont,
-                                success: function (layero, index) {
+                                success: function(layero, index){
                                 }
                             });
                         }
                     });
 
-                } else {
+                }else{
                     // 表单提交方式
                     if (query_jump == 'form') {
                         Base.funSimulationForm(url, data, query_type);
@@ -1310,13 +1252,13 @@
                             success: function (res) {
                                 Base.funUnLoad();
                                 if (res.code == 0) {
-                                    Base.funMessage(res.msg, 'error');
+                                    Base.funMessage(res.msg,'error');
                                 } else {
                                     Base.funMessage(res.msg);
                                 }
-                                refreshMethod({pageNumber: null});
+                                refreshMethod({pageNumber:null});
                             },
-                            error: function () {
+                            error:function(){
                                 Base.funUnLoad();
                             }
                         });
@@ -1344,18 +1286,18 @@
 
             // 是否确认提示按钮
             if (confirm) {
-                Base.funMessage(confirm, 'warning', null, {
-                    showCancelButton: true,
-                    cancelButtonText: '取消',
-                    timer: null,
-                    preConfirm: function () {
+                Base.funMessage(confirm,'warning',null,{
+                    showCancelButton:true,
+                    cancelButtonText:'取消',
+                    timer:null ,
+                    preConfirm:function(){
                         requestJump(jump, url, send_data, query_type);
                     }
                 });
             }
 
             // 普通方式
-            else {
+            else{
                 requestJump(jump, url, send_data, query_type);
             }
         });
@@ -1373,7 +1315,7 @@
                 data: send_data,
                 dataType: 'JSON',
                 success: function (res) {
-                    if (res.code == 1) {
+                    if(res.code == 1){
                         if (res.data.status == 1) {
                             send_data.page = send_data.page + 1;
                             if (res.data.percentage <= 10) {
@@ -1402,10 +1344,10 @@
                             $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-success');
                             $('div[name="ssasdasd"]').find('span').html(res.data.percentage + '% (完成)');
                             $('div[name="ssasdasd"]').width(res.data.percentage + '%');
-                            window.location = 'export?download=1&temp=' + res.data.temp + '&page=' + send_data.page;
+                            window.location = 'export?download=1&temp=' + res.data.temp+'&page='+send_data.page;
                             layer.closeAll();
                         }
-                    } else {
+                    }else{
                         layer.msg(res.msg, {icon: 5});
                         layer.closeAll();
                     }
@@ -1415,99 +1357,39 @@
 
         //  格式化数据
         var formatter_gather = {};
-    <
-            ? php foreach($_formatter as $_formatterKey
-    =>
-        $_formatterVale
-    )
-        {
-                ?
-        >
-            formatter_gather.
-            {
-                $_formatterKey
-            }
-            =
-        <
-                ? php echo
-            htmlspecialchars_decode($_formatterVale);
-                ?
-        >
-        <
-                ? php
-        }
-            ?
-    >
+    <?php foreach($_formatter as $_formatterKey=>$_formatterVale){ ?>
+            formatter_gather.{$_formatterKey} = <?php echo htmlspecialchars_decode($_formatterVale); ?>
+        <?php }?>
 
         // 绑定事件
         var events_gather = {};
-    <
-            ? php foreach($_events as $_eventsKey
-    =>
-        $_eventsVale
-    )
-        {
-                ?
-        >
-            events_gather.
-            {
-                $_eventsKey
-            }
-            =
-        <
-                ? php echo
-            htmlspecialchars_decode($_eventsVale);
-                ?
-        >
-        <
-                ? php
-        }
-            ?
-    >
+    <?php foreach($_events as $_eventsKey=>$_eventsVale){ ?>
+            events_gather.{$_eventsKey} = <?php echo htmlspecialchars_decode($_eventsVale); ?>
+        <?php }?>
 
         // 额外自定义js方法代码
         var js_function_arr = {};
-    <
-            ? php foreach($_js_function_arr as $_js_function_arrKey
-    =>
-        $_js_function_arrVale
-    )
-        {
-                ?
-        >
-            js_function_arr.
-            {
-                $_js_function_arrVale['name']
-            }
-            =
-        <
-                ? php echo
-            htmlspecialchars_decode($_js_function_arrVale['value']);
-                ?
-        >
-        <
-                ? php
-        }
-            ?
-    >
+    <?php foreach($_js_function_arr as $_js_function_arrKey=>$_js_function_arrVale){ ?>
+            js_function_arr.{$_js_function_arrVale['name']} = <?php echo htmlspecialchars_decode($_js_function_arrVale['value']); ?>
+        <?php }?>
 
         // 绑定事件与格式化
-        if (columns) {
-            columns.forEach(function (val, index, arr) {
-                if (val.events) {
+        if(columns){
+            columns.forEach(function(val,index,arr){
+                if(val.events){
                     columns[index]['events'] = events_gather[val.events];
                 }
-                if (val.formatter) {
+                if(val.formatter){
                     columns[index]['formatter'] = formatter_gather[val.formatter];
                 }
                 // 行内编辑
-                if (val.editable) {
-                    if (val.editable.type == 'select2') {
-                        if (val.editable.select2) {
-                            if (val.editable.select2.templateResult) {
+                if(val.editable){
+                    if(val.editable.type == 'select2'){
+                        if(val.editable.select2){
+                            if(val.editable.select2.templateResult){
                                 columns[index].editable.select2.templateResult = js_function_arr[columns[index].editable.select2.templateResult];
                             }
-                            if (val.editable.select2.templateSelection) {
+                            if(val.editable.select2.templateSelection){
                                 columns[index].editable.select2.templateSelection = js_function_arr[columns[index].editable.select2.templateSelection];
                             }
                         }
@@ -1525,13 +1407,9 @@
              * 类型：String
              * 详情：请求后台的URL（*）用于从远程站点请求数据的URL
              */
-            url: '{$_url}',
-            rowStyle: function (row, index) {
-                return {};
-            },
-            rowAttributes: function (row, index) {
-                return {};
-            },
+            url:'{$_url}',
+            rowStyle:function(row,index){ return {};},
+            rowAttributes:function(row,index){return {};},
             /*****************************************************扩展插件相关设置*************************************************************/
             /**
              * @describe 行内编辑提交
@@ -1553,16 +1431,16 @@
              * @param oldValue Blend 未修改前数据
              * @param $el Obj 元素对象
              */
-            onEditableHidden: function (field, row, $el, reason) {
+            onEditableHidden: function(field, row, $el, reason) {
                 // 统一处理函数
                 onEditableHidden(field, row, $el, reason);
             },
             // 导出
-            showExport: false, // 是否显示导出按钮
-            exportDataType: 'basic', // 导出方式   basic：导出当前页,all：导出全部,selected：导出选中项.
-            exportTypes: ['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'], // 导出类型
+            showExport:false, // 是否显示导出按钮
+            exportDataType:'basic', // 导出方式   basic：导出当前页,all：导出全部,selected：导出选中项.
+            exportTypes:['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'], // 导出类型
             //文件名称设置
-            exportOptions: {
+            exportOptions:{
                 fileName: document.title
             },
 
@@ -1570,7 +1448,7 @@
             // stickyHeaderOffsetY:51, // 设置窗口顶部的Y偏移以固定粘性标头。如果有一个高度为60px的固定导航栏，则该值为60。
 
             /*****************************************************字段属性设置相关************************************************************/
-            columns: columns,
+            columns:columns,
             /*****************************************************方法置相关*****************************************************************/
             /**
              * @describe 当 checkbox或radio 选中触发
@@ -1578,8 +1456,8 @@
              * @param row 单击的行对应的记录
              * @param $element 选中DOM元素.
              */
-            onCheck: function (row, $element) {
-                triggerCheck(row, $element);
+            onCheck:function(row,$element){
+                triggerCheck(row,$element);
             },
 
             /**
@@ -1588,8 +1466,8 @@
              * @param row 单击的行对应的记录
              * @param $element 选中DOM元素.
              */
-            onUncheck: function (row, $element) {
-                triggerUncheck(row, $element);
+            onUncheck:function(row,$element){
+                triggerUncheck(row,$element);
             },
 
             /**
@@ -1597,7 +1475,7 @@
              * @author 仇仇天
              * @param rows 全部选中的行数据
              */
-            onCheckAll: function (rows) {
+            onCheckAll:function(rows){
                 triggerCheck(rows);
             },
 
@@ -1606,118 +1484,111 @@
              * @author 仇仇天
              * @param rows 全部取消选中的行数据
              */
-            onUncheckAll: function (rows) {
+            onUncheckAll:function(rows){
                 triggerUncheck(rows);
             },
         }
 
         tableinfo.method = '{$_tableConfig.method|raw}';
-        tableinfo.data = {$_tableConfig.data | raw};
+        tableinfo.data = {$_tableConfig.data|raw};
         tableinfo.contentType = '{$_tableConfig.contentType|raw}';
         tableinfo.dataType = '{$_tableConfig.dataType|raw}';
-        tableinfo.ajax = {$_tableConfig.ajax | raw};
-        tableinfo.cache = {$_tableConfig.cache | raw};
-        tableinfo.ajaxOptions = {$_tableConfig.ajaxOptions | raw};
-        tableinfo.queryParams = {$_tableConfig.queryParams | raw};
+        tableinfo.ajax = {$_tableConfig.ajax|raw};
+        tableinfo.cache = {$_tableConfig.cache|raw};
+        tableinfo.ajaxOptions = {$_tableConfig.ajaxOptions|raw};
+        tableinfo.queryParams = {$_tableConfig.queryParams|raw};
         tableinfo.queryParamsType = '{$_tableConfig.queryParamsType|raw}';
-        tableinfo.responseHandler = {$_tableConfig.responseHandler | raw};
+        tableinfo.responseHandler = {$_tableConfig.responseHandler|raw};
         tableinfo.totalField = '{$_tableConfig.totalField|raw}';
         tableinfo.dataField = '{$_tableConfig.dataField|raw}';
-        tableinfo.pagination = {$_tableConfig.pagination | raw};
-        tableinfo.onlyInfoPagination = {$_tableConfig.onlyInfoPagination | raw};
-        tableinfo.paginationLoop = {$_tableConfig.paginationLoop | raw};
+        tableinfo.pagination = {$_tableConfig.pagination|raw};
+        tableinfo.onlyInfoPagination = {$_tableConfig.onlyInfoPagination|raw};
+        tableinfo.paginationLoop = {$_tableConfig.paginationLoop|raw};
         tableinfo.sidePagination = '{$_tableConfig.sidePagination|raw}';
-        tableinfo.totalRows = {$_tableConfig.totalRows | raw};
-        tableinfo.pageNumber = {$_tableConfig.pageNumber | raw};
-        tableinfo.pageSize = {$_tableConfig.pageSize | raw};
-        tableinfo.pageList = {$_tableConfig.pageList | raw};
+        tableinfo.totalRows = {$_tableConfig.totalRows|raw};
+        tableinfo.pageNumber = {$_tableConfig.pageNumber|raw};
+        tableinfo.pageSize = {$_tableConfig.pageSize|raw};
+        tableinfo.pageList = {$_tableConfig.pageList|raw};
         tableinfo.paginationHAlign = '{$_tableConfig.paginationHAlign|raw}';
         tableinfo.paginationVAlign = '{$_tableConfig.paginationVAlign|raw}';
         tableinfo.paginationDetailHAlign = '{$_tableConfig.paginationDetailHAlign|raw}';
         tableinfo.paginationPreText = '{$_tableConfig.paginationPreText|raw}';
         tableinfo.paginationNextText = '{$_tableConfig.paginationNextText|raw}';
-        tableinfo.paginationSuccessivelySize = {$_tableConfig.paginationSuccessivelySize | raw};
-        tableinfo.paginationPagesBySide = {$_tableConfig.paginationPagesBySide | raw};
-        tableinfo.paginationUseIntermediate = {$_tableConfig.paginationUseIntermediate | raw};
-        tableinfo.search = {$_tableConfig.search | raw};
-        tableinfo.searchOnEnterKey = {$_tableConfig.searchOnEnterKey | raw};
-        tableinfo.strictSearch = {$_tableConfig.strictSearch | raw};
-        tableinfo.trimOnSearch = {$_tableConfig.trimOnSearch | raw};
+        tableinfo.paginationSuccessivelySize = {$_tableConfig.paginationSuccessivelySize|raw};
+        tableinfo.paginationPagesBySide = {$_tableConfig.paginationPagesBySide|raw};
+        tableinfo.paginationUseIntermediate = {$_tableConfig.paginationUseIntermediate|raw};
+        tableinfo.search = {$_tableConfig.search|raw};
+        tableinfo.searchOnEnterKey = {$_tableConfig.searchOnEnterKey|raw};
+        tableinfo.strictSearch = {$_tableConfig.strictSearch|raw};
+        tableinfo.trimOnSearch = {$_tableConfig.trimOnSearch|raw};
         tableinfo.searchAlign = '{$_tableConfig.searchAlign|raw}';
-        tableinfo.searchTimeOut = {$_tableConfig.searchTimeOut | raw};
+        tableinfo.searchTimeOut = {$_tableConfig.searchTimeOut|raw};
         tableinfo.searchText = '{$_tableConfig.searchText|raw}';
-        tableinfo.customSearch = {$_tableConfig.customSearch | raw};
-        tableinfo.showFooter = {$_tableConfig.showFooter | raw};
-        tableinfo.footerStyle = {$_tableConfig.footerStyle | raw};
+        tableinfo.customSearch = {$_tableConfig.customSearch|raw};
+        tableinfo.showFooter = {$_tableConfig.showFooter|raw};
+        tableinfo.footerStyle = {$_tableConfig.footerStyle|raw};
 
-        tableinfo.toolbar = {$_tableConfig.toolbar | raw};
+        tableinfo.toolbar = {$_tableConfig.toolbar|raw};
         tableinfo.toolbarAlign = '{$_tableConfig.toolbarAlign|raw}';
-        tableinfo.buttonsToolbar = {$_tableConfig.buttonsToolbar | raw};
+        tableinfo.buttonsToolbar = {$_tableConfig.buttonsToolbar|raw};
         tableinfo.toolbarAlign = '{$_tableConfig.toolbarAlign|raw}';
         tableinfo.buttonsClass = '{$_tableConfig.buttonsClass|raw}';
-        tableinfo.showColumns = {$_tableConfig.showColumns | raw};
-        tableinfo.minimumCountColumns = {$_tableConfig.minimumCountColumns | raw};
-        tableinfo.showPaginationSwitch = {$_tableConfig.showPaginationSwitch | raw};
-        tableinfo.showRefresh = {$_tableConfig.showRefresh | raw};
-        tableinfo.showToggle = {$_tableConfig.showToggle | raw};
-        tableinfo.showFullscreen = {$_tableConfig.showFullscreen | raw};
+        tableinfo.showColumns = {$_tableConfig.showColumns|raw};
+        tableinfo.minimumCountColumns = {$_tableConfig.minimumCountColumns|raw};
+        tableinfo.showPaginationSwitch = {$_tableConfig.showPaginationSwitch|raw};
+        tableinfo.showRefresh = {$_tableConfig.showRefresh|raw};
+        tableinfo.showToggle = {$_tableConfig.showToggle|raw};
+        tableinfo.showFullscreen = {$_tableConfig.showFullscreen|raw};
 
         tableinfo.classes = '{$_tableConfig.classes|raw}';
-        tableinfo.striped = {$_tableConfig.striped | raw};
-        tableinfo.undefinedText = {$_tableConfig.undefinedText | raw};
+        tableinfo.striped = {$_tableConfig.striped|raw};
+        tableinfo.undefinedText = {$_tableConfig.undefinedText|raw};
         tableinfo.locale = '{$_tableConfig.locale|raw}';
-        tableinfo.showHeader = {$_tableConfig.showHeader | raw};
-        tableinfo.smartDisplay = {$_tableConfig.smartDisplay | raw};
-        tableinfo.escape = {$_tableConfig.escape | raw};
+        tableinfo.showHeader = {$_tableConfig.showHeader|raw};
+        tableinfo.smartDisplay = {$_tableConfig.smartDisplay|raw};
+        tableinfo.escape = {$_tableConfig.escape|raw};
         tableinfo.selectItemName = '{$_tableConfig.selectItemName|raw}';
-        tableinfo.clickToSelect = {$_tableConfig.clickToSelect | raw};
+        tableinfo.clickToSelect = {$_tableConfig.clickToSelect|raw};
 
-        tableinfo.singleSelect = {$_tableConfig.singleSelect | raw};
-        tableinfo.checkboxHeader = {$_tableConfig.checkboxHeader | raw};
-        tableinfo.maintainSelected = {$_tableConfig.maintainSelected | raw};
-        tableinfo.uniqueId = {$_tableConfig.uniqueId | raw};
-        tableinfo.cardView = {$_tableConfig.cardView | raw};
+        tableinfo.singleSelect = {$_tableConfig.singleSelect|raw};
+        tableinfo.checkboxHeader = {$_tableConfig.checkboxHeader|raw};
+        tableinfo.maintainSelected = {$_tableConfig.maintainSelected|raw};
+        tableinfo.uniqueId = {$_tableConfig.uniqueId|raw};
+        tableinfo.cardView = {$_tableConfig.cardView|raw};
         tableinfo.theadClasses = '{$_tableConfig.theadClasses|raw}';
 
-        tableinfo.detailView = {$_tableConfig.detailView | raw};
-        tableinfo.detailFormatter = {$_tableConfig.detailFormatter | raw};
-        tableinfo.detailFilter = {$_tableConfig.detailFilter | raw};
+        tableinfo.detailView = {$_tableConfig.detailView|raw};
+        tableinfo.detailFormatter = {$_tableConfig.detailFormatter|raw};
+        tableinfo.detailFilter = {$_tableConfig.detailFilter|raw};
 
-        tableinfo.iconSize = {$_tableConfig.iconSize | raw};
+        tableinfo.iconSize = {$_tableConfig.iconSize|raw};
 
-        tableinfo.sortable = {$_tableConfig.sortable | raw};
-        tableinfo.sortClass = {$_tableConfig.sortClass | raw};
-        tableinfo.silentSort = {$_tableConfig.silentSort | raw};
-        tableinfo.sortName = {$_tableConfig.sortName | raw};
+        tableinfo.sortable = {$_tableConfig.sortable|raw};
+        tableinfo.sortClass = {$_tableConfig.sortClass|raw};
+        tableinfo.silentSort = {$_tableConfig.silentSort|raw};
+        tableinfo.sortName = {$_tableConfig.sortName|raw};
         tableinfo.sortOrder = '{$_tableConfig.sortOrder|raw}';
-        tableinfo.sortStable = {$_tableConfig.sortStable | raw};
-        tableinfo.rememberOrder = {$_tableConfig.rememberOrder | raw};
-        tableinfo.customSort = {$_tableConfig.customSort | raw};
+        tableinfo.sortStable = {$_tableConfig.sortStable|raw};
+        tableinfo.rememberOrder = {$_tableConfig.rememberOrder|raw};
+        tableinfo.customSort = {$_tableConfig.customSort|raw};
 
-        tableinfo.resizable = {$_tableConfig.resizable | raw};
+        tableinfo.resizable = {$_tableConfig.resizable|raw};
 
-        tableinfo.fixedColumns = {$_tableConfig.fixedColumns | raw};
-        tableinfo.fixedNumber = {$_tableConfig.fixedNumber | raw};
+        tableinfo.fixedColumns = {$_tableConfig.fixedColumns|raw};
+        tableinfo.fixedNumber = {$_tableConfig.fixedNumber|raw};
 
 
-        tableinfo.onLoadSuccess = {$_tableConfig.onLoadSuccess | raw};
-        tableinfo.onLoadError = {$_tableConfig.onLoadError | raw};
+        tableinfo.onLoadSuccess = {$_tableConfig.onLoadSuccess|raw};
+        tableinfo.onLoadError = {$_tableConfig.onLoadError|raw};
 
         // 树表格配置
-        {
-            notempty
-            name = "_isTreeTable"
-        }
-        {
-            $_treeTableConfig | raw
-        }
-        {
-            /notempty}
+        {notempty name="_isTreeTable"}
+        {$_treeTableConfig|raw}
+        {/notempty}
 
             // 初始化表格
             tableObj.bootstrapTable(tableinfo);
-        }
-    );
+        });
 </script>
 
 {// 额外自定义js文件 }
@@ -1727,9 +1598,7 @@
 
 {// 额外JS代码}
 <script>
-    {
-        $_js_code
-    }
+    {$_js_code}
 </script>
 
 {/block}

@@ -46,55 +46,37 @@ License: You must have a valid license purchased only from themeforest(the above
     <!--end::Page Vendors Styles -->
 
     <!--begin:: Global Mandatory Vendors -->
-    <link href="__GLODAL_PLUGINS__/perfect-scrollbar/css/perfect-scrollbar.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/perfect-scrollbar/css/perfect-scrollbar.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
     <!--end:: Global Mandatory Vendors -->
 
     <!--begin:: Global Optional Vendors -->
     {// 必须}
-    <link href="__GLODAL_PLUGINS__/tether/dist/css/tether.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/bootstrap-select/dist/css/bootstrap-select.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/tether/dist/css/tether.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/bootstrap-select/dist/css/bootstrap-select.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
 
-    <link href="__GLODAL_PLUGINS__/owl.carousel/dist/assets/owl.carousel.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/owl.carousel/dist/assets/owl.theme.default.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/dropzone/dist/dropzone.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/summernote/dist/summernote.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/bootstrap-markdown/css/bootstrap-markdown.min.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/animate.css/animate.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/toastr/build/toastr.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/owl.carousel/dist/assets/owl.carousel.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/owl.carousel/dist/assets/owl.theme.default.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/dropzone/dist/dropzone.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/summernote/dist/summernote.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/bootstrap-markdown/css/bootstrap-markdown.min.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/animate.css/animate.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/toastr/build/toastr.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
     <link href="__GLODAL_PLUGINS__/morris.js/morris.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/sweetalert2/dist/sweetalert2.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/socicon/css/socicon.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
-    <link href="__GLODAL_CUSTOM__/vendors/line-awesome/css/line-awesome.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
-    <link href="__GLODAL_CUSTOM__/vendors/flaticon/flaticon.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
-    <link href="__GLODAL_CUSTOM__/vendors/flaticon2/flaticon.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
-    <link href="__GLODAL_PLUGINS__/@fortawesome/fontawesome-free/css/all.min.css?v={:config('asset_version')}"
-          rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/sweetalert2/dist/sweetalert2.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/socicon/css/socicon.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_CUSTOM__/vendors/line-awesome/css/line-awesome.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_CUSTOM__/vendors/flaticon/flaticon.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_CUSTOM__/vendors/flaticon2/flaticon.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
+    <link href="__GLODAL_PLUGINS__/@fortawesome/fontawesome-free/css/all.min.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
     <!--end:: Global Optional Vendors -->
 
     {// 动态加载css文件 }
     {notempty name="_css_files"}
-    {volist name="_css_files" id="css"}
-    {:load_assets($css)}
-    {/volist}
+        {volist name="_css_files" id="css"}
+            {:load_assets($css)}
+        {/volist}
     {/notempty}
 
 
@@ -104,8 +86,7 @@ License: You must have a valid license purchased only from themeforest(the above
     <!--end::Global Theme Styles -->
 
     <!--begin::Layout Skins(used by all pages) -->
-    <link href="__ADMIN_CSS__/skins/header/base/light.css?v={:config('asset_version')}" rel="stylesheet"
-          type="text/css"/>
+    <link href="__ADMIN_CSS__/skins/header/base/light.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
     <link href="__ADMIN_CSS__/skins/header/menu/light.css" rel="stylesheet" type="text/css"/>
     <link href="__ADMIN_CSS__/skins/brand/dark.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
     <link href="__ADMIN_CSS__/skins/aside/dark.css?v={:config('asset_version')}" rel="stylesheet" type="text/css"/>
@@ -121,26 +102,20 @@ License: You must have a valid license purchased only from themeforest(the above
     {// 初始化js配置}
     <script>
         var base = {
-        {// 获取顶部菜单地址}
+            {// 获取顶部菜单地址}
             top_menu_url: '{:url("admin/ajax/getSidebarMenu")}',
-                {// 百度编辑器上传地址}
-                    ueditor_upload_url: '{$ueditor_upload_url ? $ueditor_upload_url : url("admin/attachment/upload", ["dir" => "images", "from" => "ueditor", "module" => request()->module()])}',
+            {// 百度编辑器上传地址}
+            ueditor_upload_url: '{$ueditor_upload_url ? $ueditor_upload_url : url("admin/attachment/upload", ["dir" => "images", "from" => "ueditor", "module" => request()->module()])}',
             {// 商品选择器}
-                variableParent:{
-                    id:[], data
-                :
-                    []
-                }
-            ,
-                {// 全局ztree树组件对象}
-                    ztrees:{
-                    }
-                ,
-                    // 多图存储
-                    imagesList:{
-                    }
-                }
-                ;
+            variableParent:{
+                id:[],
+                data:[]
+            },
+            {// 全局ztree树组件对象}
+            ztrees:{},
+            {// 多图存储}
+            imagesList:{}
+        };
     </script>
 
     <link rel="shortcut icon" href="__ADMIN_IMG__/logos/favicon.ico"/>
@@ -160,23 +135,19 @@ License: You must have a valid license purchased only from themeforest(the above
         </a>
     </div>
     <div class="kt-header-mobile__toolbar">
-        <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler">
-            <span></span></button>
+        <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler"><span></span></button>
         <button class="kt-header-mobile__toggler" id="kt_header_mobile_toggler"><span></span></button>
-        <button class="kt-header-mobile__topbar-toggler" id="kt_header_mobile_topbar_toggler"><i
-                class="flaticon-more"></i></button>
+        <button class="kt-header-mobile__topbar-toggler" id="kt_header_mobile_topbar_toggler"><i class="flaticon-more"></i></button>
     </div>
 </div>
 <!-- end:: Header Mobile -->
 
 <div class="kt-grid kt-grid--hor kt-grid--root">
     <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
-
         <!-- begin:: Aside -->
         <button class="kt-aside-close " id="kt_aside_close_btn"><i class="la la-close"></i></button>
 
-        <div class="kt-aside  kt-aside--fixed  kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop"
-             id="kt_aside">
+        <div class="kt-aside  kt-aside--fixed  kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop" id="kt_aside">
 
             <!-- begin:: Aside -->
             <div class="kt-aside__brand kt-grid__item " id="kt_aside_brand">
@@ -222,65 +193,59 @@ License: You must have a valid license purchased only from themeforest(the above
 
             <!-- begin:: Aside Menu -->
             <div class="kt-aside-menu-wrapper kt-grid__item kt-grid__item--fluid" id="kt_aside_menu_wrapper">
-                <div id="kt_aside_menu" class="kt-aside-menu " data-ktmenu-vertical="1" data-ktmenu-scroll="1"
-                     data-ktmenu-dropdown-timeout="500">
+                <div id="kt_aside_menu" class="kt-aside-menu " data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
                     <ul class="kt-menu__nav page-sidebar-menu">
                         {volist name="_sidebar_menus" id="menu"}
-                        {if $menu.is_hide == 0}
-                        <li class="kt-menu__item  kt-menu__item--submenu {$menu['id'] == $_location[1][" id
-                        "]?='kt-menu__item--open kt-menu__item--here'}" aria-haspopup="true"
-                        data-ktmenu-submenu-toggle="hover">
-                        {notempty name="menu.url_value"}
-                        <a class="kt-menu__link" href="{$menu.url_value}" target="{$menu.url_target}">
-                            {notempty name="menu.icon"}
-                            <i class="kt-menu__link-icon {$menu.icon}"></i>
-                            {/notempty}
-                            <span class="kt-menu__link-text">{$menu.title}</span>
-                        </a>
-                        {else/}
-                        <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
-                            {notempty name="menu.icon"}
-                            <i class="kt-menu__link-icon {$menu.icon}"></i>
-                            {/notempty}
-                            <span class="kt-menu__link-text">{$menu.title}</span>
-                            <i class="kt-menu__ver-arrow la la-angle-right"></i>
-                        </a>
-                        {/notempty}
-                        {notempty name="menu['child']"}
-                        <div class="kt-menu__submenu ">
-                            <span class="kt-menu__arrow"></span>
-                            <ul class="kt-menu__subnav">
-                                {volist name="menu['child']" id="submenu"}
-                                {if $submenu.is_hide == 0}
-                                {if(isset($_location[2]) && $submenu['id'] == $_location[2]["id"])}
-                                <li class="kt-menu__item  kt-menu__item--active" aria-haspopup="true">
-                                    <a href="{:url($submenu.url_value)}" class="kt-menu__link"
-                                       target="{$submenu.url_target}">
-                                        {notempty name="submenu.icon"}
-                                        <i class="kt-menu__link-icon {$submenu.icon}"></i>
+                            {if $menu.is_hide == 0}
+                                <li class="kt-menu__item  kt-menu__item--submenu {$menu['id'] == $_location[1]['id'] ?= 'kt-menu__item--open kt-menu__item--here'}" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                                    {notempty name="menu.url_value"}
+                                        <a class="kt-menu__link" href="{$menu.url_value}" target="{$menu.url_target}">
+                                        {notempty name="menu.icon"}
+                                        <i class="kt-menu__link-icon {$menu.icon}"></i>
                                         {/notempty}
-
-                                        <span class="kt-menu__link-text">{$submenu.title}</span>
-                                    </a>
+                                        <span class="kt-menu__link-text">{$menu.title}</span>
+                                        </a>
+                                    {else/}
+                                        <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
+                                            {notempty name="menu.icon"}
+                                            <i class="kt-menu__link-icon {$menu.icon}"></i>
+                                            {/notempty}
+                                            <span class="kt-menu__link-text">{$menu.title}</span>
+                                            <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                                        </a>
+                                    {/notempty}
+                                    {notempty name="menu['child']"}
+                                        <div class="kt-menu__submenu ">
+                                            <span class="kt-menu__arrow"></span>
+                                            <ul class="kt-menu__subnav">
+                                                {volist name="menu['child']" id="submenu"}
+                                                    {if $submenu.is_hide == 0}
+                                                        {if(isset($_location[2]) && $submenu['id'] == $_location[2]['id'])}
+                                                            <li class="kt-menu__item  kt-menu__item--active" aria-haspopup="true">
+                                                                <a href="{:url($submenu.url_value)}" class="kt-menu__link" target="{$submenu.url_target}">
+                                                                    {notempty name="submenu.icon"}
+                                                                    <i class="kt-menu__link-icon {$submenu.icon}"></i>
+                                                                    {/notempty}
+                                                                    <span class="kt-menu__link-text">{$submenu.title}</span>
+                                                                </a>
+                                                            </li>
+                                                        {else/}
+                                                            <li class="kt-menu__item " aria-haspopup="true">
+                                                                <a href="{:url($submenu.url_value)}" class="kt-menu__link" target="{$submenu.url_target}">
+                                                                    {notempty name="submenu.icon"}
+                                                                    <i class="kt-menu__link-icon {$submenu.icon}"></i>
+                                                                    {/notempty}
+                                                                    <span class="kt-menu__link-text">{$submenu.title}</span>
+                                                                </a>
+                                                            </li>
+                                                        {/if}
+                                                    {/if}
+                                                {/volist}
+                                            </ul>
+                                        </div>
+                                    {/notempty}
                                 </li>
-                                {else/}
-                                <li class="kt-menu__item " aria-haspopup="true">
-                                    <a href="{:url($submenu.url_value)}" class="kt-menu__link"
-                                       target="{$submenu.url_target}">
-                                        {notempty name="submenu.icon"}
-                                        <i class="kt-menu__link-icon {$submenu.icon}"></i>
-                                        {/notempty}
-                                        <span class="kt-menu__link-text">{$submenu.title}</span>
-                                    </a>
-                                </li>
-                                {/if}
-                                {/if}
-                                {/volist}
-                            </ul>
-                        </div>
-                        {/notempty}
-                        </li>
-                        {/if}
+                            {/if}
                         {/volist}
                     </ul>
                 </div>

@@ -9,15 +9,14 @@ use app\common\builder\ZBuilder;
 
 /**
  * 系统配置控制器
- * @package app\admin\controller
  */
 class Config extends Admin
 {
     /**
      * 配置首页
+     * @author 仇仇天
      * @param string $module_group 模块分组
      * @return mixed
-     * @author 仇仇天
      */
     public function index($module_group = 'admin')
     {
@@ -209,9 +208,9 @@ class Config extends Admin
 
     /**
      * 新增
+     * @author 仇仇天
      * @param string $module_group 模块分组
      * @return mixed
-     * @author 仇仇天
      */
     public function add($module_group = '')
     {

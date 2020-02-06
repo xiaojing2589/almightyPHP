@@ -40,16 +40,26 @@ class Config
 
         // 视图输出字符串内容替换
         $view_replace_str = [
-            '__UPLOADS__'        => PUBLIC_PATH . 'uploads',                        // 文件上传目录
-            '__ASSETS__'         => PUBLIC_PATH . 'static1/assets',                 // 静态资源目录
-            '__GLODAL_PLUGINS__' => PUBLIC_PATH . 'static1/assets/vendors/general',  // 公共插件目录
-            '__GLODAL_CUSTOM__'  => PUBLIC_PATH . 'static1/assets/vendors/custom',  // 公共插件目录
-            '__ADMIN_LAYOUTS__'  => PUBLIC_PATH . 'static1/assets/admin/assets/layouts',   // 后台布局目录
-            '__ADMIN_CSS__'      => PUBLIC_PATH . 'static1/assets/admin/css',   // 后台CSS目录
-            '__ADMIN_JS__'       => PUBLIC_PATH . 'static1/assets/admin/js',    // 后台JS目录
-            '__ADMIN_IMG__'      => PUBLIC_PATH . 'static1/assets/admin/img',   // 后台IMG目录
-            '__HOME_CSS__'       => PUBLIC_PATH . 'static1/assets/home/assets/css',    // 前台CSS目录
-            '__EXTEND_FORM__'    => PUBLIC_PATH . 'static1/extend/form',        // 表单项扩展目录
+            // 文件上传目录
+            '__UPLOADS__'        => PUBLIC_PATH . 'uploads',
+            // 静态资源目录
+            '__ASSETS__'         => PUBLIC_PATH . 'static/assets',
+            // 公共插件目录
+            '__GLODAL_PLUGINS__' => PUBLIC_PATH . 'static/assets/vendors/general',
+            // 公共插件目录
+            '__GLODAL_CUSTOM__'  => PUBLIC_PATH . 'static/assets/vendors/custom',
+            // 后台布局目录
+            '__ADMIN_LAYOUTS__'  => PUBLIC_PATH . 'static/assets/admin/assets/layouts',
+            // 后台CSS目录
+            '__ADMIN_CSS__'      => PUBLIC_PATH . 'static/assets/admin/css',
+            // 后台JS目录
+            '__ADMIN_JS__'       => PUBLIC_PATH . 'static/assets/admin/js',
+            // 后台IMG目录
+            '__ADMIN_IMG__'      => PUBLIC_PATH . 'static/assets/admin/img',
+            // 前台CSS目录
+            '__HOME_CSS__'       => PUBLIC_PATH . 'static/assets/home/assets/css',
+            // 表单项扩展目录
+            '__EXTEND_FORM__'    => PUBLIC_PATH . 'static/extend/form',
         ];
 
         // 模板输出替换
