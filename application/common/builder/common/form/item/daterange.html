@@ -1,0 +1,8 @@
+{// 时间范围选择 }
+<div class="input-daterange input-group js-daterange" data-format="{$form.format}">
+    <input type="text" class="form-control" name="{$form.name}[]"  value="{notempty name="form['value'][0]"}{$form['value'][0]}{/notempty}"/>
+    <div class="input-group-append">
+        <span class="input-group-text">~</span>
+    </div>
+    <input type="text" class="form-control" name="{$form.name}[]"  value="{notempty name="form['value'][1]"}{$form['value'][1]}{/notempty}"/>
+</div>

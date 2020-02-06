@@ -1,0 +1,211 @@
+{extend name="$_admin_base_layout" /}
+
+{// 加载相关插件以及附加css 文件 }
+{block name="page_css"}
+<link href="__LIBS__/jstree/themes/default/style.min.css" rel="stylesheet" />
+    {notempty name="_css_files"}
+        {eq name="Think.config.minify_status" value="1"}
+            <link rel="stylesheet" href="{:minify('group', $_css_files)}">
+        {else/}
+            {volist name="_css_files" id="css"}
+                {:load_assets($css)}
+            {/volist}
+        {/eq}
+    {/notempty}
+{/block}
+
+{block name="content"}
+<div style="margin: 10px;">
+    <div class="portlet light bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                {notempty name="return_url"}
+                <a class="btn btn-circle btn-icon-only btn-grees" href="{$return_url}" title="返回">
+                    <i class="fa fa-reply font-green"></i>
+                </a>                &nbsp;&nbsp;
+                {/notempty}
+                <span class="caption-subject font-green bold uppercase"> {$page_title} </span>
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <form class="form-horizontal" action="{$form_url}">
+                {foreach name="form_hidden_data" item="form_data_value" key="form_data_key" }
+                <input name="{$form_data_value.name}" value="{$form_data_value.value}" type="hidden">
+                {/foreach}
+                <div class="tabbable-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab1" data-toggle="tab">角色信息</a>
+                        </li>
+                        <li>
+                            <a href="#tab2" data-toggle="tab">访问授权</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+
+                        <div class="tab-pane active" id="tab1">
+                            <div class="form-body">
+
+                                <div class="form-group">
+                                    <?php  $form = $form_items['name'];?>
+                                    <label class="control-label col-md-3">{$form.title}：</label>
+                                    <div class="col-md-6">
+                                        {include file="../application/common/builder/common/form/layout.html" /}
+                                        <span class="help-block"> {$form.tips|raw|clear_js}</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <?php  $form = $form_items['role'];?>
+                                    <label class="control-label col-md-3"><span class="font-red-sunglo"> * </span>{$form.title}：</label>
+                                    <div class="col-md-6">
+                                        <div class="input-icon right">
+                                            {include file="../application/common/builder/common/form/layout.html" /}
+                                            <span class="help-block" data-tipss="{$form.tips|raw|clear_js}"> {$form.tips|raw|clear_js}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <?php  $form = $form_items['description'];?>
+                                    <label class="control-label col-md-3"><span class="font-red-sunglo"> * </span>{$form.title}：</label>
+                                    <div class="col-md-6">
+                                        <div class="input-icon right">
+                                            {include file="../application/common/builder/common/form/layout.html" /}
+                                            <span class="help-block" data-tipss="{$form.tips|raw|clear_js}"> {$form.tips|raw|clear_js}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <?php  $form = $form_items['sort'];?>
+                                    <label class="control-label col-md-3"><span class="font-red-sunglo"> * </span>{$form.title}：</label>
+                                    <div class="col-md-6">
+                                        <div class="input-icon right">
+                                            {include file="../application/common/builder/common/form/layout.html" /}
+                                            <span class="help-block" data-tipss="{$form.tips|raw|clear_js}"> {$form.tips|raw|clear_js}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="tab2">
+                            <div class="row data-table-toolbar">
+                                <div class="col-sm-12">
+                                    <div class="toolbar-btn-action">
+                                        <button title="全选" type="button" class="btn btn-info" id="check-all"><i class="fa fa-check-circle-o"></i> 全选</button>
+                                        <button title="取消全选" type="button" class="btn btn-danger" id="uncheck-all"><i class="fa fa-ban"></i> 取消全选</button>
+                                        <button title="展开所有节点" type="button" class="btn btn-success" id="expand-all"><i class="fa fa-plus"></i> 展开所有节点</button>
+                                        <button title="收起所有节点" type="button" class="btn btn-warning" id="collapse-all"><i class="fa fa-minus"></i> 收起所有节点</button>
+                                        <span class="form-inline">
+                                            <input class="form-control" id="search-auth" onkeydown="if(event.keyCode === 13){return false;}" type="text" value="" placeholder="输入关键字搜索">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="jstree" class="push">{$menus|raw|default=''}</div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-offset-3 col-md-9">
+                                            <button type="submit" class="btn green">保存</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6"> </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{/block}
+
+{block name="page_script"}
+    <script src="__LIBS__/jstree/jstree.min.js"></script>
+{// 加载相关插件以及附加js 文件 }
+{notempty name="_js_files"}
+{// 是否开启minify}
+{eq name="Think.config.minify_status" value="1"}
+    <script src="{:minify('group', $_js_files)}"></script>
+{else/}
+    {volist name="_js_files" id="js"}
+        {:load_assets($js, 'js')}
+    {/volist}
+{/eq}
+{/notempty}
+
+<script>
+    $(function(){
+
+        $('#jstree').jstree({
+            plugins: ["checkbox", "search"],
+            "checkbox" : {
+                "keep_selected_style" : false,
+                "three_state" : false,
+                "cascade" : 'down+up'
+            },
+            "search" : {
+                'show_only_matches' : true,
+                'show_only_matches_children' : true
+            }
+        });
+
+        var to = false;
+        $('#search-auth').keyup(function () {
+            if(to) { clearTimeout(to); }
+            to = setTimeout(function () {
+                var v = $('#search-auth').val();
+                $('#jstree').jstree(true).search(v);
+            }, 250);
+        });
+        // 全选
+        $('#check-all').click(function () {
+            $('#jstree').jstree(true).check_all();
+        });
+        // 取消全选
+        $('#uncheck-all').click(function () {
+            $('#jstree').jstree(true).uncheck_all();
+        });
+        // 展开所有
+        $('#expand-all').click(function () {
+            $('#jstree').jstree(true).open_all();
+        });
+        // 收起所有
+        $('#collapse-all').click(function () {
+            $('#jstree').jstree(true).close_all();
+        });
+        // 提交表单
+        $('.form-horizontal').submit(function () {
+            var _this = $(this);
+            var form_data = $(this).serialize();
+            var auth_node = $('#jstree').jstree(true).get_checked(1);
+            var auth_node_arr = [];
+            $.each(auth_node,function(i,v){
+                auth_node_arr.push(v.state.mark);
+            });
+            if (auth_node_arr.length) {
+                form_data += '&menu_auth='+auth_node_arr.join(',');
+            }
+            layer.load(2);
+            $.post(_this.action, form_data).success(function (res) {
+                layer.closeAll('loading');
+                if(res.code == 1){
+                    App.funTips('success',res.msg,res.wait,res.url,res.data);
+                }else if(res.code === 0){
+                    App.funTips('error',res.msg,res.wait,res.url,res.data);
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{/block}

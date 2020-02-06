@@ -1,0 +1,320 @@
+{// 动态加载css文件 }
+{notempty name="_css_files"}
+{volist name="_css_files" id="css"}
+{:load_assets($css)}
+{/volist}
+{/notempty}
+<div class="select-tables">
+    <div class="col-md-12">
+        <div class="clearfix margin-bottom-10"></div>
+        <div class="portlet light portlet-fit portlet-datatable bordered custom-portlet">
+
+            <div class="portlet-body">
+
+                <div class="clearfix margin-bottom-10"></div>
+
+                {// 开始 表格头部}
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-inline margin-bottom-10 search-high-form">
+                            {notempty name="gc_id"}
+                            <input type="hidden" name="search_goods_class" value="{$gc_id}">
+                            {else/}
+                            <div class="form-group">
+                                <label class="control-label">分类：</label>
+                                <select class="bs-select2 form-control" name="search_goods_class">
+                                    {foreach name="goodsClassDataArr" item="form_select" key="keys_form_select" }
+                                    <option value="{$form_select.value}">
+                                        {:html_entity_decode($form_select.title)}
+                                    </option>
+                                    {/foreach}
+                                </select>
+                            </div>
+                            {/notempty}
+                            <div class="form-group">
+                                <label class="control-label">商品名称：</label>
+                                <input type="email" class="form-control" name="search_goods_name">
+                            </div>
+                            <button type="button" class="btn red search-high-btn">搜索</button>
+                        </form>
+                    </div>
+                </div>
+                {// 结束 表格头部}
+
+                {// 开始 表格}
+                <table class="contet_table fit-body"></table>
+                {// 结束 表格}
+
+            </div>
+        </div>
+    </div>
+</div>
+{// 动态加载js}
+{notempty name="_js_files"}
+{volist name="_js_files" id="js"}
+{:load_assets($js, 'js')}
+{/volist}
+{/notempty}
+
+<script>
+    $(document).ready(function () {
+
+        var _pages = $('.select-tables');
+
+        var _tableObj = _pages.find('.contet_table');// 获取表格对象
+
+        // 设置字段
+        var columns = [
+            // {
+            //     "field": "name", // 字段
+            //     "title": "模块标识", // 字段名
+            //     "class": undefined, // 该列的class
+            //     "width": undefined, // 列的宽度，可以使用像素或者百分比，不带单位则默认为px
+            //     "titleTooltip": undefined, // 该列表头的title提示文本
+            //
+            //     "visible": true, // 该列是否可见
+            //     "cardVisible": true, // 在card视图里是否可见
+            //     "switchable": true, // 列切换是否可见.
+            //     "searchable":true, // 搜索时是否搜索此列
+            //
+            //     "rowspan": null, // 合并单元格时定义合并多少行
+            //     "colspan": null, // 合并单元格时定义合并多少列
+            //
+            //     "align": "center", // 设置该列数据如何对齐，’left’, ‘right’, ‘center’
+            //     "halign": undefined, // table header对齐方式， ‘left’, ‘right’, ‘center’
+            //     "falign": undefined, // table footer对齐方式， ‘left’, ‘right’, ‘center’
+            //     "valign": undefined, // 单元格（cell）对齐方式. ‘top’, ‘middle’, ‘bottom’
+            //
+            //     "checkbox": false, // 是否显示多选
+            //     "radio": false, // 是否显示单选radio
+            //     "clickToSelect": true, // 是否选中checkbox或者radio，当该列被选择时
+            //
+            //     "sortable": false, // 该列是否排序（表头显示双箭头）
+            //     "order": "asc", // 该列默认的排序方式， ‘asc’ or ‘desc’.
+            //     "sorter": undefined, // 自定义字段排序函数，function(a, b).
+            //     "sortName": undefined, // 当列中有html等标签时，只排序实际内容（忽略标签和样式），例如字段为：”abc“，则sortName=abc
+            //
+            //
+            //     "searchFormatter":true, // 搜索是否使用格式化后的数据（即显示在页面上的数据）
+            //     "events": undefined, // The cell 的事件监听，当你使用formatter function的时候,有三个参数: event: the jQuery event. value: 该cell的值 row: 该行的数据 index: 该行的序号
+            //     "formatter": undefined, // 格式化单元格内容，function(value, row, index), value：该cell本来的值，row：该行数据，index：该行序号（从0开始）
+            //     "ooterFormatter": undefined, // 格式化footer内容，function(rows)，rows：所有行数据
+            //     "editable": null, // 行内编辑
+            //
+            // },
+            {
+                field: 'checkStatus',
+                align: 'center',
+                checkbox: true
+            },
+            {
+                "field": "goods_name", // 字段
+                "title": "商品名称", // 字段名
+                "align": "center", // 设置该列数据如何对齐，’left’, ‘right’, ‘center’
+            },
+            {
+                "field": "goods_image", // 字段
+                "title": "商品图片", // 字段名
+                "align": "center", // 设置该列数据如何对齐，’left’, ‘right’, ‘center’
+                "formatter": function (value, row, index) {
+                    var html = '';
+                    html = '<img src="' + row.goods_image + '" class="table_avatar_image" style="width: 50px; height: 50px" data-original-title="">';
+                    return html;
+                }
+            },
+            {
+                "field": "goods_price", // 字段
+                "title": "价格", // 字段名
+                "align": "center", // 设置该列数据如何对齐，’left’, ‘right’, ‘center’
+            }
+
+        ];
+
+        /**
+         * @describe 刷新方法
+         * @author 仇仇天
+         */
+        var refreshMethod = function () {
+            _tableObj.bootstrapTable('refreshOptions', {pageNumber: 1});
+        }
+
+        /**
+         * @describe 搜索处理函数
+         * @author 仇仇天
+         */
+        var queryParams = function (params) {
+            // 搜索框选择的选项字段
+            var $searchKeyword = $('.search-keyword').val();
+            if ($searchKeyword != '') {
+                params.searchKeyword = $searchKeyword; // 要搜索的关键词
+            }
+            params.page = this.pageNumber; // 当前第几页
+            params.list_rows = params.limit; // 每页显示多少
+
+            // 高级搜索
+            var senior_search_high_form = $('.search-high-form');
+            var senior_search_high_form_arr = senior_search_high_form.serializeArray();
+            var senior_search_high_form_obj = {};
+            $.each(senior_search_high_form_arr, function (i, field) {
+                if (senior_search_high_form_obj[this.name]) {
+                    if ($.isArray(senior_search_high_form_obj[this.name])) {
+                        senior_search_high_form_obj[this.name].push(this.value);
+                    } else {
+                        senior_search_high_form_obj[this.name] = [senior_search_high_form_obj[this.name], this.value];
+                    }
+                } else {
+                    senior_search_high_form_obj[this.name] = this.value;
+                }
+                return senior_search_high_form_obj;
+            });
+            Object.assign(params, senior_search_high_form_obj);
+
+            return params;
+        }
+
+        // 搜索按钮
+        $('.search-high-btn').click(function () {
+            refreshMethod();
+        });
+
+        // 表格参数初始化
+        var tableinfo = {
+            url: '{:url("goods/choice")}', // 请求后台的URL（*）用于从远程站点请求数据的URL 请注意，所需的服务器响应格式会有所不同，具体取决于是否'sidePagination'指定了该选项。
+            method: 'get', // 请求远程数据的方法类型。
+            contentType: 'application/json', // 请求远程数据类型,请求远程数据的contentType，例如：application/x-www-form-urlencoded。
+            dataType: 'json', // 请求远程数据类型,您希望从服务器返回的数据类型。
+            cache: false, // 是否使用缓存,是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性
+            queryParamsType: 'limit', // 设置'limit'以使用RESTFul类型发送查询参数。
+            queryParams: queryParams, // 传递参数（*）,当queryParamsType时limit 参数包含limit、offset、order、search、sort当否则它包含pageSize, pageNumber, searchText, sortName, sortOrder,返回 false则中断请求（return false）
+            dataField: 'data',// 数据字段
+            classes: 'table table-bordered table-hover', // 设置表类，表的类名。可以使用'table'，'table-bordered'，'table-hover'，'table-striped'，'table-dark'，'table-sm'和'table-borderless'。默认情况下，表格是有界的。
+            height: _pages.parents('.layui-layer').height() - 200,// 设置表格高度
+            columns: columns, // 设置字段
+            pagination: true,// 设置为 true 会在表格底部显示分页条
+            pageSize: 10, // 每页的记录行数
+            sidePagination: 'server',
+            pageList: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 100], // 可供选择的每页的行数
+            maintainSelected: true, // 设置true为在更改页面上维护选定的行并进行搜索,true 时点击分页按钮或搜索按钮时，记住checkbox的选择项    设为true则保持被选的那一行的状态
+            responseHandler: responseHandler,
+            onLoadSuccess: function (data) {
+                // 商品图片
+                $('.table_avatar_image').each(function () {
+                    var _this = $(this);
+                    var src = _this.attr('src'); // 图片源地址
+                    var width = _this.data('width') ? _this.data('width') : 50; // 设置宽度
+                    var height = _this.data('height') ? _this.data('height') : 50; // 设置高度
+                    App.drawImg(_this, width, height); // 设置等比例缩放
+                    // 设置预览
+                    _this.popover({
+                        html: true,
+                        content: '<img  src="' + src + '" style="max-width: 500px;max-height: 500px">',
+                        trigger: 'hover'
+                    });
+                })
+            }
+        }
+
+
+        /******************************选择商品分页保存************************************/
+
+        var selectionIds = {id: [], data: []};  //保存选中ids
+
+        //选中事件操作数组
+        var union = function (array, ids) {
+            $.each(ids, function (i, id) {
+                if ($.inArray(id, array) == -1) {
+                    array[array.length] = id;
+                }
+            });
+            return array;
+        };
+
+        //取消选中事件操作数组
+        var difference = function (array, ids) {
+            $.each(ids, function (i, id) {
+                var index = $.inArray(id, array);
+                if (index != -1) {
+                    array.splice(index, 1);
+                }
+            });
+            return array;
+        };
+
+        //选中事件操作数组
+        var unionData = function (array, ids,datas) {
+            $.each(datas, function (i, data) {
+                array.push(data);
+            });
+            return array;
+        };
+
+        //取消选中事件操作数组
+        var differenceData = function (array, ids,datas) {
+            var data = [];
+            $.each(ids, function (i, id) {
+                $.each(array,function(ii,v){
+                    if (v.goods_id != id) {
+                        data.push(v);
+                    }
+                });
+            });
+            return data;
+        };
+
+        var _ = {"union": union, "difference": difference};
+        var _data = {"union": unionData, "difference": differenceData};
+
+        //绑定选中事件、取消事件、全部选中、全部取消
+        _tableObj.on('check.bs.table check-all.bs.table uncheck.bs.table uncheck-all.bs.table', function (e, rows) {
+            var ids = $.map(!$.isArray(rows) ? [rows] : rows, function (row) {
+                return row.goods_id; // 你的id的名称是什么
+            });
+
+            var datas = $.map(!$.isArray(rows) ? [rows] : rows, function (row) {
+                return row;
+            });
+
+            func = $.inArray(e.type, ['check', 'check-all']) > -1 ? 'union' : 'difference';
+            parent.base.variableParent.id = selectionIds.id = _[func](selectionIds.id, ids);
+            parent.base.variableParent.data = selectionIds.data = _data[func](selectionIds.data, ids,datas);
+        });
+
+
+        // 第一次加载已勾选商品状态
+        var is_responseHandler = true;
+
+        // 加载服务器数据之前的处理程序，可以用来格式化数据。参数：res为从服务器请求到的数据。
+        function responseHandler(res) {
+
+            // 第一次 已选择 商品
+            if(is_responseHandler){
+
+                // 已选择商品
+                var goods_ids = {notempty name="goods_ids"}{$goods_ids|raw}{else/}[]{/notempty};
+
+                // 赋值初始化
+                parent.base.variableParent.id = selectionIds.id = goods_ids;
+
+                // 这只状态已不是第一次
+                is_responseHandler = false;
+
+            }
+
+            // 循环对比当前页已选商品
+            $.each(res.data, function (i, row) {
+
+                // 判断当前行的数据id是否存在与选中的数组，存在则将多选框状态变为true
+                row.checkStatus = $.inArray(row.goods_id, selectionIds.id) != -1;
+
+            });
+
+            return res;
+        }
+
+        /******************************选择商品分页保存************************************/
+
+        // 初始化表格
+        _tableObj.bootstrapTable(tableinfo);
+
+    });
+</script>

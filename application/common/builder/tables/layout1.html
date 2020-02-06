@@ -1,0 +1,1077 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="content"}
+<div class="row" id="{$_pag_id}">
+    <div class="col-md-12">
+
+
+        <div class="kt-portlet box-kt-portlet" id="kt_page_portlet">
+            <div class="kt-portlet__head box-portlet-head">
+
+                {notempty name="group"}
+                    <ul class="nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-brand" role="tablist">
+                    {foreach name="group" item="group_value" key="group_key"}
+                    <li class="nav-item">
+                        <a class="nav-link {notempty name="group_value.default"}active{/notempty}" data-toggle="tab" href="{$group_value.url}" role="tab">{$group_value.title|htmlspecialchars}</a>
+                    </li>
+                    {/foreach}
+                </ul>
+                {/notempty}
+
+                <div class="kt-portlet__head-label">
+                    <button type="button" class="btn btn-outline-info btn-elevate btn-circle btn-icon">
+                        <i class="fa fa-reply"></i>
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    {notempty name="page_title"}
+                    <h3 class="kt-portlet__head-title">{$page_title}</h3>&nbsp;&nbsp;&nbsp;
+                    {/notempty}
+                </div>
+
+                <div class="kt-space-5"></div>
+
+                {// 开始 高级搜索}
+                {notempty name="_advanced_search_setting"}
+                <form class="kt-form kt-form--label-right">
+
+                    <div class="form-group row form-group-marginless kt-margin-t-20">
+                        <label class="col-lg-1 col-form-label">用户名:</label>
+                        <div class="col-lg-2">
+                            <input type="email" class="form-control" placeholder="Full name">
+                        </div>
+                        <label class="col-lg-1 col-form-label">密码:</label>
+                        <div class="col-lg-2">
+                            <input type="email" class="form-control" placeholder="Email">
+                        </div>
+                        <label class="col-lg-1 col-form-label">邮箱:</label>
+                        <div class="col-lg-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend"><span class="input-group-text"><i class="la la-user"></i></span></div>
+                                <input type="text" class="form-control" placeholder="">
+                            </div>
+                        </div>
+                        <label class="col-lg-1 col-form-label">QQ:</label>
+                        <div class="col-lg-2">
+                            <input type="email" class="form-control" placeholder="Full name">
+                        </div>
+                    </div>
+
+                    <div class="form-group row form-group-marginless kt-margin-t-20">
+                        <label class="col-lg-1 col-form-label">用户名:</label>
+                        <div class="col-lg-2">
+                            <input type="email" class="form-control" placeholder="Full name">
+                        </div>
+                        <label class="col-lg-1 col-form-label">密码:</label>
+                        <div class="col-lg-2">
+                            <input type="email" class="form-control" placeholder="Email">
+                        </div>
+                        <label class="col-lg-1 col-form-label">邮箱:</label>
+                        <div class="col-lg-2">
+                            <div class="input-group">
+                                <div class="input-group-prepend"><span class="input-group-text"><i class="la la-user"></i></span></div>
+                                <input type="text" class="form-control" placeholder="">
+                            </div>
+                        </div>
+                        <label class="col-lg-1 col-form-label">QQ:</label>
+                        <div class="col-lg-2">
+                            <input type="email" class="form-control" placeholder="Full name">
+                        </div>
+                    </div>
+
+                    <div class="form-group row form-group-marginless kt-margin-t-20">
+                        <label class="col-lg-1 col-form-label"></label>
+                        <div class="col-lg-2">
+                            <button class="btn btn-primary btn-brand--icon" id="kt_search">
+                                                <span>
+                                                    <i class="la la-search"></i>
+                                                    <span>搜索</span>
+                                                </span>
+                            </button>
+                            <button class="btn btn-secondary btn-secondary--icon" id="kt_reset">
+                                                <span>
+                                                    <i class="la la-close"></i>
+                                                    <span>重置</span>
+                                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+                <div class="kt-space-5"></div>
+                {/notempty}
+
+                {// 结束 高级搜索}
+
+                <div class="kt-form kt-form--label-right">
+                    <div class="row align-items-center">
+                        <div class="col-xl-8 order-2 order-xl-1">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+                                    {// 开始 表格头部按钮}
+                                    {notempty name="$_top_buttons"}
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        {volist name="_top_buttons" id="top_bt"}
+                                        <button
+                                                type="button"
+                                                href="javascript:;"
+                                                {// class}
+                                        {notempty name="$top_bt.class"}
+                                        class="top-button {$top_bt.class}{notempty name="$top_bt.batch"} top-batch{/notempty}"
+                                        {/notempty}
+                                        {// 跳转地址}
+                                        {notempty name="$top_bt.href"}
+                                        data-url="{$top_bt.href}"
+                                        {/notempty}
+                                        {// 是否不可点击}
+                                        {notempty name="$top_bt.disabled"}
+                                        disabled
+                                        {/notempty}
+                                        {// 传输参数}
+                                        {notempty name="$top_bt.query_data"}
+                                        data-querydata='{$top_bt.query_data}'
+                                        {/notempty}
+                                        {// 传输方式}
+                                        data-jump="{$top_bt.jump_way}"
+                                        {// 是否批量}
+                                        {notempty name="$top_bt.batch"}
+                                        data-batch="1"
+                                        {/notempty}
+                                        {// 请求类型}
+                                        data-query_type="{$top_bt.query_type}"
+                                        {// 类型}
+                                        data-type="{$top_bt.type}"
+                                        {// 自定义方法}
+                                        data-functions="{$top_bt.functions}"
+                                        {// 自定义方法是否终止后续代码}
+                                        data-functionsend="{$top_bt.functionsend}"
+                                        >
+                                        {notempty name="$top_bt.icon"}
+                                        <i class="{$top_bt.icon}"></i>
+                                        {/notempty}
+                                        {$top_bt.title}
+                                        </button>
+                                        {/volist}
+                                    </div>
+                                    {/notempty}
+                                    {// 结束 表格头部按钮}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 order-1 order-xl-2 kt-align-right">
+                            {// 开始 表格头部快捷搜索}
+                            {notempty name="_search_setting"}
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    {volist name="_search_setting" id="field"}
+                                    {notempty name="$field.default"}
+                                    <button type="button" class="btn btn-info btn-elevate dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-field="{$field.field}">
+                                        {$field.title|htmlspecialchars}
+                                    </button>
+                                    {/notempty}
+                                    {/volist}
+                                    <div class="dropdown-menu">
+                                        {volist name="_search_setting" id="field"}
+                                        <a class="dropdown-item search-keyword-field" data-field="{$field.field}" href="javascript:;">
+                                            {$field.title|htmlspecialchars}
+                                        </a>
+                                        {/volist}
+                                    </div>
+                                </div>
+                                <input type="text" class="form-control search-keyword">
+                                <div class="input-group-append">
+                                    <button class="btn btn-info btn-elevate search-submit-button" type="button" >
+                                        搜索
+                                    </button>
+                                </div>
+                            </div>
+                            {/notempty}
+                            {// 结束 表格头部快捷搜索}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kt-space-5"></div>
+            </div>
+            <div class="kt-portlet__body">
+                {notempty name="group"}
+                    {// 开始 分组块}
+                    <div class="tab-content">
+                        <div class="tab-pane active" role="tabpanel">
+
+
+                            {// 开始 表格}
+                                <table id="{$_table_id}" class="fit-body"></table>
+                            {// 结束 表格}
+
+                        </div>
+                    </div>
+                    {// 结束 分组块}
+                {else/}
+
+                {/notempty}
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="page_css"}
+
+{// 额外自定义CSS文件 }
+{volist name="_css_list" id="vo"}
+<link rel="stylesheet" href="{$vo}?v={:config('asset_version')}">
+{/volist}
+
+{// 额外CSS代码 }
+{$_css_code}
+
+{/block}
+
+{block name="page_script"}
+
+<script>
+    $(function () {
+
+        // 本页对象
+        var _pag = $('#{$_pag_id}');
+
+        // 表格对象
+        var tableObj = _pag.find('#{$_table_id}');
+
+        // 列数据
+        var columns = {$_columns|raw};
+
+        // 筛选的参数
+        var $getQueryParams = {};
+
+        /**
+         * 设置表格高度(该方法已废弃)
+         * @author 仇仇天
+         * @returns {number}
+         */
+        var tableHeight = function () {
+
+            var window_height = $(window).height();
+
+            var obj_off_y = $(".fit-body").offset().top;
+
+            var result_height = window_height - obj_off_y;
+
+            return result_height;
+
+        }
+
+        /**
+         * 操作栏按钮触发(默认/自定义)
+         * @author 仇仇天
+         * @param Event 选中DOM元素.
+         * @param value 值.
+         * @param rows 全部选中的行数据
+         * @param index 第几行
+         */
+        var perationFun = function (ev, value, row, index) {
+
+            // 获取当前对象
+            var _this = $(ev.target);
+
+            // 获取当类型
+            var type = _this.data('type');
+
+            // 获取当url地址
+            var url = _this.data('url');
+
+            // 获取data参数
+            var data_query = _this.data('query_data');
+
+            // 获取请求类型
+            var query_type = _this.data('query_type');
+
+            // 获取请求方式
+            var query_jump = _this.data('query_jump');
+
+            // 是否确认框
+            var confirm = _this.data('confirm');
+
+            // 需要提提交测参数
+            var data = {};
+
+            // 解析加工需要提交测参数
+            if (data_query) {
+
+                // 解析需要提交的字段以及扩张参数,后台格式:('{"field":["id"],"extentd_field":{"action":"delete"}}')
+                data_query = data_query.replace(/”/g, '"');
+
+                if (data_query) {
+
+                    // 将参数转化成对象
+                    data_query = JSON.parse(data_query);
+
+                    // 需要提交的字段以及对应的值
+                    if (data_query.field.length > 0) {
+                        $.each(data_query.field, function (i, field) {
+                            data[field] = row[field];
+                        });
+                    }
+
+                    // 需要提交的扩展自定义参数
+                    if (data_query.extentd_field) {
+                        $.each(data_query.extentd_field, function (i, field) {
+                            data[i] = field;
+                        });
+                    }
+                }
+            }
+
+            /**
+             * 模拟form表单的提交
+             * @author 仇仇天
+             * @param query_jump  跳转方式
+             * @param url         跳转地址
+             * @param data        传输参数
+             * @param query_type  传输类型 get/post
+             */
+            var requestJump = function (query_jump, url, data, query_type) {
+
+                // 表单提交方式
+                if (query_jump == 'form') {
+                    Base.funSimulationForm(url, data, query_type);
+                }
+
+                // ajax 提交方式
+                else {
+                    layer.load(2);
+                    $.ajax({
+                        type: query_type,
+                        url: url,
+                        false: false,
+                        dataType: 'json',
+                        data: data,
+                        success: function (res) {
+                            layer.closeAll('loading');
+
+                            if (res.code == 0) {
+                                layer.msg(res.msg, {icon: 5});
+                            } else {
+                                layer.msg(res.msg, {icon: 6});
+                            }
+                            refreshMethod({pageNumber:null});
+
+                            // if (res.code == 1) {
+                            //     Base.funTips('success', res.msg, res.wait, res.url, res.data);
+                            // } else if (res.code === 0) {
+                            //     Base.funTips('error', res.msg, res.wait, res.url, res.data);
+                            // }
+                        }
+                    });
+                }
+            }
+
+            // 是否确认提示按钮
+            if (confirm) {
+                layer.confirm(confirm, {icon: 3, title: '提示'}, function (index) {
+                    // 提交
+                    requestJump(query_jump, url, data, query_type);
+                    layer.close(index);
+                });
+            }
+
+            // 正常操作
+            else {
+                requestJump(query_jump, url, data, query_type);
+            }
+        }
+
+        /**
+         * 刷新方法
+         * @author 仇仇天
+         * @param params 分页参数
+         */
+        var refreshMethod = function (params) {
+            var query_param = $.extend({}, {pageNumber: 1, url: null, pageSize: null}, params);
+            tableObj.bootstrapTable('refresh', query_param);
+        }
+
+        /**
+         * 搜索处理函数
+         * @author 仇仇天
+         */
+        var queryParams = function (params) {
+
+            // 当前第几页
+            params.page = this.pageNumber;
+
+            // 每页显示多少
+            params.list_rows = params.limit;
+
+
+
+            // 普通搜索框搜索框选择的选项字段
+            var $searchField = $('.default-search-field').data('field');
+
+            // 普通搜索框搜索的值
+            var $searchKeyword = $('.search-keyword').val();
+
+            if ($searchField && $searchKeyword != '') {
+                // 要搜索的字段
+                params.searchField = $searchField;
+                // 要搜索的关键词
+                params.searchKeyword = $searchKeyword;
+            }
+
+
+            // 高级搜索form对象
+            var senior_search_high_form = $('.senior-search-high-form');
+
+            // 高级搜索素有表单值
+            var senior_search_high_form_arr = senior_search_high_form.serializeArray();
+
+            // 高级搜索素有表单值加工成键值对
+            var senior_search_high_form_obj = {};
+
+            $.each(senior_search_high_form_arr, function (i, field) {
+                if (senior_search_high_form_obj[this.name]) {
+                    if ($.isArray(senior_search_high_form_obj[this.name])) {
+                        senior_search_high_form_obj[this.name].push(this.value);
+                    } else {
+                        senior_search_high_form_obj[this.name] = [senior_search_high_form_obj[this.name], this.value];
+                    }
+                } else {
+                    senior_search_high_form_obj[this.name] = this.value;
+                }
+                return senior_search_high_form_obj;
+            });
+
+            Object.assign(params, senior_search_high_form_obj);
+
+
+            // 自定义筛选参数
+            var queryParams = {$_queryParams|raw};
+
+            // 定义合并自定义参数变量
+            queryParams = queryParams ? queryParams : {};
+
+            // 合并自定筛选参数
+            Object.assign(params, queryParams);
+
+
+            // 向外抛出筛选参描述值(包含分页参数)
+            $getQueryParams = params;
+
+            // 返回
+            return params;
+        }
+
+        // 设置搜索框数据
+        $('.search-keyword-field').click(function () {
+            var $field = $(this).data('field');
+            var $title = $(this).html();
+            $('.default-search-field').data('field', $field);
+            $('.default-search-field').html($title);
+        });
+
+        // 刷新按钮触发
+        $('.title-refresh-but').click(function () {
+            refreshMethod();
+        });
+
+        // 搜索按钮
+        $('.search-submit-button').click(function () {
+            refreshMethod();
+        });
+
+        // 高级搜素展开
+        $('#searchBarOpen').click(function () {
+            $('.search-gao-list').animate({'right': '-40px'}, 200,
+                function () {
+                    $('.search-gao-bar').animate({'right': '0', 'width': '300'}, 300);
+                }
+            );
+        });
+
+        // 高级搜索收起
+        $('#searchBarClose').click(function () {
+            $('.search-gao-bar').animate({'right': -350, 'width': '0'}, 300,
+                function () {
+                    $('.search-gao-list').animate({'right': '0'}, 200);
+                }
+            );
+        });
+
+        //高级搜索点击触发
+        $('.submit-senior-search').on('click', function () {
+            refreshMethod();
+        });
+
+        /**
+         * @describe 当 checkbox 或 radio 选中统一触发
+         * @author 仇仇天
+         * @param rows 全部选中的行数据
+         * @param $element 选中DOM元素.
+         */
+        var triggerCheck = function (row, $element) {
+            var checkData = tableObj.bootstrapTable('getSelections'); // 获取选中数据
+            if (checkData.length) {
+                $('.top-batch').attr('disabled', false);
+            }
+        }
+
+        /**
+         * @describe 当 checkbox 或 radio 取消选中统一触发
+         * @author 仇仇天
+         * @param rows 全部选中的行数据
+         * @param $element 选中DOM元素.
+         */
+        var triggerUncheck = function (row, $element) {
+            var checkData = tableObj.bootstrapTable('getSelections'); // 获取选中数据
+            if (!checkData.length) {
+                $('.top-batch').attr('disabled', true);
+            }
+        }
+
+
+        /**
+         * 行内编辑 扩展 开关组件
+         * @author 仇仇天
+         */
+        var tableBtnMakeSwitch = function (ev, value, row, index) {
+
+            // 所有数据
+            var dataAll = row;
+
+            // 设置编辑字段
+            dataAll.extend_field = $(ev.target).data('name');
+
+            // 设置值
+            dataAll[row.extend_field] = $(ev.target).data('value');
+
+            // 是否行内编辑
+            dataAll.extend_action = true;
+
+            // 删除子节点数据(针对树表格)
+            delete dataAll._nodes;
+
+            // 删除父节点数据(针对树表格)
+            delete dataAll._parent;
+
+            // 扩展参数设置
+            try {
+                var extendData = '<?php echo htmlspecialchars_decode($_editable_data); ?>';
+                extendData = extendData ? $.parseJSON(extendData) : {};
+                Object.assign(dataAll, extendData);
+            } catch (err) {}
+
+            layer.load(2);
+            $.ajax({
+                type: 'post',
+                url: '{$_editable_url}',
+                data: dataAll,
+                dataType: 'JSON',
+                success: function (data, status) {
+                    layer.closeAll('loading');
+                    if (data.code == 0) {
+                        layer.msg(data.msg, {icon: 5});
+                    } else {
+                        layer.msg(data.msg, {icon: 6});
+                    }
+                    refreshMethod({pageNumber:null});
+                },
+                error: function () {
+                    layer.closeAll('loading');
+                    layer.msg('操作失败', {icon: 5});
+                },
+            });
+        }
+
+        // 进入编辑状态
+        var is_edit_status = false;
+
+        /**
+         * 行内编辑关闭编辑时触发
+         * @author 仇仇天
+         * @param field String 提交字段
+         * @param row Array 行数据
+         * @param oldValue Blend 未修改前数据
+         * @param $el Obj 元素对象
+         */
+        var onEditableHidden = function (field, row, el, reason) {
+
+            // 所有数据
+            var dataAll = row;
+
+            if (is_edit_status) {
+
+                // 设置编辑字段
+                dataAll.extend_field = field;
+
+                // 是否行内编辑
+                dataAll.extend_action = true;
+
+                // 原数据值
+                var oldValue = el.context.dataset.value;
+
+                // 扩展参数设置
+                try {
+                    var extendData = {$_columns|raw};
+                    extendData = extendData ? $.parseJSON(extendData) : {};
+                    Object.assign(dataAll, extendData);
+                } catch (err) {}
+
+                // 刷新当前表格视图
+                // tableObj.bootstrapTable('resetView');
+
+                // 删除子节点数据(针对树表格)
+                delete dataAll._nodes;
+
+                // 删除父节点数据(针对树表格)
+                delete dataAll._parent;
+
+                // 提交行内编辑操作
+                layer.load(2);
+                $.ajax({
+                    type: "post",
+                    url: "{$_editable_url}",
+                    data: dataAll,
+                    dataType: 'JSON',
+                    success: function (data, status) {
+                        layer.closeAll('loading');
+                        if (data.code == 0) {
+                            layer.msg(data.msg, {icon: 5});
+                            el.editable('setValue', oldValue);
+                        } else {
+                            layer.msg(data.msg, {icon: 6});
+                        }
+                        refreshMethod({pageNumber:null});
+                    },
+                    error: function () {
+                        layer.closeAll('loading');
+                        layer.msg('更新失败', {icon: 5});
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+            is_edit_status = false;
+
+        }
+
+        /**
+         * 行内编辑提交
+         * @author 仇仇天
+         * @param field String 提交字段
+         * @param row Array 行数据
+         * @param oldValue Blend 未修改前数据
+         * @param $el Obj 元素对象
+         */
+        var onEditableSave = function (field, row, oldValue, $el) {
+            is_edit_status = true;
+        }
+
+        // 顶部按钮触发
+        $('.top-button').on('click', function () {
+
+            // 自身元素对象
+            var _this = $(this);
+
+            // 传输参数
+            var send_data = {};
+
+            // 获取选中数据
+            var checkData = tableObj.bootstrapTable('getSelections');
+
+            // 针对树表格
+            $.each(checkData, function (i, v) {
+                delete v._nodes // 删除子节点数据
+                delete v._parent // 删除父节点数据
+            });
+
+            if (checkData) {
+                send_data.batch_data = checkData;
+            }
+
+            // 提交地址
+            var url = _this.data('url');
+
+            // 状态
+            var status = _this.attr('disabled');
+
+            // 提交方式
+            var jump = _this.data('jump');
+
+            // 是否批量按钮
+            var batch = _this.data('batch');
+
+            // 传输参数
+            var query_data = _this.data('querydata');
+
+            // 请求类型
+            var query_type = _this.data('query_type');
+
+            // 类型
+            var type = _this.data('type');
+
+            // 自定义方法
+            var functions = _this.data('functions');
+
+            // 自定义方法终止
+            var functionsend = _this.data('functionsend');
+
+            // 合并传输参数
+            if (query_data) {
+                // query_data = JSON.parse(query_data);
+                Object.assign(send_data, query_data);
+            }
+
+            // 上是否有自定义方法
+            if(functions){
+                // 调用方法
+                js_function_arr[functions]();
+                //  是否终止后续代码
+                if(functionsend){
+                    return false;
+                }
+            }
+
+            // 导出
+            if (type == 'export') {
+                layer.open({
+                    title: '正在导出，切勿关闭该窗口',
+                    type: 1,
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['420px', '100px'], //宽高
+                    content: '<div class="progress progress-striped active">' +
+                        '<div class="progress-bar progress-bar-danger" name="ssasdasd" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">' +
+                        '<span> 20% Complete </span>' +
+                        '</div>' +
+                        '</div>'
+                });
+                Object.assign(send_data, $getQueryParams);
+                exportAjax(url, send_data);
+                return false;
+            }
+
+            if (jump == 'ajax') {
+                if (!status) {
+                    layer.load(2);
+                    $.ajax({
+                        type: query_type,
+                        url: url,
+                        data: send_data,
+                        dataType: 'JSON',
+                        success: function (res) {
+                            layer.closeAll('loading');
+                            if (res.code == 1) {
+                                layer.msg(res.msg, {icon: 6});
+                                $('.top-batch').attr('disabled', true);
+                                refreshMethod();
+                            } else if (res.code === 0) {
+                                layer.msg(res.msg, {icon: 5});
+                            }
+                        }
+                    });
+                }
+            } else {
+                Base.funSimulationForm(url, send_data, query_type);
+            }
+        });
+
+        /**
+         * 导出请求操作
+         * @author 仇仇天
+         * @param url  提交地址
+         * @param send_data 传输数据
+         */
+       var exportAjax = function (url, send_data) {
+            $.ajax({
+                type: 'post',
+                url: "export",
+                data: send_data,
+                dataType: 'JSON',
+                success: function (res) {
+                    if(res.code == 1){
+                        if (res.data.status == 1) {
+                            send_data.page = send_data.page + 1;
+                            if (res.data.percentage <= 10) {
+                                $('div[name="ssasdasd"]').removeClass();
+                                $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-danger');
+                            }
+                            if (res.data.percentage > 10 && res.data.percentage <= 50) {
+                                $('div[name="ssasdasd"]').removeClass();
+                                $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-warning');
+                            }
+                            if (res.data.percentage > 50 && res.data.percentage <= 80) {
+                                $('div[name="ssasdasd"]').removeClass();
+                                $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-info');
+                            }
+                            if (res.data.percentage > 80 && res.data.percentage <= 100) {
+                                $('div[name="ssasdasd"]').removeClass();
+                                $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-success');
+                            }
+
+                            $('div[name="ssasdasd"]').find('span').html(res.data.percentage + '%');
+                            $('div[name="ssasdasd"]').width(res.data.percentage + '%');
+                            send_data.temp = res.data.temp;
+                            exportAjax(url, send_data);
+                        } else {
+                            $('div[name="ssasdasd"]').removeClass();
+                            $('div[name="ssasdasd"]').addClass('progress-bar progress-bar-success');
+                            $('div[name="ssasdasd"]').find('span').html(res.data.percentage + '% (完成)');
+                            $('div[name="ssasdasd"]').width(res.data.percentage + '%');
+                            window.location = 'export?download=1&temp=' + res.data.temp+'&page='+send_data.page;
+                            layer.closeAll();
+                        }
+                    }else{
+                        layer.msg(res.msg, {icon: 5});
+                        layer.closeAll();
+                    }
+                }
+            });
+        }
+
+
+        //  格式化数据
+        var formatter_gather = {};
+        <?php foreach($_formatter as $_formatterKey=>$_formatterVale){ ?>
+            formatter_gather.{$_formatterKey} = <?php echo htmlspecialchars_decode($_formatterVale); ?>
+        <?php }?>
+
+        // 绑定事件
+        var events_gather = {};
+        <?php foreach($_events as $_eventsKey=>$_eventsVale){ ?>
+            events_gather.{$_eventsKey} = <?php echo htmlspecialchars_decode($_eventsVale); ?>
+        <?php }?>
+
+        // 额外自定义js方法代码
+        var js_function_arr = {};
+        <?php foreach($_js_function_arr as $_js_function_arrKey=>$_js_function_arrVale){ ?>
+            js_function_arr.{$_js_function_arrVale['name']} = <?php echo htmlspecialchars_decode($_js_function_arrVale['value']); ?>
+        <?php }?>
+
+        // 绑定事件与格式化
+        if(columns){
+            columns.forEach(function(val,index,arr){
+                if(val.events){
+                    columns[index]['events'] = events_gather[val.events];
+                }
+                if(val.formatter){
+                    columns[index]['formatter'] = formatter_gather[val.formatter];
+                }
+                // 行内编辑
+                if(val.editable){
+                    if(val.editable.type == 'select2'){
+                        if(val.editable.select2){
+                            if(val.editable.select2.templateResult){
+                                columns[index].editable.select2.templateResult = js_function_arr[columns[index].editable.select2.templateResult];
+                            }
+                            if(val.editable.select2.templateSelection){
+                                columns[index].editable.select2.templateSelection = js_function_arr[columns[index].editable.select2.templateSelection];
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        var tableinfo = {
+
+            /*****************************************************远程加载数据相关设置***********************************************************/
+            /**
+             * 描述：请求后台的URL（*）用于从远程站点请求数据的URL 请注意，所需的服务器响应格式会有所不同，具体取决于是否'sidePagination'指定了该选项。
+             * 属性：data-url
+             * 类型：String
+             * 详情：请求后台的URL（*）用于从远程站点请求数据的URL
+             */
+            url:'{$_url}',
+            rowStyle:function(row,index){ return {};},
+            rowAttributes:function(row,index){return {};},
+            /*****************************************************扩展插件相关设置*************************************************************/
+            /**
+             * @describe 行内编辑提交
+             * @author 仇仇天
+             * @param field String 提交字段
+             * @param row Array 行数据
+             * @param oldValue Blend 未修改前数据
+             * @param $el Obj 元素对象
+             */
+            onEditableSave: function (field, row, oldValue, $el) {
+                // 统一处理函数
+                onEditableSave(field, row, oldValue, $el);
+            },
+            /**
+             * @describe 行内编辑关闭编辑时触发
+             * @author 仇仇天
+             * @param field String 提交字段
+             * @param row Array 行数据
+             * @param oldValue Blend 未修改前数据
+             * @param $el Obj 元素对象
+             */
+            onEditableHidden: function(field, row, $el, reason) {
+                // 统一处理函数
+                onEditableHidden(field, row, $el, reason);
+            },
+            // 导出
+            showExport:false, // 是否显示导出按钮
+            exportDataType:'basic', // 导出方式   basic：导出当前页,all：导出全部,selected：导出选中项.
+            exportTypes:['json', 'xml', 'csv', 'txt', 'sql', 'excel', 'pdf'], // 导出类型
+            //文件名称设置
+            exportOptions:{
+                fileName: document.title
+            },
+
+            // stickyHeader: true, // 全屏固定头部
+            // stickyHeaderOffsetY:51, // 设置窗口顶部的Y偏移以固定粘性标头。如果有一个高度为60px的固定导航栏，则该值为60。
+
+            /*****************************************************字段属性设置相关************************************************************/
+            columns:columns,
+            /*****************************************************方法置相关*****************************************************************/
+            /**
+             * @describe 当 checkbox或radio 选中触发
+             * @author 仇仇天
+             * @param row 单击的行对应的记录
+             * @param $element 选中DOM元素.
+             */
+            onCheck:function(row,$element){
+                triggerCheck(row,$element);
+            },
+
+            /**
+             * @describe 当 checkbox或radio 取消选中触发
+             * @author 仇仇天
+             * @param row 单击的行对应的记录
+             * @param $element 选中DOM元素.
+             */
+            onUncheck:function(row,$element){
+                triggerUncheck(row,$element);
+            },
+
+            /**
+             * @describe 当 checkbox或radio 全部选中触发
+             * @author 仇仇天
+             * @param rows 全部选中的行数据
+             */
+            onCheckAll:function(rows){
+                triggerCheck(rows);
+            },
+
+            /**
+             * @describe 当 checkbox或radio 全部取消选中触发
+             * @author 仇仇天
+             * @param rows 全部取消选中的行数据
+             */
+            onUncheckAll:function(rows){
+                triggerUncheck(rows);
+            },
+        }
+
+        tableinfo.method = '{$_tableConfig.method|raw}';
+        tableinfo.data = {$_tableConfig.data|raw};
+        tableinfo.contentType = '{$_tableConfig.contentType|raw}';
+        tableinfo.dataType = '{$_tableConfig.dataType|raw}';
+        tableinfo.ajax = {$_tableConfig.ajax|raw};
+        tableinfo.cache = {$_tableConfig.cache|raw};
+        tableinfo.ajaxOptions = {$_tableConfig.ajaxOptions|raw};
+        tableinfo.queryParams = {$_tableConfig.queryParams|raw};
+        tableinfo.queryParamsType = '{$_tableConfig.queryParamsType|raw}';
+        tableinfo.responseHandler = {$_tableConfig.responseHandler|raw};
+        tableinfo.totalField = '{$_tableConfig.totalField|raw}';
+        tableinfo.dataField = '{$_tableConfig.dataField|raw}';
+        tableinfo.pagination = {$_tableConfig.pagination|raw};
+        tableinfo.onlyInfoPagination = {$_tableConfig.onlyInfoPagination|raw};
+        tableinfo.paginationLoop = {$_tableConfig.paginationLoop|raw};
+        tableinfo.sidePagination = '{$_tableConfig.sidePagination|raw}';
+        tableinfo.totalRows = {$_tableConfig.totalRows|raw};
+        tableinfo.pageNumber = {$_tableConfig.pageNumber|raw};
+        tableinfo.pageSize = {$_tableConfig.pageSize|raw};
+        tableinfo.pageList = {$_tableConfig.pageList|raw};
+        tableinfo.paginationHAlign = '{$_tableConfig.paginationHAlign|raw}';
+        tableinfo.paginationVAlign = '{$_tableConfig.paginationVAlign|raw}';
+        tableinfo.paginationDetailHAlign = '{$_tableConfig.paginationDetailHAlign|raw}';
+        tableinfo.paginationPreText = '{$_tableConfig.paginationPreText|raw}';
+        tableinfo.paginationNextText = '{$_tableConfig.paginationNextText|raw}';
+        tableinfo.paginationSuccessivelySize = {$_tableConfig.paginationSuccessivelySize|raw};
+        tableinfo.paginationPagesBySide = {$_tableConfig.paginationPagesBySide|raw};
+        tableinfo.paginationUseIntermediate = {$_tableConfig.paginationUseIntermediate|raw};
+        tableinfo.search = {$_tableConfig.search|raw};
+        tableinfo.searchOnEnterKey = {$_tableConfig.searchOnEnterKey|raw};
+        tableinfo.strictSearch = {$_tableConfig.strictSearch|raw};
+        tableinfo.trimOnSearch = {$_tableConfig.trimOnSearch|raw};
+        tableinfo.searchAlign = '{$_tableConfig.searchAlign|raw}';
+        tableinfo.searchTimeOut = {$_tableConfig.searchTimeOut|raw};
+        tableinfo.searchText = '{$_tableConfig.searchText|raw}';
+        tableinfo.customSearch = {$_tableConfig.customSearch|raw};
+        tableinfo.showFooter = {$_tableConfig.showFooter|raw};
+        tableinfo.footerStyle = {$_tableConfig.footerStyle|raw};
+
+        tableinfo.toolbar = {$_tableConfig.toolbar|raw};
+        tableinfo.toolbarAlign = '{$_tableConfig.toolbarAlign|raw}';
+        tableinfo.buttonsToolbar = {$_tableConfig.buttonsToolbar|raw};
+        tableinfo.toolbarAlign = '{$_tableConfig.toolbarAlign|raw}';
+        tableinfo.buttonsClass = '{$_tableConfig.buttonsClass|raw}';
+        tableinfo.showColumns = {$_tableConfig.showColumns|raw};
+        tableinfo.minimumCountColumns = {$_tableConfig.minimumCountColumns|raw};
+        tableinfo.showPaginationSwitch = {$_tableConfig.showPaginationSwitch|raw};
+        tableinfo.showRefresh = {$_tableConfig.showRefresh|raw};
+        tableinfo.showToggle = {$_tableConfig.showToggle|raw};
+        tableinfo.showFullscreen = {$_tableConfig.showFullscreen|raw};
+
+        tableinfo.classes = '{$_tableConfig.classes|raw}';
+        tableinfo.striped = {$_tableConfig.striped|raw};
+        tableinfo.undefinedText = {$_tableConfig.undefinedText|raw};
+        tableinfo.locale = '{$_tableConfig.locale|raw}';
+        tableinfo.showHeader = {$_tableConfig.showHeader|raw};
+        tableinfo.smartDisplay = {$_tableConfig.smartDisplay|raw};
+        tableinfo.escape = {$_tableConfig.escape|raw};
+        tableinfo.selectItemName = '{$_tableConfig.selectItemName|raw}';
+        tableinfo.clickToSelect = {$_tableConfig.clickToSelect|raw};
+
+        tableinfo.singleSelect = {$_tableConfig.singleSelect|raw};
+        tableinfo.checkboxHeader = {$_tableConfig.checkboxHeader|raw};
+        tableinfo.maintainSelected = {$_tableConfig.maintainSelected|raw};
+        tableinfo.uniqueId = {$_tableConfig.uniqueId|raw};
+        tableinfo.cardView = {$_tableConfig.cardView|raw};
+        tableinfo.theadClasses = '{$_tableConfig.theadClasses|raw}';
+
+        tableinfo.detailView = {$_tableConfig.detailView|raw};
+        tableinfo.detailFormatter = {$_tableConfig.detailFormatter|raw};
+        tableinfo.detailFilter = {$_tableConfig.detailFilter|raw};
+
+        tableinfo.iconSize = {$_tableConfig.iconSize|raw};
+
+        tableinfo.sortable = {$_tableConfig.sortable|raw};
+        tableinfo.sortClass = {$_tableConfig.sortClass|raw};
+        tableinfo.silentSort = {$_tableConfig.silentSort|raw};
+        tableinfo.sortName = {$_tableConfig.sortName|raw};
+        tableinfo.sortOrder = '{$_tableConfig.sortOrder|raw}';
+        tableinfo.sortStable = {$_tableConfig.sortStable|raw};
+        tableinfo.rememberOrder = {$_tableConfig.rememberOrder|raw};
+        tableinfo.customSort = {$_tableConfig.customSort|raw};
+
+        tableinfo.resizable = {$_tableConfig.resizable|raw};
+
+        tableinfo.fixedColumns = {$_tableConfig.fixedColumns|raw};
+        tableinfo.fixedNumber = {$_tableConfig.fixedNumber|raw};
+
+
+        tableinfo.onLoadSuccess = {$_tableConfig.onLoadSuccess|raw};
+        tableinfo.onLoadError = {$_tableConfig.onLoadError|raw};
+
+        // 树表格配置
+        {notempty name="_isTreeTable"}
+        {$_treeTableConfig|raw}
+        {/notempty}
+
+        // 初始化表格
+        tableObj.bootstrapTable(tableinfo);
+    });
+</script>
+
+{// 额外自定义js文件 }
+{volist name="_js_list" id="vo"}
+<script src="{$vo}?v={:config('asset_version')}"></script>
+{/volist}
+
+{// 额外JS代码}
+<script>
+{$_js_code}
+</script>
+
+{/block}

@@ -1,0 +1,15 @@
+{//  单图}
+<div class="input-group js-image">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text popover-img" id="basic-addon1">
+                <i class="flaticon2-photograph kt-font-brand"></i>
+            </span>
+        </div>
+        <input type="text" class="form-control input-img" placeholder="请选择文件" value="{$form.value}" aria-describedby="basic-addon1" disabled>
+        <div class="input-group-append">
+            <input type="file" class="file-img" name="{$form.name}" data-url="{$form.url}" style="display: none">
+            <button class="btn btn-primary uploader-img" type="button">选择图片</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,398 @@
+{extend name="$_admin_base_layout" /}
+
+{block name="page_css"}
+
+{// 额外自定义css文件 }
+{volist name="extra_css_file" id="vo"}
+<script src="{$vo}?v={:config('asset_version')}"></script>
+{/volist}
+
+<style type="text/css">
+    {// 额外css代码}
+    {$extra_css_code|raw}
+</style>
+{/block}
+
+
+{block name="content"}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="kt-portlet kt-portlet--last kt-portlet--head-lg kt-portlet--responsive-mobile" {empty name="ispopup"}id="kt_page_portlet"{/empty}>
+
+            {// 开始 返回 标题 保存按钮}
+            <div class="kt-portlet__head kt-portlet__head--lg use-kt-portlet__head">
+
+                {// 开始 返回 标题}
+                <div class="kt-portlet__head-label">
+                    {empty name="ispopup"}
+                        {notempty name="return_url"}
+                            <a href="{$return_url}" class="btn btn-sm btn-icon btn-default btn-pill btn-icon-md">
+                                <i class="fa fa-reply"></i>
+                            </a>                        &nbsp;&nbsp;&nbsp;
+                        {/notempty}
+                    {/empty}
+
+                    {notempty name="page_title"}
+                        <h3 class="kt-portlet__head-title kt-font-info">{$page_title}</h3>
+                    {/notempty}
+                </div>
+                {// 结束 返回 标题}
+
+                {// 开始 保存}
+                {empty name="ispopup"}
+                <div class="kt-portlet__head-toolbar">
+                    <button type="button" class="btn btn-brand btn-save">
+                        <i class="la la-check"></i>
+                        <span class="kt-hidden-mobile">保存</span>
+                    </button>
+                </div>
+                {/empty}
+                {// 结束 保存}
+
+            </div>
+            {// 结束 返回 标题 保存按钮}
+
+
+            <form class="kt-form kt-form--label-right form-save-zbuilder {notempty name="popup_form"}{$popup_form}{/notempty}" action="{$form_url}" method="{$form_method}" enctype="multipart/form-data">
+
+                {// 隐藏表单}
+                {foreach name="form_hidden_data" item="form_data_value" key="form_data_key" }
+                <input name="{$form_data_value.name}" value="{$form_data_value.value}" type="hidden">
+                {/foreach}
+
+                <div class="kt-portlet__body use-kt-portlet__body">
+                    {notempty name="group"}
+                    {// 开始 有分组}
+
+                    {// 开始 分组标签}
+                    <ul class="nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-brand">
+                        {foreach name="group" item="group_value" key="group_key"}
+                        <li class="nav-item">
+                            <a class="nav-link {notempty name="group_value.default"}active{/notempty}" href="{$group_value.url}">
+                                {$group_value.title|htmlspecialchars}
+                            </a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                    {// 结束 分组标签}
+
+                    {// 开始 分组内容}
+                    <div class="tab-content">
+                        <div class="tab-pane active" role="tabpanel">
+                            {notempty name="type_group"}
+                                {// 开始 有类型分组}
+                                {foreach name="form_items" item="form_A" key="form_k_A" }
+                                    <h3 class="kt-section__title kt-font-primary">{$type_group[$form_k_A]['name']}</h3>
+                                    {foreach name="form_A" item="form_B" key="form_k_B" }
+                                        <div class="form-group row">
+                                            {foreach name="form_B" item="form" key="form_k_C" }
+                                                {// 开始 标题}
+                                                <label class="col-form-label {if condition="$list_number == 1"}col-lg-3{else /}col-lg-1{/if} {$form.form_group_class}-title" {$form.form_group_hide}>
+                                                    {// 是否必填}
+                                                    {notempty name="form.require"}<span class="kt-font-danger kt-font-bold">*</span>{/notempty}
+                                                    {// 表单标题}
+                                                    <span class="kt-font-boldest">{$form.title}</span>：
+                                                </label>
+                                                {// 结束 标题}
+
+                                                <div class="{if condition="$list_number == 1 || $list_number == 2"}col-lg-5{else /}{if condition="$list_number == 3"}col-lg-3{else /}col-lg-2{/if}{/if} {$form.form_group_class}-form" {$form.form_group_hide}>
+                                                    {// 开始 表单}
+                                                    {include file="../application/common/builder/common/form/layout.html" /}
+                                                    {// 结束 表单}
+                                                    {// 开始 提示}
+                                                    <div class="form-text text-muted kt-font-boldest">
+                                                        {$form.tips|raw|clear_js}
+                                                    </div>
+                                                    {// 结束 提示}
+                                                </div>
+                                            {/foreach}
+                                        </div>
+                                    {/foreach}
+                                    <div class="kt-separator kt-separator--border-dashed kt-separator--portlet-fit"></div>
+                                {/foreach}
+                                {// 结束 有类型分组}
+                            {else/}
+                                {// 开始 无类型分组}
+                                {foreach name="form_items" item="form_A" key="form_k_A" }
+                                    {foreach name="form_A" item="form_B" key="form_k_B" }
+                                        <div class="form-group row">
+                                            {foreach name="form_B" item="form" key="form_k_C" }
+                                                {// 开始 标题}
+                                                <label class="col-form-label {if condition="$list_number == 1"}col-lg-3{else /}col-lg-1{/if} {$form.form_group_class}-title" {$form.form_group_hide}>
+                                                    {// 是否必填}
+                                                    {notempty name="form.require"}<span class="kt-font-danger kt-font-bold">*</span>{/notempty}
+                                                    {// 表单标题}
+                                                    <span class="kt-font-boldest">{$form.title}</span>：
+                                                </label>
+                                                {// 结束 标题}
+
+                                                <div class="{if condition="$list_number == 1 || $list_number == 2"}col-lg-5{else /}{if condition="$list_number == 3"}col-lg-3{else /}col-lg-2{/if}{/if} {$form.form_group_class}-form" {$form.form_group_hide}>
+                                                    {// 开始 表单}
+                                                    {include file="../application/common/builder/common/form/layout.html" /}
+                                                    {// 结束 表单}
+                                                    {// 开始 提示}
+                                                    <div class="form-text text-muted kt-font-boldest">
+                                                        {$form.tips|raw|clear_js}
+                                                    </div>
+                                                    {// 结束 提示}
+                                                </div>
+                                            {/foreach}
+                                        </div>
+                                    {/foreach}
+                                {/foreach}
+                                {// 结束 无类型分组}
+                            {/notempty}
+                        </div>
+                    </div>
+                    {// 结束 分组内容}
+
+                    {// 结束 有分组}
+                    {else/}
+                        {// 开始 无分组}
+                            {notempty name="type_group"}
+                                {// 开始 有类型分组}
+                                {foreach name="form_items" item="form_A" key="form_k_A" }
+                                    <h3 class="kt-section__title">{$type_group[$form_k_A]['name']}</h3>
+                                    {foreach name="form_A" item="form_B" key="form_k_B" }
+                                        <div class="form-group row">
+                                            {foreach name="form_B" item="form" key="form_k_C" }
+                                                {// 开始 标题}
+                                                <label class="col-form-label {if condition="$list_number == 1"}col-lg-3{else /}col-lg-1{/if} {$form.form_group_class}-title" {$form.form_group_hide}>
+                                                    {// 是否必填}
+                                                    {notempty name="form.require"}<span class="kt-font-danger kt-font-bold">*</span>{/notempty}
+                                                    {// 表单标题}
+                                                    <span class="kt-font-boldest">{$form.title}</span>：
+                                                </label>
+                                                {// 结束 标题}
+
+                                                <div class="{if condition="$list_number == 1 || $list_number == 2"}col-lg-5{else /}{if condition="$list_number == 3"}col-lg-3{else /}col-lg-2{/if}{/if} {$form.form_group_class}-form" {$form.form_group_hide}>
+                                                    {// 开始 表单}
+                                                    {include file="../application/common/builder/common/form/layout.html" /}
+                                                    {// 结束 表单}
+                                                    {// 开始 提示}
+                                                    <div class="form-text text-muted kt-font-boldest">
+                                                        {$form.tips|raw|clear_js}
+                                                    </div>
+                                                    {// 结束 提示}
+                                                </div>
+                                            {/foreach}
+                                        </div>
+                                    {/foreach}
+                                    <div class="kt-separator kt-separator--border-dashed kt-separator--portlet-fit"></div>
+                                {/foreach}
+                                {// 结束 有类型分组}
+                            {else/}
+                                {// 开始 无类型分组}
+                                {foreach name="form_items" item="form_A" key="form_k_A" }
+                                    {foreach name="form_A" item="form_B" key="form_k_B" }
+                                        <div class="form-group row">
+                                            {foreach name="form_B" item="form" key="form_k_C" }
+                                                {// 开始 标题}
+                                                <label class="col-form-label {if condition="$list_number == 1"}col-lg-3{else /}col-lg-1{/if} {$form.form_group_class}-title" {$form.form_group_hide}>
+                                                    {// 是否必填}
+                                                    {notempty name="form.require"}<span class="kt-font-danger kt-font-bold">*</span>{/notempty}
+                                                    {// 表单标题}
+                                                    <span class="kt-font-boldest">{$form.title}</span>：
+                                                </label>
+                                                {// 结束 标题}
+
+                                                <div class="{if condition="$list_number == 1 || $list_number == 2"}col-lg-5{else /}{if condition="$list_number == 3"}col-lg-3{else /}col-lg-2{/if}{/if} {$form.form_group_class}-form" {$form.form_group_hide}>
+                                                    {// 开始 表单}
+                                                    {include file="../application/common/builder/common/form/layout.html" /}
+                                                    {// 结束 表单}
+                                                    {// 开始 提示}
+                                                    <div class="form-text text-muted kt-font-boldest">
+                                                        {$form.tips|raw|clear_js}
+                                                    </div>
+                                                    {// 结束 提示}
+                                                </div>
+                                            {/foreach}
+                                        </div>
+                                    {/foreach}
+                                {/foreach}
+                                {// 结束 无类型分组}
+                            {/notempty}
+                            {// 结束 无分组}
+                        {/notempty}
+
+
+
+                    {// 开始 额外html内容代码}
+                    {$extra_html_content_form_code|raw}
+                    {// 结束 额外html内容代码}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {// 开始 额外html内容代码}
+    {$extra_html_content_code|raw}
+    {// 结束 额外html内容代码}
+
+</div>
+
+{// 图标 }
+{notempty name="_icon"}
+<div class="kt-portlet" id="icon_tab" style="display:none">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <span class="kt-portlet__head-icon kt-hidden">
+                <i class="la la-gear"></i>
+            </span>
+            <h3 class="kt-portlet__head-title">
+               选择图标
+            </h3>
+        </div>
+    </div>
+    <div class="kt-portlet__body">
+        <ul class="nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-brand" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" role="tab" href="#flaticon" data-toggle="tab">flaticon</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" role="tab" href="#fontawesome5" >fontawesome5</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" role="tab" href="#lineawesome" >lineawesome</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" role="tab" href="#socicons" >socicons</a>
+            </li>
+            {volist name="_icons" id="icon"}
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" role="tab" href="#icon{$icon.id}">{$icon.name}</a>
+            </li>
+            {/volist}
+        </ul>
+        <div class="tab-content js-icon-content" style="padding: 10px">
+            <div class="tab-pane active" id="flaticon">
+                {include file="../application/common/builder/common/form/item/icon/flaticon.html" /}
+            </div>
+            <div class="tab-pane" id="fontawesome5">
+                {include file="../application/common/builder/common/form/item/icon/fontawesome5.html" /}
+            </div>
+            <div class="tab-pane" id="lineawesome">
+                {include file="../application/common/builder/common/form/item/icon/lineawesome.html" /}
+            </div>
+            <div class="tab-pane" id="socicons">
+                {include file="../application/common/builder/common/form/item/icon/socicons.html" /}
+            </div>
+            {volist name="_icons" id="icon"}
+            <div class="tab-pane" id="icon{$icon.id}">
+                {$icon.html|raw|default='暂无图标'}
+            </div>
+            {/volist}
+        </div>
+    </div>
+</div>
+{/notempty}
+
+
+{// 额外html代码}
+{$extra_html_code|raw}
+
+{/block}
+
+{block name="page_script"}
+
+{// 额外自定义js文件 }
+{volist name="extra_js_file" id="vo"}
+<script src="{$vo}?v={:config('asset_version')}"></script>
+{/volist}
+
+<script>
+    var form_validate = null;
+
+    $(function(){
+
+        {// 前置代码块}
+        {$extra_prepose_block_js_code|raw}
+
+        $("[data-toggle='hover']").popover();
+
+        var form = $('.form-save-zbuilder');
+
+        // 设置验证规则
+        var rules = {};
+        {notempty  name="$form_validate.rules"}
+        rules = {:json_encode($form_validate['rules'])};
+        {/notempty}
+
+         // 设置验证报错信息
+        var messages = {};
+        {notempty  name="$form_validate.messages"}
+         messages = {:json_encode($form_validate['messages'])};
+        {/notempty}
+
+        form.validate({
+            // 验证规则
+            rules: rules,
+            // 验证提示
+            messages:messages,
+            invalidHandler: function(event, validator) {
+                var alert = $('#kt_form_1_msg');
+                alert.removeClass('kt--hide').show();
+                KTUtil.scrollTo('m_form_1_msg', -200);
+            },
+
+            // 提交
+            submitHandler: function (form) {
+
+                var uploadFile = new FormData(form);
+
+                // 获取多图
+                $.each(base.imagesList, function(i, field){
+                    $.each(field, function(ii, fields){
+                        uploadFile.append(i+'[]',fields);
+                    })
+                });
+
+                // 加载特效
+                Base.funLoad();
+
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    async: false,
+                    cache: false,
+                    //不设置内容类型
+                    contentType: false,
+                    //不处理数据
+                    processData: false,
+                    dataType: 'json',
+                    data: uploadFile,
+                    success: function (res) {
+                        Base.funUnLoad();
+                        if(res.code == 1){
+                            Base.funMessage(res.msg);
+                            if(res.url){
+                                {notempty name="popupisjump"}
+                                window.location.href = res.url;
+                                {/notempty}
+                            }
+                        }else if(res.code === 0){
+                            Base.funMessage(res.msg,'error');
+                        }
+                    },
+                    error:function(){
+                        Base.funMessage('系统错误','error');
+                        Base.funUnLoad();
+                    }
+                });
+            }
+        });
+
+        // 提交事件
+        $('.btn-save').on('click',function(){
+            // 提交
+            form.submit();
+        });
+
+        {// 后置代码块}
+        {$extra_postposition_block_js_code|raw}
+    });
+
+    {// 额外JS代码}
+    {$extra_js_code|raw}
+</script>
+{/block}
