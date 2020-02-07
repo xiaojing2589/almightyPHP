@@ -12,14 +12,12 @@
                     {notempty name="return_url"}
                         <a href="{$return_url}" class="btn btn-sm btn-icon btn-default btn-pill btn-icon-md">
                             <i class="fa fa-reply"></i>
-                        </a>
-                        &nbsp;&nbsp;&nbsp;
+                        </a>                        &nbsp;&nbsp;&nbsp;
                     {else/}
-                        <span class="font-green">
-                            <i class="la la-th"></i>
+                        <span class="kt-portlet__head-icon">
+                            <i class="la la-th kt-font-brand"></i>
                         </span>
                     {/notempty}
-                    &nbsp;&nbsp;&nbsp;&nbsp;
                     {notempty name="page_title"}
                         <h3 class="kt-portlet__head-title kt-font-info">{$page_title}</h3>
                     {/notempty}

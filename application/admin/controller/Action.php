@@ -9,8 +9,6 @@ use app\common\model\AdminModule as ModuleModel;
 
 /**
  * 行为管理控制器
- * Class Action
- * @package app\admin\controller
  */
 class Action extends Admin
 {
@@ -27,6 +25,7 @@ class Action extends Admin
 
         if ($this->request->isAjax()) {
 
+            // 传递数据
             $data = input();
 
             // 筛选参数设置
@@ -37,7 +36,6 @@ class Action extends Admin
 
             // 快捷筛选 关键词
             if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])){
-
                 if ($data['searchCondition'] == 'like'){
                     $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
                 }else{
@@ -92,10 +90,28 @@ class Action extends Admin
         // 设置页面标题
         $view->setPageTitle('行为管理');
 
-        // 设置搜索框
+        // 设置快捷搜索框
         $view->setSearch([
-            ['title' => '名称', 'field' => 'a.title','condition'=>'like', 'default' => true],
-            ['title' => '标识', 'field' => 'a.name','condition'=>'like', 'default' => false]
+            [
+                // 快捷搜索标题
+                'title' => '名称',
+                // 快捷搜索字段
+                'field' => 'a.title',
+                // 快捷搜索条件
+                'condition'=>'like',
+                // 快捷搜索是否默认搜索项
+                'default' => true
+            ],
+            [
+                // 快捷搜索标题
+                'title' => '标识',
+                // 快捷搜索字段
+                'field' => 'a.name',
+                // 快捷搜索条件
+                'condition'=>'like',
+                // 快捷搜索是否默认搜索项
+                'default' => false
+            ]
         ]);
 
         // 设置列
