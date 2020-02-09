@@ -9,14 +9,16 @@ if (is_file(think\facade\Env::get('app_path') . 'function.php')) {
 /**
  * 加载静态资源
  * @author 仇仇天
- * @param string $assets 资源
- * @param string $type   资源类型 css/javascript
+ * @param string|Array $assets 资源名称
+ * @param string $type 资源类型 css/javascript
  * @return mixed|string
  */
 function load_assets($assets = '', $type = 'css')
 {
     // 获取相应的静态资源
-    $assets_list = config('assets.' . $assets);
+//    $assets_list = config('assets.' . $assets);
+
+    $assets_list = !is_array($assets) ? config('assets.' . $assets) : $assets_list;
 
     // 设置资源
     $result      = '';
@@ -29,6 +31,33 @@ function load_assets($assets = '', $type = 'css')
     }
     $result = str_replace(array_keys(config('template.tpl_replace_string')), array_values(config('template.tpl_replace_string')), $result);
     return $result;
+}
+
+/**
+ * 合并输出js代码或css代码
+ * @author 仇仇天
+ * @param string $type 类型：group-分组，file-单个文件，base-基础目录
+ * @param string $files 文件名或分组名
+ */
+function minify($type = '', $files = '')
+{
+    // 获取需要加载 静态资源组
+    $files = !is_array($files) ? $files : implode(',', $files);
+
+    $url   = PUBLIC_PATH. 'min/?';
+
+    switch ($type) {
+        case 'group':
+            $url .= 'g=' . $files;
+            break;
+        case 'file':
+            $url .= 'f=' . $files;
+            break;
+        case 'base':
+            $url .= 'b=' . $files;
+            break;
+    }
+    echo $url.'&v='.config('asset_version');
 }
 
 /**

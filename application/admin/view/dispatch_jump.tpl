@@ -4,8 +4,6 @@
 <!--[if !IE]><!-->
 <html lang="en">
 <!--<![endif]-->
-
-
 <head>
     <meta charset="utf-8" />
     <title>Metronic | 500 Page Option 2</title>
@@ -25,8 +23,6 @@
     <link href="__ADMIN_CSS__/error.css" rel="stylesheet" type="text/css" />
 
     <link rel="shortcut icon" href="favicon.ico" /> </head>
-
-
 <body class=" page-500-full-page">
 <div class="row">
     <div class="col-md-12 page-500">
@@ -90,5 +86,4 @@
 </script>
 
 </body>
-
 </html>

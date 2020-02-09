@@ -7,8 +7,7 @@ use app\common\model\AdminIcon as AdminIconModel;
 use app\common\model\AdminRole as AdminRoleModel;
 
 /**
- * @describe 后台公共控制器
- * @author 仇仇天
+ * 后台公共控制器
  */
 class Admin extends Common
 {
@@ -70,9 +69,11 @@ class Admin extends Common
                     $this->error('该用户已锁定，请先解锁',url('user/lock'));
                 }
             }
+
             // 已登录
             return $uid;
-        } else {
+        }
+        else {
             // 未登录
             $this->redirect('admin/publics/signin');
         }

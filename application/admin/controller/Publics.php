@@ -17,8 +17,8 @@ class Publics extends Common
 {
     /**
      * 用户登录
-     * @return mixed
      * @author 仇仇天
+     * @return mixed
      */
     public function signin()
     {
@@ -43,16 +43,14 @@ class Publics extends Common
             // 验证失败 输出错误信息
             if (true !== $result) $this->error($result);
 
-
-
             // 获取验证码
-//            $captcha = $this->request->post('captcha', '');
+            $captcha = $this->request->post('captcha', '');
 
             // 验证码是否为空
-//            $captcha == '' && $this->error('请输入验证码');
+            $captcha == '' && $this->error('请输入验证码');
 
             // 验证失败
-//            if (!captcha_check($captcha)) $this->error('验证码错误或失效');
+            if (!captcha_check($captcha)) $this->error('验证码错误或失效');
 
             // 后台用户model对象
             $UserModel = new AdminUserModel;
@@ -117,8 +115,8 @@ class Publics extends Common
             'fontSize' => 15,
             // 验证码位数
             'length'   => 4,
-            // 设置宽度
-//            'imageW'   => 135,
+            // 背景
+            'useImgBg' => true,
             // 关闭验证码杂点
             'useNoise' => false,
             // 是否画混淆曲线

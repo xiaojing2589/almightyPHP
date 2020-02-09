@@ -10,8 +10,6 @@ use think\facade\Env;
 
 /**
  * 表格构建器
- * @package app\common\builder\table
- * @author 仇仇天
  */
 class Builder extends ZBuilder
 {
@@ -100,10 +98,10 @@ class Builder extends ZBuilder
         $this->_template = Env::get('app_path') . 'common/builder/tables/layout.html';
 
         // 默认加载所需jscss
-        $this->_vars['_js_files'] = ['select2_js', 'bootstraptable_js', 'moment_js'];
+        $this->_vars['_js_files'] = ['bootstraptable_js'];
 
         // 默认加载所需css
-        $this->_vars['_css_files'] = ['select2_css', 'bootstraptable_css'];
+        $this->_vars['_css_files'] = ['bootstraptable_css'];
 
     }
 

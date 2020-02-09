@@ -26,50 +26,11 @@ License: You must have a valid license purchased only from themeforest(the above
     <meta name="description" content="No subheader example">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!--begin::Fonts -->
-<!--    <script src="https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js"></script>-->
-    <script>
-        // WebFont.load({
-        //     google: {
-        //         "families": ["Poppins:300,400,500,600,700", "Roboto:300,400,500,600,700"]
-        //     },
-        //     active: function() {
-        //         sessionStorage.fonts = true;
-        //     }
-        // });
-    </script>
-    <!--end::Fonts -->
+    {// 动态加载核心css文件 }
+    {:load_assets('core_css')}
 
-    <!--begin::Page Vendors Styles(used by this page) -->
-    <link href="__GLODAL_CUSTOM__/fullcalendar/fullcalendar.bundle.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <!--end::Page Vendors Styles -->
-
-    <!--begin:: Global Mandatory Vendors -->
-    <link href="__GLODAL_PLUGINS__/perfect-scrollbar/css/perfect-scrollbar.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <!--end:: Global Mandatory Vendors -->
-
-    <!--begin:: Global Optional Vendors -->
-    {// 必须}
-    <link href="__GLODAL_PLUGINS__/tether/dist/css/tether.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/bootstrap-select/dist/css/bootstrap-select.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-
-    <link href="__GLODAL_PLUGINS__/owl.carousel/dist/assets/owl.carousel.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/owl.carousel/dist/assets/owl.theme.default.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/dropzone/dist/dropzone.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/summernote/dist/summernote.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/bootstrap-markdown/css/bootstrap-markdown.min.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/animate.css/animate.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/toastr/build/toastr.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/morris.js/morris.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/sweetalert2/dist/sweetalert2.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/socicon/css/socicon.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_CUSTOM__/vendors/line-awesome/css/line-awesome.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_CUSTOM__/vendors/flaticon/flaticon.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_CUSTOM__/vendors/flaticon2/flaticon.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/@fortawesome/fontawesome-free/css/all.min.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <!--end:: Global Optional Vendors -->
+    {// 动态加载后台核心插件css }
+    {:load_assets('admin_core_plugin_css')}
 
     {// 动态加载css文件 }
     {notempty name="_css_files"}
@@ -78,19 +39,8 @@ License: You must have a valid license purchased only from themeforest(the above
         {/volist}
     {/notempty}
 
-
-    <!--begin::Global Theme Styles(used by all pages) -->
-    <link href="__ADMIN_CSS__/style.bundle.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__ADMIN_CSS__/base.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <!--end::Global Theme Styles -->
-
-    <!--begin::Layout Skins(used by all pages) -->
-    <link href="__ADMIN_CSS__/skins/header/base/light.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__ADMIN_CSS__/skins/header/menu/light.css" rel="stylesheet" type="text/css" />
-    <link href="__ADMIN_CSS__/skins/brand/dark.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <link href="__ADMIN_CSS__/skins/aside/dark.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-    <!--end::Layout Skins -->
-
+    {// 动态加载后台核心css }
+    {:load_assets('admin_core_css')}
 
     {// 插件css钩子}
     {:hook('page_plugin_css')}
@@ -124,11 +74,12 @@ License: You must have a valid license purchased only from themeforest(the above
 
 <!-- begin:: Page -->
 {// 开始 页面}
+
 <!-- begin:: Header Mobile -->
 <div id="kt_header_mobile" class="kt-header-mobile  kt-header-mobile--fixed ">
     <div class="kt-header-mobile__logo">
-        <a href="demo1/index.html">
-            <img alt="Logo" src="__ADMIN_IMG__/logos/logo-light.png" />
+        <a href="{:url('index')}">
+            <span style="color: #f0f0f0;font-size: 19px;">{:config('web_site_title')}</span>
         </a>
     </div>
     <div class="kt-header-mobile__toolbar">
@@ -138,6 +89,7 @@ License: You must have a valid license purchased only from themeforest(the above
     </div>
 </div>
 <!-- end:: Header Mobile -->
+
 <div class="kt-grid kt-grid--hor kt-grid--root">
     <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
 
@@ -148,8 +100,8 @@ License: You must have a valid license purchased only from themeforest(the above
             <!-- begin:: Aside -->
             <div class="kt-aside__brand kt-grid__item " id="kt_aside_brand">
                 <div class="kt-aside__brand-logo">
-                    <a href="demo1/index.html">
-                        <img alt="Logo" src="__ADMIN_IMG__/logos/logo-light.png" />
+                    <a href="{:url('index')}">
+                        <span style="color: #f0f0f0;font-size: 19px;">{:config('web_site_title')}</span>
                     </a>
                 </div>
                 <div class="kt-aside__brand-tools">
@@ -982,7 +934,7 @@ License: You must have a valid license purchased only from themeforest(the above
                             <div class="kt-header__topbar-user">
                                 <span class="kt-header__topbar-welcome kt-hidden-mobile">您好,</span>
                                 <span class="kt-header__topbar-username kt-hidden-mobile">{$Think.session.admin_user_info.username}</span>
-                                <img alt="Pic" src="__ADMIN_IMG__/users/300_25.jpg" />
+                                <img alt="Pic" src="{$Think.session.admin_user_info.avatar|attaUrl='admin_avatar'}" />
                             </div>
                         </div>
                         <div class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-top-unround dropdown-menu-xl">
@@ -991,7 +943,7 @@ License: You must have a valid license purchased only from themeforest(the above
                             <div class="kt-user-card kt-user-card--skin-dark kt-notification-item-padding-x" style="background-image: url(__ADMIN_IMG__/misc/bg-1.jpg)">
                                 {// 开始 头像}
                                 <div class="kt-user-card__avatar">
-                                    <img alt="Pic" src="__ADMIN_IMG__/users/300_25.jpg" />
+                                    <img alt="Pic" src="{$Think.session.admin_user_info.avatar|attaUrl='admin_avatar'}" />
                                 </div>
                                 {// 结束 头像}
                                 {// 开始 用户名称}
@@ -1001,7 +953,10 @@ License: You must have a valid license purchased only from themeforest(the above
                                 {// 结束 用户名称}
                                 {// 开始 消息按钮}
                                 <div class="kt-user-card__badge">
-                                    <span class="btn btn-success btn-sm btn-bold btn-font-md">23 信息</span>
+                                    <a href="{:url('user/lock')}" class="btn btn-success">
+                                        <i class="flaticon-lock"></i>
+                                        锁定
+                                    </a>
                                 </div>
                                 {// 结束 消息按钮}
                             </div>
@@ -1084,8 +1039,9 @@ License: You must have a valid license purchased only from themeforest(the above
                                 </a>
                                 {// 结束 用户消息}
                                 <div class="kt-notification__custom kt-space-between">
-                                    <a href="demo1/custom/user/login-v2.html" target="_blank" class="btn btn-label btn-label-brand btn-sm btn-bold">退出</a>
-                                    <a href="demo1/custom/user/login-v2.html" target="_blank" class="btn btn-clean btn-sm btn-bold">升级计划</a>
+                                    <a href="{:url('admin/publics/signout')}" target="_blank" class="btn btn-label btn-label-brand btn-sm btn-bold w-100">
+                                        退出
+                                    </a>
                                 </div>
                             </div>
                             {// 结束 用户下拉导航}
@@ -1128,6 +1084,7 @@ License: You must have a valid license purchased only from themeforest(the above
 
     </div>
 </div>
+
 {// 结束 页面}
 <!-- end:: Page -->
 
@@ -1953,92 +1910,21 @@ License: You must have a valid license purchased only from themeforest(the above
 </script>
 <!-- end::Global Config -->
 
-<!--begin:: Global Mandatory Vendors -->
-<script src="__GLODAL_PLUGINS__/jquery/dist/jquery.js" type="text/javascript"></script>
-{// ajax重写处理}
-<script src="__GLODAL_PLUGINS__/newajax.js?v={:config('asset_version')}" type="text/javascript"></script>
+{// 动态加载核心js文件 }
+{:load_assets('core_js','js')}
 
-<script src="__GLODAL_PLUGINS__/popper.js/dist/umd/popper.js" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/js-cookie/src/js.cookie.js" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/moment/min/moment.min.js" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/tooltip.js/dist/umd/tooltip.min.js" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/perfect-scrollbar/dist/perfect-scrollbar.js" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/sticky-js/dist/sticky.min.js" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/wnumb/wNumb.js" type="text/javascript"></script>
-<!--end:: Global Mandatory Vendors -->
-
-<!--begin:: Global Optional Vendors -->
-
-
-{// 必须}
-<script src="__GLODAL_PLUGINS__/jquery-form/dist/jquery.form.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/block-ui/jquery.blockUI.js?v={:config('asset_version')}" type="text/javascript"></script>
-{// 弹窗插件}
-<script src="__GLODAL_PLUGINS__/layer/layer.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/autosize/dist/autosize.js?v={:config('asset_version')}" type="text/javascript"></script>
-{// 弹窗插件}
-<script src="__GLODAL_PLUGINS__/sweetalert2/dist/sweetalert2.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_CUSTOM__/js/vendors/sweetalert2.init.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.js?v={:config('asset_version')}" type="text/javascript"></script>
-{// 输入框最大输入数量}
-<script src="__GLODAL_PLUGINS__/bootstrap-maxlength/src/bootstrap-maxlength.js?v={:config('asset_version')}" type="text/javascript"></script>
-
-<script src="__GLODAL_CUSTOM__/vendors/bootstrap-multiselectsplitter/bootstrap-multiselectsplitter.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap-select/dist/js/bootstrap-select.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap-switch/dist/js/bootstrap-switch.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_CUSTOM__/js/vendors/bootstrap-switch.init.js?v={:config('asset_version')}" type="text/javascript"></script>
-
-<script src="__GLODAL_PLUGINS__/typeahead.js/dist/typeahead.bundle.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/handlebars/dist/handlebars.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/inputmask/dist/jquery.inputmask.bundle.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/inputmask/dist/inputmask/inputmask.date.extensions.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/inputmask/dist/inputmask/inputmask.numeric.extensions.js?v={:config('asset_version')}" type="text/javascript"></script>
-
-<script src="__GLODAL_PLUGINS__/owl.carousel/dist/owl.carousel.js?v={:config('asset_version')}" type="text/javascript"></script>
-
-<script src="__GLODAL_PLUGINS__/clipboard/dist/clipboard.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/dropzone/dist/dropzone.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/summernote/dist/summernote.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/markdown/lib/markdown.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap-markdown/js/bootstrap-markdown.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_CUSTOM__/js/vendors/bootstrap-markdown.init.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap-notify/bootstrap-notify.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_CUSTOM__/js/vendors/bootstrap-notify.init.js?v={:config('asset_version')}" type="text/javascript"></script>
-
-<script src="__GLODAL_PLUGINS__/toastr/build/toastr.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/raphael/raphael.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/morris.js/morris.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/chart.js/dist/Chart.bundle.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_CUSTOM__/vendors/bootstrap-session-timeout/dist/bootstrap-session-timeout.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_CUSTOM__/vendors/jquery-idletimer/idle-timer.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/waypoints/lib/jquery.waypoints.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/counterup/jquery.counterup.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/es6-promise-polyfill/promise.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-
-
-<script src="__GLODAL_PLUGINS__/dompurify/dist/purify.js?v={:config('asset_version')}" type="text/javascript"></script>
-<!--end:: Global Optional Vendors -->
-
-<!--begin::Global Theme Bundle(used by all pages) -->
-<script src="__ADMIN_JS__/scripts.bundle.js?v={:config('asset_version')}" type="text/javascript"></script>
-<!--end::Global Theme Bundle -->
-
-<!--begin::Page Vendors(used by this page) -->
-<script src="__GLODAL_CUSTOM__/fullcalendar/fullcalendar.bundle.js?v={:config('asset_version')}" type="text/javascript"></script>
-<!--<script src="//maps.google.com/maps/api/js?key=AIzaSyBTGnKT7dt597vo9QgeQ7BFhvSRP4eiMSM" type="text/javascript"></script>-->
-<script src="__GLODAL_CUSTOM__/gmaps/gmaps.js?v={:config('asset_version')}" type="text/javascript"></script>
-<!--end::Page Vendors -->
-
-{// ajax 基本扩展js}
-<script src="__ADMIN_JS__/base.js?v={:config('asset_version')}" type="text/javascript"></script>
+{// 动态加载后台核心插件js }
+{:load_assets('admin_core_plugin_js','js')}
 
 {// 动态加载js}
 {notempty name="_js_files"}
     {volist name="_js_files" id="js"}
-        {:load_assets($js, 'js')}
+        {:load_assets($js,'js')}
     {/volist}
 {/notempty}
+
+{// 动态加载后台核心js }
+{:load_assets('admin_core_js','js')}
 
 {// 钩子js}
 {:hook('page_plugin_js')}
