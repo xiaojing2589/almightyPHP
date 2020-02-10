@@ -586,6 +586,10 @@ javascript
             // 输入密码
             $inputPassword = trim($data['password']);
 
+            if(empty($inputPassword)){
+                return $this->error('请输入登录密码');
+            }
+
             // 系统定义锁定次数
             $lock_count = config('lock_count');
 
@@ -597,8 +601,7 @@ javascript
                 // 判断时间是否过时
                 if(time() - $info['lock_time'] > $lock_time){
                     // 取消锁定
-                    UserModel::where(['id'=>$info['id']])
-                        ->update(['lock_count'=>0,'lock_time'=>0,'lock_status'=>0]);
+                    UserModel::where(['id'=>$info['id']])->update(['lock_count'=>0,'lock_time'=>0,'lock_status'=>0]);
                 }else{
                     return $this->error('密码错误次数过多已锁定，请五分钟后解锁');
                 }

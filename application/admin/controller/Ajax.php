@@ -3,10 +3,9 @@ namespace app\admin\controller;
 
 use app\common\controller\Common;
 use app\common\model\AdminMenu as AdminMenuModel;
-use app\common\model\AdminUser as AdminUserModel;
+
 /**
  * 用于处理ajax请求的控制器
- * @package app\admin\controller
  */
 class Ajax extends Common
 {
@@ -25,11 +24,10 @@ class Ajax extends Common
     }
 
     /**
-     * 轮询任务
+     * 检测是否锁定
      * @author 仇仇天
      */
-    public function getPollingHandle(){
-
+    public function lock(){
         $data = [
             // 锁定状态 0=未锁定 1=锁定
             'lock_status'=>0
@@ -43,5 +41,4 @@ class Ajax extends Common
 
         $this->success('操作成功','',$data);
     }
-
 }

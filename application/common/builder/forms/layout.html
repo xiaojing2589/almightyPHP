@@ -69,6 +69,9 @@
                         {foreach name="group" item="group_value" key="group_key"}
                         <li class="nav-item">
                             <a class="nav-link {notempty name="group_value.default"}active{/notempty}" href="{$group_value.url}">
+                            {notempty name="group_value.ico"}
+                            <i class="{$group_value.ico}"></i>
+                            {/notempty}
                                 {$group_value.title|htmlspecialchars}
                             </a>
                         </li>
@@ -82,7 +85,11 @@
                             {notempty name="type_group"}
                                 {// 开始 有类型分组}
                                 {foreach name="form_items" item="form_A" key="form_k_A" }
-                                    <h3 class="kt-section__title kt-font-primary">{$type_group[$form_k_A]['name']}</h3>
+                                    <div class="kt-divider">
+                                        <span></span>
+                                        <span> <h3 class="kt-section__title kt-font-primary">{$type_group[$form_k_A]['name']}</h3></span>
+                                        <span></span>
+                                    </div>
                                     {foreach name="form_A" item="form_B" key="form_k_B" }
                                         <div class="form-group row">
                                             {foreach name="form_B" item="form" key="form_k_C" }
@@ -152,7 +159,11 @@
                             {notempty name="type_group"}
                                 {// 开始 有类型分组}
                                 {foreach name="form_items" item="form_A" key="form_k_A" }
-                                    <h3 class="kt-section__title">{$type_group[$form_k_A]['name']}</h3>
+                                    <div class="kt-divider">
+                                        <span></span>
+                                        <span> <h3 class="kt-section__title kt-font-primary">{$type_group[$form_k_A]['name']}</h3></span>
+                                        <span></span>
+                                    </div>
                                     {foreach name="form_A" item="form_B" key="form_k_B" }
                                         <div class="form-group row">
                                             {foreach name="form_B" item="form" key="form_k_C" }

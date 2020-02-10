@@ -9,7 +9,6 @@ use app\common\model\AdminModule as AdminModuleModel;
 
 /**
  * 系统模块控制器
- * @package app\admin\controller
  */
 class System extends Admin
 {
@@ -405,25 +404,24 @@ class System extends Admin
         $module_group_arr_info = AdminModuleModel::getModuleDataInfo();
         $module_group_arr      = [];
         foreach ($module_group_arr_info as $key => $value) {
-
             // 检查模块下配置数量
             $data_num = AdminConfigModel::where(['module'=>$value['name'],'is_hide'=>0])->count();
-
             if(!empty($data_num)){
                 $module_group_arr[] = [
                     'title'   => $value['title'],
                     'field'   => $value['name'],
+                    'ico'     => $value['icon'],
                     'url'     => url('index', ['module_group' => $value['name']]),
                     'default' => $module_group == $value['name'] ? true : false
                 ];
             }
         }
-
         // 设置页面分组
         $form->setGroup($module_group_arr);
 
         // 获取配置分组
         $group_arr_info = rcache('module_config_group');
+
         $group_arr      = [];
         foreach ($group_arr_info[$module_group] as $key => $value) {
             $group_arr[] = [

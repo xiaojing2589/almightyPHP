@@ -1,73 +1,130 @@
 <!DOCTYPE html>
-<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
-<!--[if !IE]><!-->
 <html lang="en">
-<!--<![endif]-->
+
+<!-- begin::Head -->
 <head>
+
+    <!--begin::Base Path (base relative path for assets of this page) -->
+    <base href="../../../../">
+
+    <!--end::Base Path -->
     <meta charset="utf-8" />
-    <title>Metronic | 500 Page Option 2</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <meta content="" name="description" />
-    <meta content="" name="author" />
+    <title> 错误 | {:config('web_site_title')}</title>
+    <meta name="description" content="Login page example">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/uniform/css/uniform.default.css" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_PLUGINS__/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
-    <link href="__GLODAL_CSS__/components-rounded.min.css" rel="stylesheet" id="style_components" type="text/css" />
-    <link href="__GLODAL_CSS__/plugins.min.css" rel="stylesheet" type="text/css" />
-    <link href="__ADMIN_CSS__/error.css" rel="stylesheet" type="text/css" />
+    {// 动态加载核心css文件 }
+    {:load_assets('core_css')}
 
-    <link rel="shortcut icon" href="favicon.ico" /> </head>
-<body class=" page-500-full-page">
-<div class="row">
-    <div class="col-md-12 page-500">
-        {notempty name="code"}
-            <div class=" number font-green-turquoise">
-                <i class="fa fa-check-circle"></i>
+    <!--begin::Page Custom Styles(used by this page) -->
+    <link href="__ADMIN_CSS__/pages/login-3.min.css" rel="stylesheet" type="text/css" />
+    <!--end::Page Custom Styles -->
+
+    {// 动态加载后台核心插件css }
+    {:load_assets('admin_core_plugin_css')}
+
+    {// 动态加载css文件 }
+    {notempty name="_css_files"}
+        {volist name="_css_files" id="css"}
+            {:load_assets($css)}
+        {/volist}
+    {/notempty}
+
+    {// 动态加载后台核心css }
+    {:load_assets('admin_core_css')}
+
+    <link rel="shortcut icon" href="__ADMIN_IMG__/logos/favicon.ico" />
+
+</head>
+
+<!-- end::Head -->
+
+<!-- begin::Body -->
+<body class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
+
+<!-- begin:: Page -->
+<div class="kt-grid kt-grid--ver kt-grid--root">
+    <div class="kt-grid kt-grid--hor kt-grid--root  kt-login kt-login--v3 kt-login--forgot" id="kt_login">
+        <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" style="background-image: url(__ADMIN_IMG__/bg/bg-3.jpg);">
+            <div class="kt-grid__item kt-grid__item--fluid kt-login__wrapper">
+                <div class="kt-login__container">
+                    <div class="kt-login__logo">
+                        <a href="#">
+                            <img src="__ADMIN_IMG__/logos/logo-5.png">
+                        </a>
+                    </div>
+                    <div class="kt-login__forgot">
+                        <div class="kt-login__head">
+                            <h3 class="kt-login__title"><?php echo(strip_tags($msg));?></h3>
+                            <div class="kt-login__desc">页面自动 <a id="href" href="<?php echo($url);?>">跳转</a> 等待时间：<b id="wait"><?php echo($wait);?></b>秒<br/></div>
+                        </div>
+                        <form class="kt-form lock-form" action="{:url('user/lock')}">
+
+                            <div class="kt-login__actions">
+                                <a class="btn btn-outline-brand kt-login__btn-primary" href="{$url}">
+                                    <i class="flaticon-reply"></i>
+                                    立即跳转
+                                </a>
+                                <button class="btn btn-outline-danger kt-login__btn-primary" type="button" onclick="stop()">
+                                    <i class="fa fa-ban"></i>
+                                    禁止跳转
+                                </button>
+                                <a class="btn btn-outline-dark kt-login__btn-primary" href="{$Request.baseFile}">
+                                    <i class="flaticon-home-1"></i>
+                                    返回首页
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            {else/}
-            <div class=" number font-red">
-                <i class="fa fa-times-circle"></i>
-            </div>
-        {/notempty}
-
-        <div class=" details">
-            <h1 {$code ? 'class="font-green-turquoise"' : 'class="font-red"'}><?php echo(strip_tags($msg));?></h1>
-            <p>页面自动 <a id="href" href="<?php echo($url);?>">跳转</a> 等待时间：<b id="wait"><?php echo($wait);?></b>秒<br/></p>
-            <p>
-                <a class="btn green btn-outline" href="<?php echo($url);?>"><i class="fa fa-external-link-square"></i> 立即跳转</a>
-                <button class="btn yellow btn-outline" type="button" onclick="stop()"><i class="fa fa-ban"></i> 禁止跳转</button>
-                <a class="btn btn-minw btn-rounded btn-default" href="{$Request.baseFile}"><i class="fa fa-home"></i> 返回首页</a>
-            </p>
         </div>
     </div>
 </div>
 
-<!--[if lt IE 9]>
-<script src="__GLODAL_PLUGINS__/respond.min.js"></script>
-<script src="__GLODAL_PLUGINS__/excanvas.min.js"></script>
-<![endif]-->
+<!-- end:: Page -->
 
-<!-- BEGIN CORE PLUGINS -->
-<script src="__GLODAL_PLUGINS__/jquery.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap/js/bootstrap.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/js.cookie.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/jquery-slimscroll/jquery.slimscroll.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/jquery.blockui.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/uniform/jquery.uniform.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_PLUGINS__/bootstrap-switch/js/bootstrap-switch.min.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__GLODAL_JS__/app.js?v={:config('asset_version')}" type="text/javascript"></script>
-<script src="__ADMIN_JS__/base.js?v={:config('asset_version')}" type="text/javascript"></script>
+<!-- begin::Global Config(global config for global JS sciprts) -->
+<script>
+    var KTAppOptions = {
+        "colors": {
+            "state": {
+                "brand": "#5d78ff",
+                "dark": "#282a3c",
+                "light": "#ffffff",
+                "primary": "#5867dd",
+                "success": "#34bfa3",
+                "info": "#36a3f7",
+                "warning": "#ffb822",
+                "danger": "#fd3995"
+            },
+            "base": {
+                "label": ["#c5cbe3", "#a1a8c3", "#3d4465", "#3e4466"],
+                "shape": ["#f0f3ff", "#d9dffa", "#afb4d4", "#646c9a"]
+            }
+        }
+    };
+</script>
+<!-- end::Global Config -->
 
+{// 动态加载核心js文件 }
+{:load_assets('core_js','js')}
 
-<script type="text/javascript">
-    (function(){
+{// 动态加载后台核心插件js }
+{:load_assets('admin_core_plugin_js','js')}
+
+{// 动态加载js}
+{notempty name="_js_files"}
+    {volist name="_js_files" id="js"}
+        {:load_assets($js,'js')}
+    {/volist}
+{/notempty}
+
+{// 动态加载后台核心js }
+{:load_assets('admin_core_js','js')}
+
+<script>
+    $(function() {
         var wait = document.getElementById('wait'),
             href = document.getElementById('href').href;
         var interval = setInterval(function(){
@@ -77,13 +134,14 @@
                 clearInterval(interval);
             };
         }, 1000);
-
         // 禁止跳转
         window.stop = function (){
             clearInterval(interval);
         }
-    })();
+    });
 </script>
 
 </body>
+
+<!-- end::Body -->
 </html>

@@ -9,7 +9,6 @@ use app\common\builder\ZBuilder;
 
 /**
  * 系统配置控制器
- * @package app\admin\controller
  */
 class Config extends Admin
 {
@@ -24,8 +23,10 @@ class Config extends Admin
         // 初始化 表格
         $view = ZBuilder::make('tables');
 
+        // 加载表格数据
         if ($this->request->isAjax()) {
 
+            // 传输数据
             $data = input();
 
             // 筛选参数设置
@@ -36,7 +37,6 @@ class Config extends Admin
 
             // 快捷筛选 关键词
             if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])){
-
                 if ($data['searchCondition'] == 'like'){
                     $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
                 }else{
@@ -62,6 +62,7 @@ class Config extends Admin
             // 配置类型数据
             $form_item_type = json_decode(config('form_item_type'), true);
 
+            // 重新格式化数据
             foreach ($data_list as $key => $value) {
                 foreach ($form_item_type as $keys => $values) {
                     if ($value['type'] == $values['value']) {
@@ -89,9 +90,9 @@ class Config extends Admin
         foreach ($list_group as $key => $value) {
             $tab_list[$key]['title']   = $value['title'];
             $tab_list[$key]['field']   = $value['name'];
+            $tab_list[$key]['ico']     = $value['icon'];
             $tab_list[$key]['url']     = url('index', ['module_group' => $value['name']]);
             $tab_list[$key]['default'] = $module_group == $value['name'] ? true : false;
-
         }
 
         // 设置分组
@@ -204,6 +205,7 @@ class Config extends Admin
         // 自定义传参
         $view->setQueryParams(['module_group' => $module_group]);
 
+        // 设置页面
         return $view->fetch();
     }
 
@@ -227,7 +229,7 @@ class Config extends Admin
         if ($this->request->isPost()) {
 
             // 表单数据
-            $data = $this->request->post();
+            $data = input();
 
             // 验证
             $result = $this->validate($data, 'Config.add');
@@ -260,9 +262,6 @@ class Config extends Admin
             }
         }
 
-        // 配置类型数据
-        $form_item_type = json_decode(config('form_item_type'), true);
-
         // 使用ZBuilder快速创建表单
         $form = ZBuilder::make('forms');
 
@@ -289,9 +288,6 @@ class Config extends Admin
 
         // 设置配置
         $this->setConfig($form);
-
-        // 配置类型数据
-        $form_item_type = json_decode(config('form_item_type'), true);
 
         // 设置表单项
         $form->addFormItems([
@@ -329,7 +325,7 @@ class Config extends Admin
                 'name'      => 'type',
                 'form_type' => 'select',
                 'title'     => '配置类型',
-                'option'    => $form_item_type
+                'option'    =>  json_decode(config('form_item_type'), true)
             ],
             [
                 'field'            => 'value',
@@ -341,6 +337,7 @@ class Config extends Admin
             ]
         ]);
 
+        // 设置页面
         return $form->fetch();
     }
 
@@ -360,6 +357,7 @@ class Config extends Admin
         // 操作标识
         $vars['actions'] = 'edit';
 
+        // 保存数据
         if ($this->request->isPost()) {
 
             // 表单数据
@@ -398,8 +396,6 @@ class Config extends Admin
                 $save_data['value']   = $value;
                 $save_data['options'] = $options;
             }
-
-
 
             // 原配置内容
             $config_info = AdminConfigModel::where('id', $id)->find();
@@ -450,9 +446,6 @@ class Config extends Admin
         $info['actions'] = 'edit';
         $this->setConfig($form,$info);
 
-        // 配置类型数据
-        $form_item_type = json_decode(config('form_item_type'), true);
-
         // 设置表单项
         $form->addFormItems([
             [
@@ -488,7 +481,7 @@ class Config extends Admin
                 'name'      => 'type',
                 'form_type' => 'select',
                 'title'     => '配置类型',
-                'option'    => $form_item_type
+                'option'    => json_decode(config('form_item_type'), true)
             ],
             [
                 'field'            => 'value',
@@ -506,6 +499,7 @@ class Config extends Admin
         // 设置表单数据
         $form->setFormdata($info);
 
+        // 设置页面
         return $form->fetch();
     }
 
@@ -515,7 +509,7 @@ class Config extends Admin
      */
     public function del()
     {
-        $data = $this->request->post();
+        $data = input();
 
         $where = [];
 

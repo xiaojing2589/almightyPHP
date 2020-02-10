@@ -23,6 +23,7 @@ class Action extends Admin
         // 初始化 表格
         $view = ZBuilder::make('tables');
 
+        // 加载表格数据
         if ($this->request->isAjax()) {
 
             // 传递数据
@@ -79,6 +80,7 @@ class Action extends Admin
         foreach ($list_group as $key => $value) {
             $tab_list[$key]['title'] = $value['title'];
             $tab_list[$key]['value'] = $value['name'];
+            $tab_list[$key]['ico'] = $value['icon'];
             $tab_list[$key]['url']   = url('index', ['module_group' => $value['name']]);
             $tab_list[$key]['default'] = ($module_group == $value['name']) ? true : false;
         }
@@ -184,6 +186,7 @@ class Action extends Admin
      */
     public function add($module='admin')
     {
+        // 保存数据
         if ($this->request->isPost()) {
 
             // 表单数据

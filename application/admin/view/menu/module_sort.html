@@ -25,13 +25,15 @@
                 <ul class="nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-brand">
                     {foreach name="tab_nav['tab_list']" item="group_value" key="group_key"}
                     <li class="nav-item">
-                        <a class="nav-link href="{$group_value.url}">
+                        <a class="nav-link" href="{$group_value.url}">
+                        <l class="{$group_value.ico}"></l>
                         {$group_value.title|htmlspecialchars}
                         </a>
                     </li>
                     {/foreach}
                     <li class="nav-item">
                         <a class="nav-link active" href="{:url('', ['group' => 'module-sort'])}">
+                            <l class="fab fa-gitter"></l>
                             模块排序
                         </a>
                     </li>

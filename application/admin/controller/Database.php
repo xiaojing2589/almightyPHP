@@ -22,15 +22,49 @@ class Database extends Admin
     {
         // 配置分组信息
         $list_group = [
-            ['title'=>'备份数据库','value'=>'export','url'=>url('index', ['group' =>'export']),'default'=>($group == 'export') ? true : false],
-            ['title'=>'还原数据库','value'=>'import','url'=>url('index', ['group' =>'import']),'default'=>($group == 'import') ? true : false]
+            [
+                'title'=>'备份数据库',
+                'value'=>'export',
+                'url'=>url('index', ['group' =>'export']),
+                'ico'=>'fa fa-database',
+                'default'=>($group == 'export') ? true : false],
+            [
+                'title'=>'还原数据库',
+                'ico'=>'fa fa-database',
+                'value'=>'import',
+                'url'=>url('index', ['group' =>'import']),
+                'default'=>($group == 'import') ? true : false
+            ]
         ];
 
         switch ($group) {
+            // 备份数据库
             case 'export':
 
                 // 初始化 表格
                 $view = ZBuilder::make('tables');
+
+                // 加载数据
+                if ($this->request->isAjax()) {
+
+                    // 获取数据
+                    $requrest_data = input();
+
+                    // 名称筛选
+                    if (!empty($requrest_data['name']))$map[] = ['name', 'like', "%".$requrest_data['name']."%"];
+
+                    // 标题筛选
+                    if (!empty($requrest_data['title']))$map[] = ['title', 'like', "%".$requrest_data['title']."%"];
+
+                    // 状态筛选
+                    if (!empty($requrest_data['status']))$map[] = ['status', '=', $requrest_data['status']];
+
+                    // 数据列表
+                    $data_list = Db::query("SHOW TABLE STATUS");
+
+                    // 设置表格数据
+                    $view->setRowList($data_list);
+                }
 
                 // 设置页面标题
                 $view->setPageTitle('备份数据库管理');
@@ -54,7 +88,7 @@ class Database extends Admin
                 $view->addTopButton('custom',[
                     'title' => '优化表',
                     'icon'  => 'fa fa-fw fa-cogs',
-                    'class' => 'btn btn-success',
+                    'class' => 'btn btn-brand',
                     'url'=>url('optimize'),
                     'query_data'=>'{"action":"optimization_batch"}',
                     'jump_way'=>'ajax',
@@ -121,7 +155,7 @@ class Database extends Admin
                                 'field'=>'c',
                                 'text'=>'优化表',
                                 'ico'=>'fa fa-fw fa-cogs',
-                                'class' => 'btn btn-xs btn-success',
+                                'class' => 'btn btn-xs btn-brand',
                                 'url'=>url('optimize'),
                                 'query_data'=>'{"field":["Name"],"extentd_field":{"action":"optimization"}}',
                                 'query_jump'=>'ajax',
@@ -141,29 +175,11 @@ class Database extends Admin
                     ]
                 ]);
 
-                if ($this->request->isAjax()) {
-
-                    $requrest_data = $this->request->request();
-
-                    // 名称筛选
-                    if (!empty($requrest_data['name']))$map[] = ['name', 'like', "%".$requrest_data['name']."%"];
-
-                    // 标题筛选
-                    if (!empty($requrest_data['title']))$map[] = ['title', 'like', "%".$requrest_data['title']."%"];
-
-                    // 状态筛选
-                    if (!empty($requrest_data['status']))$map[] = ['status', '=', $requrest_data['status']];
-
-                    // 数据列表
-                    $data_list = Db::query("SHOW TABLE STATUS");
-
-                    // 设置表格数据
-                    $view->setRowList($data_list);
-                }
-
+                // 设置页面
                 return $view->fetch();
 
                 break;
+            // 还原数据库
             case 'import':
 
                 // 初始化 表格

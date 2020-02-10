@@ -10,7 +10,6 @@ use app\common\model\AdminRole as AdminRoleModel;
 
 /**
  * 节点管理
- * @package app\admin\controller
  */
 class Menu extends Admin
 {
@@ -48,9 +47,15 @@ class Menu extends Admin
         $tab_list   = [];
         $list_group = AdminModuleModel::getModuleDataInfo();
         foreach ($list_group as $key => $value) {
-            $tab_list[] = ['title' => $value['title'], 'value' => $value['name'], 'url' => url('index', ['group' => $value['name']]), 'default' => ($group == $value['name']) ? true : false];
+            $tab_list[] = [
+                'title' => $value['title'],
+                'value' => $value['name'],
+                'ico'   => $value['icon'],
+                'url' => url('index', ['group' => $value['name']]),
+                'default' => ($group == $value['name']) ? true : false
+            ];
         }
-        $tab_list[] = ['title' => '模块排序', 'value' => 'module_sort', 'url' => url('modulesort'), 'default' => false];
+        $tab_list[] = ['title' => '模块排序', 'value' => 'module_sort','ico'=> 'fab fa-gitter', 'url' => url('modulesort'), 'default' => false];
 
         // 设置分组标签
         $view->setGroup($tab_list);
@@ -222,10 +227,11 @@ class Menu extends Admin
         }
 
         // 配置分组信息
-        $list_group = AdminMenuModel::getGroup();
+        $list_group = AdminModuleModel::getModuleDataInfo();
         foreach ($list_group as $key => $value) {
-            $tab_list[$key]['title'] = $value;
-            $tab_list[$key]['url']   = url('index', ['group' => $key]);
+            $tab_list[$key]['title'] = $value['title'];
+            $tab_list[$key]['ico']   = $value['icon'];
+            $tab_list[$key]['url']   = url('index', ['group' => $value['name']]);
         }
 
         $map['status'] = 1;

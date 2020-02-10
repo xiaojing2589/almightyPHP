@@ -219,14 +219,6 @@ return [
         "__GLODAL_PLUGINS__/jquery-tags-Input-master/dist/jquery.tagsinput.min.css",
     ],
 
-    // 验证插件
-    'validate_js' => [
-        "__GLODAL_PLUGINS__/jquery-validation/dist/jquery.validate.js",
-        "__GLODAL_PLUGINS__/jquery-validation/dist/localization/messages_zh.js",
-        "__GLODAL_PLUGINS__/jquery-validation/dist/additional-methods.js",
-        "__GLODAL_CUSTOM__/js/vendors/jquery-validation.init.js"
-    ],
-
     //js 模板插件
     'jsrender_js' => [
         "__GLODAL_PLUGINS__/jsrender.min.js"

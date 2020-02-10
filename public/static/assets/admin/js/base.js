@@ -56,7 +56,7 @@ var Base = function () {
     var pollingHandle = function(){
         function handleer() {
             $.ajax({
-                url: '/admin.php/admin/ajax/getpollinghandle',
+                url: '/admin.php/admin/ajax/lock',
                 async:true,
                 type: 'post',
                 success: function (res) {
@@ -66,7 +66,7 @@ var Base = function () {
                 }
             })
         }
-        setInterval(handleer,5000);
+         userLock = setInterval(handleer,5000);
     }
 
     /**

@@ -11,7 +11,6 @@ use app\common\model\AdminModule as AdminModuleModel;
 
 /**
  * 缓存管理控制器
- * @package app\admin\controller
  */
 class ExtendCache extends Admin
 {
@@ -26,9 +25,10 @@ class ExtendCache extends Admin
         // 初始化 表格
         $view = ZBuilder::make('tables');
 
+        // 加载表格数据
         if ($this->request->isAjax()) {
 
-            $data = $this->request->request();
+            $data = input();
 
             // 筛选参数设置
             $map = [];
@@ -71,6 +71,7 @@ class ExtendCache extends Admin
         foreach ($list_group as $key => $value) {
             $tab_list[$key]['title']   = $value['title'];
             $tab_list[$key]['value']   = $value['name'];
+            $tab_list[$key]['ico']    = $value['icon'];
             $tab_list[$key]['url']     = url('index', ['module_group' => $value['name']]);
             $tab_list[$key]['default'] = ($module_group == $value['name']) ? true : false;
         }

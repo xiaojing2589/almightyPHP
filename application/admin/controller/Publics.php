@@ -10,8 +10,6 @@ use think\facade\Session;
 
 /**
  * 公共控制器
- * Class Publics
- * @package app\admin\controller
  */
 class Publics extends Common
 {
@@ -104,6 +102,7 @@ class Publics extends Common
 
     /**
      *  验证码
+     * @author 仇仇天
      * @return mixed
      */
     public function signinVerify()

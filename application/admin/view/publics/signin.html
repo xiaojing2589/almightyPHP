@@ -16,7 +16,9 @@
     {// 动态加载核心css文件 }
     {:load_assets('core_css')}
 
-    <link href="__ADMIN_CSS__/pages/login-3.css" rel="stylesheet" type="text/css" />
+    <!--begin::Page Custom Styles(used by this page) -->
+    <link href="__ADMIN_CSS__/pages/login-3.min.css" rel="stylesheet" type="text/css" />
+    <!--end::Page Custom Styles -->
 
     {// 动态加载后台核心插件css }
     {:load_assets('admin_core_plugin_css')}

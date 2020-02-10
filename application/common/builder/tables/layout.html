@@ -38,7 +38,12 @@
                     <ul class="nav nav-tabs nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-brand">
                         {foreach name="group" item="group_value" key="group_key"}
                         <li class="nav-item">
-                            <a class="nav-link {notempty name="group_value.default"}active{/notempty}" href="{$group_value.url}" role="tab">{$group_value.title|htmlspecialchars}</a>
+                            <a class="nav-link {notempty name="group_value.default"}active{/notempty}" href="{$group_value.url}" role="tab">
+                            {notempty name="group_value.ico"}
+                            <i class="{$group_value.ico}"></i>
+                            {/notempty}
+                            {$group_value.title|htmlspecialchars}
+                            </a>
                         </li>
                         {/foreach}
                     </ul>

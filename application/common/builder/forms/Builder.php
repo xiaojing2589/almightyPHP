@@ -90,9 +90,6 @@ class Builder extends ZBuilder
 
         // 生成请求令牌
         $this->_vars['token_value'] = $this->request->token($this->_vars['token_name']);
-
-        // 默认加载所需jscss
-        $this->_vars['_js_files'] = ['validate_js'];
     }
 
     /**
