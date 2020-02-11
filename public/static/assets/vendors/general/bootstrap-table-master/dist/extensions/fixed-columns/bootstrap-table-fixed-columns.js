@@ -178,22 +178,40 @@
         }
       }, {
         key: 'initFixedColumnsBody',
+        // value: function initFixedColumnsBody() {
+        //   this.$container.find('.fixed-table-body-columns').remove();
+        //   this.$fixedBody = $('<div class="fixed-table-body-columns"></div>');
+        //   this.$fixedBody.append(this.$tableBody.find('>table').clone(true));
+        //   this.$tableBody.after(this.$fixedBody);
+        // }
         value: function initFixedColumnsBody() {
           this.$container.find('.fixed-table-body-columns').remove();
           this.$fixedBody = $('<div class="fixed-table-body-columns"></div>');
           this.$fixedBody.append(this.$tableBody.find('>table').clone(true));
+          this.$fixedBody.find('table').css({'width':this.$tableBody.find('>table').outerWidth()});
           this.$tableBody.after(this.$fixedBody);
         }
       }, {
         key: 'getFixedColumnsWidth',
+        // value: function getFixedColumnsWidth() {
+        //   var visibleFields = this.getVisibleFields();
+        //   var width = 0;
+        //
+        //   for (var i = 0; i < this.options.fixedNumber; i++) {
+        //     width += this.$header.find('th[data-field="' + visibleFields[i] + '"]').outerWidth(true);
+        //   }
+        //
+        //   return width + 1;
+        // }
         value: function getFixedColumnsWidth() {
           var visibleFields = this.getVisibleFields();
           var width = 0;
-
+          var vLen = visibleFields.length;	//表格列数
+          var lastCol = 0;
           for (var i = 0; i < this.options.fixedNumber; i++) {
-            width += this.$header.find('th[data-field="' + visibleFields[i] + '"]').outerWidth(true);
+            lastCol = vLen - i - 1;	//选择表格最后的列
+            width += this.$header.find("th[data-field=\"".concat(visibleFields[lastCol], "\"]")).outerWidth(true);
           }
-
           return width + 1;
         }
       }, {

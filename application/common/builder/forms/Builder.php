@@ -22,23 +22,23 @@ class Builder extends ZBuilder
      * @var array 模板变量
      */
     public $_vars = [
-        '_module'                          => '',           // 当前访问的模块
-        '_controller'                      => '',           // 当前访问的控制器
-        '_action'                          => '',           // 当前访问的方法
-        'page_title'                       => '',           // 页面标题
-        'return_url'                       => [],           // 返回地址
-        'explanation'                      => [],           // 页面提示信息
-        'group'                            => [],           // 分组
-        'type_group'                       => [],           // 分组类型
-        'list_number'                      => 1,            // 表单分列数
-        'list_numberL'                     => 1,            // 表单分列数量（bootstrap专用）
-        'form_items'                       => [],           // 表单项目
-        'form_validate'                    => [],           // 表单验证
-        'form_url'                         => '',           // 表单提交地址
-        'form_data'                        => [],           // 表单数据
-        'form_hidden_data'                 => [],           // 表单隐藏数据
-        'form_method'                      => 'POST',       // 表单请求方式
-        'form_is_ajax'                     => true,         // 是否ajax方式提交
+        '_module'                          => '',            // 当前访问的模块
+        '_controller'                      => '',            // 当前访问的控制器
+        '_action'                          => '',            // 当前访问的方法
+        'page_title'                       => '',            // 页面标题
+        'return_url'                       => [],            // 返回地址
+        'explanation'                      => [],            // 页面提示信息
+        'group'                            => [],            // 分组
+        'type_group'                       => [],            // 分组类型
+        'list_number'                      => 1,             // 表单分列数
+        'list_numberL'                     => 1,             // 表单分列数量（bootstrap专用）
+        'form_items'                       => [],            // 表单项目
+        'form_validate'                    => [],            // 表单验证
+        'form_url'                         => '',            // 表单提交地址
+        'form_data'                        => [],            // 表单数据
+        'form_hidden_data'                 => [],            // 表单隐藏数据
+        'form_method'                      => 'POST',        // 表单请求方式
+        'form_is_ajax'                     => true,          // 是否ajax方式提交
         '_js_init'                         => [],            // 初始化的js（合并输出）
         '_js_files'                        => [],            // 需要加载的js（合并输出）
         '_css_files'                       => [],            // 需要加载的css（合并输出）
@@ -50,17 +50,17 @@ class Builder extends ZBuilder
         'extra_html_code'                  => '',            // 额外自定义html代码
         'extra_html_content_code'          => '',            // 额外自定义内容html代码
         'extra_html_content_form_code'     => '',            // 额外自定义表单内容html代码
-        'extra_prepose_block_js_code'      => '',    // 额外前置自定义js代码块
-        'extra_postposition_block_js_code' => '', // 额外后置自定义js代码块
-        'btn_extra'                        => [],           // 额外按钮
+        'extra_prepose_block_js_code'      => '',            // 额外前置自定义js代码块
+        'extra_postposition_block_js_code' => '',            // 额外后置自定义js代码块
+        'btn_extra'                        => [],            // 额外按钮
         'token_name'                       => '__token__',   // 表单令牌名称
         'token_value'                      => '',            // 表单令牌值
         '_submit_button_show'              => 1,             // 是否显示提交按钮
         '_button_button_show'              => 1,             // 是否显示重置按钮
-        '_submit_button_text'              => '提交',        // 提交按钮文本
+        '_submit_button_text'              => '保存',        // 提交按钮文本
         '_button_button_text'              => '重置',        // 重置按钮文本
         'ispopup'                          => 0,             // 弹窗模式
-        'popup_form'                       => '',             // 弹窗模式form名称
+        'popup_form'                       => '',            // 弹窗模式form名称
         'popupisjump'                      => true,          // 弹窗模式成功后是否跳转
     ];
 
@@ -215,7 +215,7 @@ class Builder extends ZBuilder
      * 提交按钮文本
      * @author 仇仇天
      */
-    public function submitButtonText($text = '提交')
+    public function submitButtonText($text = '保存')
     {
         $this->_vars['_submit_button_text'] = $text;
         return $this;
@@ -993,6 +993,8 @@ class Builder extends ZBuilder
 
             $this->assign('_admin_base_layout', Env::get('app_path').'admin/view/ajaxformlayout.html');
         }
+
+//        predBUG($this->_vars['_js_files']);
 
         // 实例化视图并渲染
         return parent::fetch($this->_template, $this->_vars, $config);

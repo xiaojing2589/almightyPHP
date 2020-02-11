@@ -96,9 +96,9 @@ class Action extends Admin
         $view->setSearch([
             [
                 // 快捷搜索标题
-                'title' => '名称',
+                'title' => '标识',
                 // 快捷搜索字段
-                'field' => 'a.title',
+                'field' => 'a.name',
                 // 快捷搜索条件
                 'condition'=>'like',
                 // 快捷搜索是否默认搜索项
@@ -106,9 +106,9 @@ class Action extends Admin
             ],
             [
                 // 快捷搜索标题
-                'title' => '标识',
+                'title' => '名称',
                 // 快捷搜索字段
-                'field' => 'a.name',
+                'field' => 'a.title',
                 // 快捷搜索条件
                 'condition'=>'like',
                 // 快捷搜索是否默认搜索项
@@ -122,13 +122,15 @@ class Action extends Admin
                 'field' => 'asdasd',
                 'title' => '全选',
                 'align' => 'center',
-                'checkbox' => true
+                'checkbox' => true,
+                'width' => 50
             ],
             [
                 'field' => 'id',
                 'title' => 'ID',
                 'align' => 'center',
-                'sortable' => true
+                'sortable' => true,
+                'width' => 50
             ],
             [
                 'field' => 'name',
@@ -150,13 +152,14 @@ class Action extends Admin
             [
                 'field' => 'btitle',
                 'title' => '所属模块',
-                'align' => 'center',
+                'align' => 'center'
             ],
             [
                 'field' => 'peration',
                 'title' => '操作',
                 'align' => 'center',
-                'type' => 'btn',
+                'type'  => 'btn',
+                'width' => 150,
                 'btn' => [
                     [
                         'field' => 'd',

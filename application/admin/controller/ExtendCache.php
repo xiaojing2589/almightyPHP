@@ -31,14 +31,13 @@ class ExtendCache extends Admin
             $data = input();
 
             // 筛选参数设置
-            $map = [];
+            $where = [];
 
             // 所属模块筛选
-            $map[] = ['module', '=', $module_group];
+            $where[] = ['module', '=', $module_group];
 
             // 快捷筛选 关键词
             if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])){
-
                 if ($data['searchCondition'] == 'like'){
                     $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
                 }else{
@@ -50,7 +49,7 @@ class ExtendCache extends Admin
             $list_rows = input('list_rows');
 
             // 数据列表
-            $data_list = ExtendCacheModel::where($map)->order('id ASC,field_name DESC')->paginate($list_rows);
+            $data_list = ExtendCacheModel::where($where)->order('id ASC,field_name DESC')->paginate($list_rows);
 
             // 设置表格数据
             $view->setRowList($data_list);
@@ -407,9 +406,6 @@ javascript;
 
         // 设置页面标题
         $form->setPageTitle('缓存管理 - 编辑');
-
-        // 设置页面需要加载的js
-        $form->setJsFiles(['validate_js']);
 
         // 设置返回地址
         $form->setReturnUrl(url('extend_cache/index', ['module_group' => $info['module']]));

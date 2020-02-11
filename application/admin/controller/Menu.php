@@ -160,7 +160,7 @@ class Menu extends Admin
             [
                 'field' => 'peration',
                 'title' => '操作',
-                'width' => 250,
+                'width' => 210,
                 'align' => 'center',
                 'type'  => 'btn',
                 'btn'   => [

@@ -119,13 +119,15 @@ class Config extends Admin
                 'field'    => 'asdasd',
                 'title'    => '全选',
                 'align'    => 'center',
-                'checkbox' => true
+                'checkbox' => true,
+                'width'    => 50
             ],
             [
                 'field'    => 'id',
                 'title'    => 'ID',
                 'align'    => 'center',
-                'sortable' => true
+                'sortable' => true,
+                'width'    => 50
             ],
             [
                 'field'    => 'name',
@@ -155,6 +157,7 @@ class Config extends Admin
                 'title'    => '状态',
                 'align'    => 'center',
                 'sortable' => true,
+                'width'    => 90,
                 'editable' => [
                     'type'   => 'switch',
                     'config' => ['on_text' => '启用', 'on_value' => 1, 'off_text' => '禁用', 'off_value' => 0]
@@ -165,6 +168,7 @@ class Config extends Admin
                 'title'    => '是否隐藏',
                 'align'    => 'center',
                 'sortable' => true,
+                'width'    => 90,
                 'editable' => [
                     'type'   => 'switch',
                     'config' => ['on_text' => '是', 'on_value' => 1, 'off_text' => '否', 'off_value' => 0]
@@ -175,6 +179,7 @@ class Config extends Admin
                 'title'    => '排序',
                 'align'    => 'center',
                 'sortable' => true,
+                'width'    => 60,
                 'editable' => [
                     'type' => 'number'
                 ]
@@ -184,6 +189,7 @@ class Config extends Admin
                 'title' => '操作',
                 'align' => 'center',
                 'type'  => 'btn',
+                'width' => 150,
                 'btn'   => [
                     [
                         'field'      => 'd',
@@ -269,7 +275,7 @@ class Config extends Admin
         $form->setPageTitle('配置管理 - 新增');
 
         // 设置页面需要加载的js
-        $form->setJsFiles(['validate_js', 'jsrender_js', 'colorpicker_js', 'jsoneditor_js','tags_js']);
+        $form->setJsFiles(['jsrender_js', 'colorpicker_js', 'jsoneditor_js','tags_js']);
 
         // 设置页面需要加载的css
         $form->setCaaFiles(['colorpicker_css', 'jsoneditor_css','tags_css']);

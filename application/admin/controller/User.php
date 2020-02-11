@@ -21,10 +21,10 @@ class User extends Admin
      */
     public function index()
     {
-
         // 初始化 表格
         $view = ZBuilder::make('tables');
 
+        // 加载表格数据
         if ($this->request->isAjax()) {
 
             // 筛选参数设置
@@ -190,6 +190,7 @@ javascript
         // 设置行内编辑地址
         $view->editableUrl(url('user/edit'));
 
+        // 设置页面
         return $view->fetch();
     }
 

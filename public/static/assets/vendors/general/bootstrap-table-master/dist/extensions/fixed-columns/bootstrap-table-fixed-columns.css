@@ -5,6 +5,7 @@
   box-sizing: border-box;
   overflow: hidden;
   z-index: 1;
+  right:17px;
 }
 
 .fixed-table-header-columns {
@@ -24,4 +25,19 @@
 .fixed-table-body-columns table {
   position: absolute;
   animation: none;
+}
+
+/********************bug修复**************************/
+.fixed-table-header-columns>table{
+  position: relative;
+  float: right;
+}
+
+.fixed-table-body-columns>table{
+  position: relative;
+  float: right;
+}
+
+.fht-cell{
+  /*width:120px!important;*/
 }
