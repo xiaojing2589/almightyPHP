@@ -991,10 +991,10 @@ class Builder extends ZBuilder
 
             $this->_vars['popupisjump'] = input('popupisjump');
 
-            $this->assign('_admin_base_layout', Env::get('app_path').'admin/view/ajaxformlayout.html');
-        }
+            $this->_template = config('app_path') . 'common/builder/forms/popuplayout.html';
 
-//        predBUG($this->_vars['_js_files']);
+            $this->assign('_admin_base_layout', Env::get('app_path').'admin/view/popuplayout.html');
+        }
 
         // 实例化视图并渲染
         return parent::fetch($this->_template, $this->_vars, $config);

@@ -1690,7 +1690,118 @@ var Base = function () {
         swal.fire(defoultOptions);
     }
 
+    /**
+     * 模态框
+     * @author 仇仇天
+     * @param options 参数
+     */
+    var funModal = function(options){
+        var defoultOptions = {
+            // id
+            id:'modal_'+new Date().getTime()+'_modal',
+            // 标题
+            title: '',
+            // 宽度
+            width:'100%',
+            //高度
+            height:'100%',
+            // 是否显示
+            isShow:true,
+            // 主体内容
+            content: '暂无内容！',
+            // 确定按钮
+            determineButton:{
+                // 文本
+                text:'确定',
+                // 图标
+                icons:null,
+                // 是否显示
+                isShow:true
+            },
+            // 关闭按钮
+            closeButton:{
+                // 文本
+                text:'关闭',
+                // 图标
+                icons:null,
+                // 是否显示
+                isShow:true
+            },
+            // 是否通过ajax加载内容
+            isAjax:false,
+            // ajax加载
+             ajax:{
+                // 请求方式
+                 type: 'POST',
+                 // 请求地址
+                 url: '',
+                 // 请求参数
+                 data:{},
 
+            }
+        }
+
+        // 覆盖默认参数
+        $.extend(defoultOptions, options);
+
+        if(defoultOptions.isAjax){
+            funLoad();
+            $.ajax({
+                type: defoultOptions.ajax.type,
+                url:  defoultOptions.ajax.url,
+                data: defoultOptions.ajax.data,
+                // 同步
+                false:false,
+                dataType: 'html',
+                success: function (res) {
+                    funUnLoad();
+                    defoultOptions.content = res;
+                },
+                fail:function(res){
+                    funUnLoad();
+                    funMessage('服务器内部错误~','error');
+                }
+            });
+        }
+
+        // 确定按钮
+        var  determineButton = defoultOptions.determineButton.isShow ? '<button type="button" class="btn btn-primary">'+defoultOptions.determineButton.text+'</button>' : '';
+
+        // 关闭按钮
+        var  closeButton = defoultOptions.closeButton.isShow ?  '<button type="button" class="btn btn-secondary" data-dismiss="modal">'+defoultOptions.closeButton.text+'</button>' : '';
+
+        // html 内容
+        var html = '<div class="modal fade" id="'+defoultOptions.id+'">'+
+                        '<div class="modal-dialog modal-lg modal-dialog-centered" role="document">'+
+                            '<div class="modal-content">'+
+                                '<div class="modal-header">'+
+                                    '<h4 class="modal-title">模态框头部</h4>'+
+                                    '<button type="button" class="close" data-dismiss="modal"></button>'+
+                                '</div>'+
+                                '<div class="modal-body">'+defoultOptions.content+'</div>'+
+                                '<div class="modal-footer">'+
+                                    determineButton+
+                                    closeButton+
+                                '</div>'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>';
+
+       // 渲染页面
+        $('.modalnode').after(html);
+
+        // 主体对象
+        var boy = $('#'+defoultOptions.id);
+
+        boy.modal({
+            // 包含模态背景元素。或者，为点击时不关闭模式的背景指定静态。
+            backdrop:true,
+            // 是否显示
+            show:defoultOptions.isShow
+        });
+
+        return  boy;
+    }
 
 
     return {
@@ -1787,7 +1898,12 @@ var Base = function () {
         // 信息提示
         funMessage:function(title,type,msg,options){
             funMessage(title,type,msg,options);
-        }
+        },
+
+        // 模态窗
+        funModal:function(options){
+            funModal(options);
+        },
     };
 
 }();
