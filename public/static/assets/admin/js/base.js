@@ -360,6 +360,7 @@ var Base = function () {
      */
     var helperSelect = function(){
         $('.bs-select').each(function () {
+            console.log(123);
             var _this = $(this);
 
             // 选中方法
@@ -1765,20 +1766,22 @@ var Base = function () {
         }
 
         // 确定按钮
-        var  determineButton = defoultOptions.determineButton.isShow ? '<button type="button" class="btn btn-primary">'+defoultOptions.determineButton.text+'</button>' : '';
+        var  determineButton = defoultOptions.determineButton.isShow ? '<button type="button" class="btn btn-primary btn-save">'+defoultOptions.determineButton.text+'</button>' : '';
 
         // 关闭按钮
         var  closeButton = defoultOptions.closeButton.isShow ?  '<button type="button" class="btn btn-secondary" data-dismiss="modal">'+defoultOptions.closeButton.text+'</button>' : '';
 
+        var height = 700;
+
         // html 内容
         var html = '<div class="modal fade" id="'+defoultOptions.id+'">'+
-                        '<div class="modal-dialog modal-lg modal-dialog-centered" role="document">'+
+                        '<div class="modal-dialog" role="document" style="max-width:90%">'+
                             '<div class="modal-content">'+
                                 '<div class="modal-header">'+
                                     '<h4 class="modal-title">模态框头部</h4>'+
                                     '<button type="button" class="close" data-dismiss="modal"></button>'+
                                 '</div>'+
-                                '<div class="modal-body">'+defoultOptions.content+'</div>'+
+                                '<div class="modal-body"><div class="kt-scroll" data-scroll="true" data-height="'+height+'">'+defoultOptions.content+'</div></div>'+
                                 '<div class="modal-footer">'+
                                     determineButton+
                                     closeButton+
@@ -1792,6 +1795,9 @@ var Base = function () {
 
         // 主体对象
         var boy = $('#'+defoultOptions.id);
+
+        // console.log(boy.find());
+
 
         boy.modal({
             // 包含模态背景元素。或者，为点击时不关闭模式的背景指定静态。
@@ -1902,7 +1908,7 @@ var Base = function () {
 
         // 模态窗
         funModal:function(options){
-            funModal(options);
+            return funModal(options);
         },
     };
 

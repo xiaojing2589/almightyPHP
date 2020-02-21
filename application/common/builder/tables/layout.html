@@ -735,39 +735,53 @@
 
                     // 表单成功后是否跳转
                     data.popupisjump = _this.data('popupisjump');
-
+                    Base.funLoad();
                     $.ajax({
                         type: query_type,
                         url: url,
                         data: data,
                         dataType : "html",
                         success: function(result) {
+
+                            Base.funUnLoad();
+
                             //返回的结果页面
-                            var htmlCont = result;
-                            layer.open({
-                                //弹出框类型
-                                type: 1,
-                                // 显示大小框
-                                maxmin: true,
-                                //点击遮罩关闭层
-                                shadeClose: false,
-                                area : ['80%' , '90%'],
-                                btn: ['确定', '取消'],
-                                yes: function(index, layero){
+                            var modalObj = Base.funModal({content:result});
 
-                                    // 提交
-                                    $('.'+data.popup_form).submit();
+                            // 设置标题
+                            if(modalObj.find('.popup_page_title').val()){
+                                modalObj.find('.modal-title').html(modalObj.find('.popup_page_title').val());
+                            }
 
-                                    //如果设定了yes回调，需进行手工关闭
-                                    layer.close(index);
+                            // 刷新
+                            KTChat.setup(modalObj[0]);
 
-                                    // 刷新表格
-                                    refreshMethod({pageNumber:null});
-                                },
-                                //将结果页面放入layer弹出层中
-                                content: htmlCont,
-                                 success: function(layero, index){
-                                }
+                            Base.init();
+
+                            // 提交事件
+                            modalObj.find('.btn-save').on('click',function(){
+
+                                // 提交
+                                modalObj.find('.form-save-zbuilder').submit();
+
+
+                                setTimeout(function() {
+                                    // 检测是否提交成功
+                                    if(modalObj.find('.popup_save_status').val()){
+
+                                        // 刷新表格
+                                        refreshMethod({pageNumber:null});
+
+                                        // 隐藏弹窗
+                                        modalObj.modal('hide');
+
+                                        setTimeout(function() {
+                                            // 删除弹窗元素
+                                            modalObj.remove();
+                                        }, 1000);
+                                    }
+                                }, 1000);
+
                             });
                         }
                     });
@@ -1198,44 +1212,55 @@
 
                     // 表单成功后是否跳转
                     data.popupisjump = _this.data('popupisjump');
-
+                    Base.funLoad();
                     $.ajax({
                         type: query_type,
                         url: url,
                         data: data,
                         dataType : "html",
                         success: function(result) {
+
+                            Base.funUnLoad();
+
                             //返回的结果页面
-                            var htmlCont = result;
-                            layer.open({
-                                //弹出框类型
-                                type: 1,
-                                // 显示大小框
-                                maxmin: true,
-                                //点击遮罩关闭层
-                                shadeClose: false,
-                                area : ['80%' , '90%'],
-                                btn: ['确定', '取消'],
-                                yes: function(index, layero){
+                            var modalObj = Base.funModal({content:result});
 
-                                    // 提交
-                                    $('.'+data.popup_form).submit();
+                            // 设置标题
+                            if(modalObj.find('.popup_page_title').val()){
+                                modalObj.find('.modal-title').html(modalObj.find('.popup_page_title').val());
+                            }
 
-                                    //如果设定了yes回调，需进行手工关闭
-                                    layer.close(index);
+                            // 刷新
+                            KTChat.setup(modalObj[0]);
 
-                                    // 刷新表格
-                                    refreshMethod({pageNumber:null});
-                                },
-                                //将结果页面放入layer弹出层中
-                                content: htmlCont,
-                                success: function(layero, index){
-                                }
+                            // 提交事件
+                            modalObj.find('.btn-save').on('click',function(){
+
+                                // 提交
+                                modalObj.find('.form-save-zbuilder').submit();
+
+
+                                setTimeout(function() {
+                                    // 检测是否提交成功
+                                    if(modalObj.find('.popup_save_status').val()){
+
+                                        // 刷新表格
+                                        refreshMethod({pageNumber:null});
+
+                                        // 隐藏弹窗
+                                        modalObj.modal('hide');
+
+                                        setTimeout(function() {
+                                            // 删除弹窗元素
+                                            modalObj.remove();
+                                        }, 1000);
+                                    }
+                                }, 1000);
                             });
                         }
                     });
-
-                }else{
+                }
+                else{
                     // 表单提交方式
                     if (query_jump == 'form') {
                         Base.funSimulationForm(url, data, query_type);

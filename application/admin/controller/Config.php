@@ -1635,11 +1635,7 @@ javascript;
                             required: '请输入默认一步地址'
                         }
                     });
-            }
-            
-            
-            
-            Base.init();
+            }        
         }
         
 javascript;

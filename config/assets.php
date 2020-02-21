@@ -35,7 +35,9 @@ return [
         // 消息通知
         '__GLODAL_PLUGINS__/toastr/build/toastr.css',
         // 弹窗提示插件
-        '__GLODAL_PLUGINS__/sweetalert2/dist/sweetalert2.css'
+        '__GLODAL_PLUGINS__/sweetalert2/dist/sweetalert2.css',
+        // 完美滚动条
+        '__GLODAL_PLUGINS__/perfect-scrollbar/css/perfect-scrollbar.css'
     ],
 
     // 后台核心css
@@ -109,8 +111,11 @@ return [
         '__GLODAL_PLUGINS__/jquery-validation/dist/localization/messages_zh.js',
         '__GLODAL_PLUGINS__/jquery-validation/dist/additional-methods.js',
         '__GLODAL_CUSTOM__/js/vendors/jquery-validation.init.js',
+        // 完美滚动条
+        '__GLODAL_PLUGINS__/perfect-scrollbar/dist/perfect-scrollbar.js',
         // XSS 过滤器
         '__GLODAL_PLUGINS__/dompurify/dist/purify.js'
+
     ],
 
     // 后台核心js

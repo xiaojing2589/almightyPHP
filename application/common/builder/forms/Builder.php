@@ -862,13 +862,9 @@ class Builder extends ZBuilder
                     break;
                 /************************************下拉框*************************************/
                 case 'select':
-                    $this->_vars['_js_files'][]  = 'select2_js';
-                    $this->_vars['_css_files'][] = 'select2_css';
                     break;
                 /************************************下拉框2*************************************/
                 case 'select2':
-                    $this->_vars['_js_files'][]  = 'select2_js';
-                    $this->_vars['_css_files'][] = 'select2_css';
                     break;
                 /************************************格式化*************************************/
                 case 'masked':

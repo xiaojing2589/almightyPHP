@@ -5,36 +5,17 @@
     {/volist}
 {/notempty}
 
-<!--begin::Global Theme Styles(used by all pages) -->
-<link href="__ADMIN_CSS__/style.bundle.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-<link href="__ADMIN_CSS__/base.css?v={:config('asset_version')}" rel="stylesheet" type="text/css" />
-<!--end::Global Theme Styles -->
-
-{// 插件css钩子}
-{:hook('page_plugin_css')}
-
 {// 页面css 代码}
 {block name="page_css"}{/block}
 
-<div class="row">
-    <div class="col-md-12">
-        {block name="content"}asdasdasdasdas{/block}
-    </div>
-</div>
-
-<!--begin::Global Theme Bundle(used by all pages) -->
-<script src="__ADMIN_JS__/scripts.bundle.js?v={:config('asset_version')}" type="text/javascript"></script>
-<!--end::Global Theme Bundle -->
+{block name="content"}{/block}
 
 {// 动态加载js}
 {notempty name="_js_files"}
     {volist name="_js_files" id="js"}
-        {:load_assets($js, 'js')}
+        {:load_assets($js,'js')}
     {/volist}
 {/notempty}
-
-{// 钩子js}
-{:hook('page_plugin_js')}
 
 {// 页面js代码}
 {block name="page_script"}{/block}

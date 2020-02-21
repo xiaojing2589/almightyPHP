@@ -16,9 +16,7 @@ if (is_file(think\facade\Env::get('app_path') . 'function.php')) {
 function load_assets($assets = '', $type = 'css')
 {
     // 获取相应的静态资源
-//    $assets_list = config('assets.' . $assets);
-
-    $assets_list = !is_array($assets) ? config('assets.' . $assets) : $assets_list;
+    $assets_list = !is_array($assets) ? config('assets.' . $assets) : $assets;
 
     // 设置资源
     $result      = '';

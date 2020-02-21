@@ -19,39 +19,9 @@
     <div class="col-lg-12">
         <div class="kt-portlet kt-portlet--last kt-portlet--head-lg kt-portlet--responsive-mobile" {empty name="ispopup"}id="kt_page_portlet"{/empty}>
 
-            {// 开始 返回 标题 保存按钮}
-            <div class="kt-portlet__head kt-portlet__head--lg use-kt-portlet__head">
+            <input type="hidden" class="popup_page_title" value="{notempty name="page_title"}{$page_title}{/notempty}">
 
-                {// 开始 返回 标题}
-                <div class="kt-portlet__head-label">
-                    {empty name="ispopup"}
-                        {notempty name="return_url"}
-                            <a href="{$return_url}" class="btn btn-sm btn-icon btn-default btn-pill btn-icon-md">
-                                <i class="fa fa-reply"></i>
-                            </a>                        &nbsp;&nbsp;&nbsp;
-                        {/notempty}
-                    {/empty}
-
-                    {notempty name="page_title"}
-                        <h3 class="kt-portlet__head-title kt-font-info">{$page_title}</h3>
-                    {/notempty}
-                </div>
-                {// 结束 返回 标题}
-
-                {// 开始 保存}
-                {empty name="ispopup"}
-                <div class="kt-portlet__head-toolbar">
-                    <button type="button" class="btn btn-brand btn-save">
-                        <i class="la la-check"></i>
-                        <span class="kt-hidden-mobile">{$_submit_button_text}</span>
-                    </button>
-                </div>
-                {/empty}
-                {// 结束 保存}
-
-            </div>
-            {// 结束 返回 标题 保存按钮}
-
+            <input type="hidden" class="popup_save_status">
 
             <form class="kt-form kt-form--label-right form-save-zbuilder {notempty name="popup_form"}{$popup_form}{/notempty}" action="{$form_url}" method="{$form_method}" enctype="multipart/form-data">
 
@@ -376,11 +346,7 @@
                         Base.funUnLoad();
                         if(res.code == 1){
                             Base.funMessage(res.msg);
-                            if(res.url){
-                                {notempty name="popupisjump"}
-                                window.location.href = res.url;
-                                {/notempty}
-                            }
+                            $('.popup_save_status').val(1);
                         }else if(res.code === 0){
                             Base.funMessage(res.msg,'error');
                         }
@@ -393,17 +359,12 @@
             }
         });
 
-        // 提交事件
-        $('.btn-save').on('click',function(){
-            // 提交
-            form.submit();
-        });
-
         {// 后置代码块}
         {$extra_postposition_block_js_code|raw}
     });
 
     {// 额外JS代码}
     {$extra_js_code|raw}
+
 </script>
 {/block}
