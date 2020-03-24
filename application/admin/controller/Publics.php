@@ -6,10 +6,12 @@ use app\common\controller\Common;
 use app\common\model\AdminUser as AdminUserModel;
 use think\facade\Hook;
 use think\captcha\Captcha;
-use think\facade\Session;
+
 
 /**
- * 公共控制器
+ * 公共功能
+ * Class Publics
+ * @package app\admin\controller
  */
 class Publics extends Common
 {
@@ -17,6 +19,7 @@ class Publics extends Common
      * 用户登录
      * @author 仇仇天
      * @return mixed
+     * @throws \Exception
      */
     public function signin()
     {
@@ -107,15 +110,15 @@ class Publics extends Common
      */
     public function signinVerify()
     {
-        // 验证码配置 255,255,255
+        // 验证码配置
         $config = [
-            'bg'=>['255','255','255'],
+            'bg'=>[243, 251, 254],
             // 验证码字体大小
             'fontSize' => 15,
             // 验证码位数
             'length'   => 4,
             // 背景
-            'useImgBg' => true,
+            'useImgBg' => false,
             // 关闭验证码杂点
             'useNoise' => false,
             // 是否画混淆曲线
@@ -123,7 +126,6 @@ class Publics extends Common
             // 设置验证码字符为纯数字
             'codeSet'  => '0123456789'
         ];
-
         $captcha = new Captcha($config);
         return $captcha->entry();
     }

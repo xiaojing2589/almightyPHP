@@ -46,6 +46,7 @@ class Menu extends Admin
         // 设置标签
         $tab_list   = [];
         $list_group = AdminModuleModel::getModuleDataInfo();
+//        $list_group = AdminMenuModel::where(['pid'=>0])->order('sort')->select();
         foreach ($list_group as $key => $value) {
             $tab_list[] = [
                 'title' => $value['title'],

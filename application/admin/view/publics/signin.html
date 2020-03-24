@@ -9,7 +9,7 @@
 
     <!--end::Base Path -->
     <meta charset="utf-8" />
-    <title> 登录 | {:config('web_site_title')}</title>
+    <title> {:lang('signin')} | {:config('web_site_title')}</title>
     <meta name="description" content="Login page example">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -55,22 +55,22 @@
                     </div>
                     <div class="kt-login__signin">
                         <div class="kt-login__head">
-                            <h3 class="kt-login__title">{:config('web_site_title')}系统</h3>
+                            <h3 class="kt-login__title">{:config('web_site_title')}{:lang('asdasdas')}</h3>
                         </div>
                         <form class="kt-form" action="{:url('signin')}" method="post">
                             <div class="input-group">
-                                <input class="form-control" type="text" placeholder="账号" name="username">
+                                <input class="form-control" type="text" placeholder="{:lang('please enter')}{:lang('username')}" name="username">
                             </div>
                             <div class="input-group">
-                                <input class="form-control" type="password" placeholder="密码" name="password">
+                                <input class="form-control" type="password" placeholder="{:lang('please enter')}{:lang('password')}" name="password">
                             </div>
                             <div class="input-group">
                                 <div style="width: 70%;">
-                                    <input class="form-control" type="text" name="captcha" placeholder="请输入验证码">
+                                    <input class="form-control" type="text" name="captcha" placeholder="{:lang('please enter')}{:lang('verification code')}">
                                 </div>
 
                                 <div style="width: 30%;margin-top: 19px;">
-                                    <img style=" cursor: pointer; border-radius:0 5px 5px 0;height: 100%;" src="{:url('publics/signinverify')}" class="pull-right" id="captcha" onclick="this.src='{:url("publics/signinverify")}?d='+Math.random();" title="点击刷新" alt="captcha" />
+                                    <img style=" cursor: pointer; border-radius:0 5px 5px 0;height: 100%;" src="{:url('publics/signinverify')}" class="pull-right" id="captcha" onclick="this.src='{:url("publics/signinverify")}?d='+Math.random();" title="{:lang('click')}{:lang('刷新')}" alt="captcha" />
                                 </div>
                             </div>
                             <div class="row kt-login__extra">
@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                             <div class="kt-login__actions">
-                                <button id="kt_login_signin_submit" class="btn btn-brand btn-elevate kt-login__btn-primary">登录</button>
+                                <button id="kt_login_signin_submit" class="btn btn-brand btn-elevate kt-login__btn-primary">{:lang('signin')}</button>
                             </div>
                         </form>
                     </div>

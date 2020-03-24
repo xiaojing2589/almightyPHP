@@ -4,9 +4,12 @@ namespace app\common\behavior;
 
 use think\facade\Env;
 use think\facade\Request;
+use think\facade\Lang;
 
 /**
  * 初始化配置信息行为,将系统配置信息合并到本地配置
+ * Class Config
+ * @package app\common\behavior
  */
 class Config
 {
@@ -97,9 +100,11 @@ class Config
         }
 
         // 所有配置数据
-        $systemConfigData =  \app\common\model\AdminConfig::getConfigDataInfo('name','value');
+        $systemConfigData =  \app\admin\model\AdminConfig::getConfigDataInfo('name','value');
 
         // 设置配置信息
         config($systemConfigData, 'app');
+
+        Lang::set('asdasdas','aaaaaa');
     }
 }

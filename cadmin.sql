@@ -1664,6 +1664,24 @@ CREATE TABLE `dp_p_sms_tpl` (
   PRIMARY KEY (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='短信消息模板';
 
+CREATE TABLE `dp_admin_lang_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(150) NOT NULL COMMENT '标识码',
+  `title` varchar(50) NOT NULL COMMENT '名称',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='语言类型表';
+
+CREATE TABLE `dp_admin_lang` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `type_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '语言类型id',
+  `code` varchar(150) NOT NULL COMMENT '标识码',
+  `title` varchar(50) NOT NULL COMMENT '名称',
+  `values` varchar(500) NOT NULL COMMENT '值',
+  `channel` char(10) NOT NULL COMMENT '渠道 admin=后台,home=前台,api=接口',
+  `module` varchar(16) NOT NULL DEFAULT '' COMMENT '所属模块，空=系统',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='语言表';
+
 
 
 

@@ -376,11 +376,14 @@
                         Base.funUnLoad();
                         if(res.code == 1){
                             Base.funMessage(res.msg);
-                            if(res.url){
-                                {notempty name="popupisjump"}
-                                window.location.href = res.url;
-                                {/notempty}
-                            }
+                            setTimeout(function(){
+                                if(res.url){
+                                    {notempty name="popupisjump"}
+                                    window.location.href = res.url;
+                                    {/notempty}
+                                }
+                            },1000);
+
                         }else if(res.code === 0){
                             Base.funMessage(res.msg,'error');
                         }

@@ -11,7 +11,7 @@ function adminIsSignin()
     if (empty($user)) {
         // 判断是否记住登录
         if (cookie('?admin_uid') && cookie('?admin_signin_token')) {
-            $UserModel = new AdminUserModel();
+            $UserModel = new app\common\model\AdminUser();
             $user      = $UserModel::get(cookie('admin_uid'));
             if ($user) {
                 $signin_token = data_auth_sign($user['username'] . $user['id'] . $user['last_login_time']);

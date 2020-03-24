@@ -9,6 +9,8 @@ use app\common\model\AdminModule as ModuleModel;
 
 /**
  * 行为管理控制器
+ * Class Action
+ * @package app\admin\controller
  */
 class Action extends Admin
 {

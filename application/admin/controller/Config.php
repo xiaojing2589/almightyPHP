@@ -250,7 +250,7 @@ class Config extends Admin
             $save_data['type']    = $data['type'];
             $save_data['title']   = $data['title'];
             $save_data['name']    = $data['name'];
-            $save_data['tips']    = $data['tips'];
+            $save_data['tips']    = empty($data['tips']) ? "代码调用方式：<code>config('".$data['name']."')</code>" : $data['tips']."，代码调用方式：<code>config('".$data['name']."')</code>";
             $save_data['value']   = $data['value'];
             $save_data['options'] = $options;
 

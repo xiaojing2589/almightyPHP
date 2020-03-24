@@ -185,6 +185,8 @@ var Base = function () {
 
                 $(".page-sidebar-menu").html(menu);
 
+                $(".kt-menu__item--here").find('kt-menu__item--active');
+
                 return false;
 
             } else {
@@ -301,7 +303,9 @@ var Base = function () {
                 format:$format,
                 todayHighlight: true,
                 templates: arrows,
-                orientation:'bottom'
+                orientation:'bottom',
+                // 显示清除按钮
+                clearBtn:true
             });
         });
     };
