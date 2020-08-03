@@ -10,7 +10,6 @@ class Storage
      * 配置参数
      * @var array
      */
-
     protected $config = [];
 
     protected $ossClient; // oss对象
@@ -185,11 +184,14 @@ class Storage
      */
     public function getUrl($file, $param = [])
     {
-        $domain = Request::domain(); // 协议加域名
+        // 协议加域名
+        $domain = Request::domain();
 
-        $file_info = pathinfo($file); // 文件信息
+        // 文件信息
+        $file_info = pathinfo($file);
 
-        $file_exist = true; // 文件是否存在
+        // 文件是否存在
+        $file_exist = true;
 
         // 缩略图
         if (!empty($param['thumbs'])) {

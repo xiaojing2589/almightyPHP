@@ -1683,6 +1683,489 @@ CREATE TABLE `dp_admin_lang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='语言表';
 
 
+CREATE TABLE `dp_store_grade` (
+  `sg_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引ID',
+  `sg_name` char(50) DEFAULT NULL COMMENT '等级名称',
+  `sg_goods_limit` mediumint(10) unsigned NOT NULL DEFAULT '0' COMMENT '允许发布的商品数量',
+  `sg_album_limit` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '允许上传图片数量',
+  `sg_space_limit` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上传空间大小，单位MB',
+  `sg_template_number` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '选择店铺模板套数',
+  `sg_template` varchar(255) DEFAULT NULL COMMENT '模板内容',
+  `sg_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '开店费用(元/年)',
+  `sg_description` text COMMENT '申请说明',
+  `sg_function` varchar(255) DEFAULT NULL COMMENT '附加功能',
+  `sg_sort` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '级别，数目越大级别越高',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`sg_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='店铺等级表';
+
+
+CREATE TABLE `dp_b2b2c_p_bundling` (
+  `bl_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '组合ID',
+  `bl_name` varchar(50) NOT NULL COMMENT '组合名称',
+  `store_id` int(11) NOT NULL COMMENT '店铺名称',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `bl_discount_price` decimal(10,2) NOT NULL COMMENT '组合价格',
+  `bl_freight_choose` tinyint(1) NOT NULL COMMENT '运费承担方式',
+  `bl_freight` decimal(10,2) DEFAULT '0.00' COMMENT '运费',
+  `bl_state` tinyint(1) NOT NULL DEFAULT '1' COMMENT '组合状态 0-关闭/1-开启',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`bl_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='组合销售活动表';
+
+CREATE TABLE `dp_b2b2c_p_bundling_goods` (
+  `bl_goods_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '组合商品id',
+  `bl_id` int(11) NOT NULL COMMENT '组合id',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
+  `goods_name` varchar(50) NOT NULL COMMENT '商品名称',
+  `goods_image` varchar(100) NOT NULL COMMENT '商品图片',
+  `bl_goods_price` decimal(10,2) NOT NULL COMMENT '商品价格',
+  `bl_appoint` tinyint(3) unsigned NOT NULL COMMENT '指定商品 1是，0否',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`bl_goods_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='组合销售活动商品表';
+
+CREATE TABLE `dp_b2b2c_p_bundling_quota` (
+  `bl_quota_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '套餐ID',
+  `store_id` int(11) NOT NULL COMMENT '店铺id',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `member_id` int(11) NOT NULL COMMENT '会员id',
+  `member_name` varchar(50) NOT NULL COMMENT '会员名称',
+  `bl_quota_month` tinyint(3) unsigned NOT NULL COMMENT '购买数量（单位月）',
+  `bl_quota_starttime` varchar(10) NOT NULL COMMENT '套餐开始时间',
+  `bl_quota_endtime` varchar(10) NOT NULL COMMENT '套餐结束时间',
+  `bl_state` tinyint(1) unsigned NOT NULL COMMENT '套餐状态：0关闭，1开启。默认为 1',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`bl_quota_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='组合销售套餐表';
+
+
+CREATE TABLE `dp_b2b2c_p_booth_goods` (
+  `booth_goods_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '套餐商品id',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺id',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
+  `gc_id` int(10) unsigned NOT NULL COMMENT '商品分类id',
+  `booth_state` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '套餐状态 1开启 0关闭 默认1',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`booth_goods_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='展位商品表';
+
+CREATE TABLE `dp_b2b2c_p_booth_quota` (
+  `booth_quota_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '套餐id',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺id',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `booth_quota_starttime` int(10) unsigned NOT NULL COMMENT '开始时间',
+  `booth_quota_endtime` int(10) unsigned NOT NULL COMMENT '结束时间',
+  `booth_state` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '套餐状态 1开启 0关闭 默认1',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`booth_quota_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='展位套餐表';
+
+
+CREATE TABLE `dp_b2b2c_p_xianshi` (
+  `xianshi_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '限时编号',
+  `xianshi_name` varchar(50) NOT NULL COMMENT '活动名称',
+  `xianshi_title` varchar(10) DEFAULT NULL COMMENT '活动标题',
+  `xianshi_explain` varchar(50) DEFAULT NULL COMMENT '活动说明',
+  `quota_id` int(10) unsigned NOT NULL COMMENT '套餐编号',
+  `start_time` int(10) unsigned NOT NULL COMMENT '活动开始时间',
+  `end_time` int(10) unsigned NOT NULL COMMENT '活动结束时间',
+  `member_id` int(10) unsigned NOT NULL COMMENT '用户编号',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺编号',
+  `member_name` varchar(50) NOT NULL COMMENT '用户名',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `lower_limit` int(10) unsigned NOT NULL DEFAULT '1' COMMENT '购买下限，1为不限制',
+  `state` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '状态，0-取消 1-正常',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`xianshi_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='限时折扣活动表';
+
+CREATE TABLE `dp_b2b2c_p_xianshi_goods` (
+  `xianshi_goods_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '限时折扣商品编号',
+  `xianshi_id` int(10) unsigned NOT NULL COMMENT '限时活动编号',
+  `xianshi_name` varchar(50) NOT NULL COMMENT '活动名称',
+  `xianshi_title` varchar(10) DEFAULT NULL COMMENT '活动标题',
+  `xianshi_explain` varchar(50) DEFAULT NULL COMMENT '活动说明',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品编号',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺编号',
+  `goods_name` varchar(100) NOT NULL COMMENT '商品名称',
+  `goods_price` decimal(10,2) NOT NULL COMMENT '店铺价格',
+  `xianshi_price` decimal(10,2) NOT NULL COMMENT '限时折扣价格',
+  `goods_image` varchar(100) NOT NULL COMMENT '商品图片',
+  `start_time` int(10) unsigned NOT NULL COMMENT '开始时间',
+  `end_time` int(10) unsigned NOT NULL COMMENT '结束时间',
+  `lower_limit` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '购买下限，0为不限制',
+  `state` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '状态，0-取消 1-正常',
+  `xianshi_recommend` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '推荐标志 0-未推荐 1-已推荐',
+  `gc_id_1` mediumint(9) DEFAULT '0' COMMENT '商品分类一级ID',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`xianshi_goods_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='限时折扣商品表';
+
+CREATE TABLE `dp_b2b2c_p_xianshi_quota` (
+  `quota_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '限时折扣套餐编号',
+  `member_id` int(10) unsigned NOT NULL COMMENT '用户编号',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺编号',
+  `member_name` varchar(50) NOT NULL COMMENT '用户名',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `start_time` int(10) unsigned NOT NULL COMMENT '套餐开始时间',
+  `end_time` int(10) unsigned NOT NULL COMMENT '套餐结束时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`quota_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='限时折扣套餐表';
+
+
+CREATE TABLE `dp_b2b2c_groupbuy` (
+  `groupbuy_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '抢购ID',
+  `groupbuy_name` varchar(255) NOT NULL COMMENT '活动名称',
+  `start_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '开始时间',
+  `end_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '结束时间',
+  `goods_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商品ID',
+  `goods_commonid` int(10) unsigned NOT NULL COMMENT '商品公共表ID',
+  `goods_name` varchar(200) NOT NULL COMMENT '商品名称',
+  `store_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '店铺ID',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `goods_price` decimal(10,2) NOT NULL COMMENT '商品原价',
+  `groupbuy_price` decimal(10,2) NOT NULL COMMENT '抢购价格',
+  `groupbuy_rebate` decimal(10,2) NOT NULL COMMENT '折扣',
+  `virtual_quantity` int(10) unsigned NOT NULL COMMENT '虚拟购买数量',
+  `upper_limit` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '购买上限',
+  `buyer_count` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '已购买人数',
+  `buy_quantity` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '购买数量',
+  `groupbuy_intro` text COMMENT '本团介绍',
+  `state` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '抢购状态 10-审核中 20-正常 30-审核失败 31-管理员关闭 32-已结束',
+  `recommended` tinyint(1) unsigned NOT NULL COMMENT '是否推荐 0.未推荐 1.已推荐',
+  `views` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '查看次数',
+  `class_id` int(10) unsigned NOT NULL COMMENT '抢购类别编号',
+  `s_class_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '抢购2级分类id',
+  `groupbuy_image` varchar(100) NOT NULL COMMENT '抢购图片',
+  `groupbuy_image1` varchar(100) DEFAULT NULL COMMENT '抢购图片1',
+  `remark` varchar(255) DEFAULT '' COMMENT '备注',
+  `is_vr` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否虚拟抢购 1是0否',
+  `vr_city_id` int(11) DEFAULT NULL COMMENT '虚拟抢购城市id',
+  `vr_area_id` int(11) DEFAULT NULL COMMENT '虚拟抢购区域id',
+  `vr_mall_id` int(11) DEFAULT NULL COMMENT '虚拟抢购商区id',
+  `vr_class_id` int(11) DEFAULT NULL COMMENT '虚拟抢购大分类id',
+  `vr_s_class_id` int(11) DEFAULT NULL COMMENT '虚拟抢购小分类id',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`groupbuy_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抢购商品表';
+
+
+CREATE TABLE `dp_b2b2c_groupbuy_class` (
+  `class_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '类别编号',
+  `class_name` varchar(20) NOT NULL COMMENT '类别名称',
+  `class_parent_id` int(10) unsigned NOT NULL COMMENT '父类别编号',
+  `sort` tinyint(1) unsigned NOT NULL COMMENT '排序',
+  `deep` tinyint(1) unsigned DEFAULT '0' COMMENT '深度',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`class_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抢购类别表';
+
+
+CREATE TABLE `dp_b2b2c_groupbuy_price_range` (
+  `range_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '价格区间编号',
+  `range_name` varchar(20) NOT NULL COMMENT '区间名称',
+  `range_start` int(10) unsigned NOT NULL COMMENT '区间下限',
+  `range_end` int(10) unsigned NOT NULL COMMENT '区间上限',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`range_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抢购价格区间表';
+
+
+CREATE TABLE `dp_b2b2c_groupbuy_quota` (
+  `quota_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '抢购套餐编号',
+  `member_id` int(10) unsigned NOT NULL COMMENT '用户编号',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺编号',
+  `member_name` varchar(50) NOT NULL COMMENT '用户名',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `start_time` int(10) unsigned NOT NULL COMMENT '套餐开始时间',
+  `end_time` int(10) unsigned NOT NULL COMMENT '套餐结束时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`quota_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抢购套餐表';
+
+
+CREATE TABLE `dp_b2b2c_vr_groupbuy_area` (
+  `area_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '区域id',
+  `area_name` varchar(100) NOT NULL COMMENT '域区名称',
+  `parent_area_id` int(11) NOT NULL COMMENT '域区id',
+  `add_time` int(11) NOT NULL COMMENT '添加时间',
+  `first_letter` char(1) NOT NULL COMMENT '首字母',
+  `area_number` varchar(10) DEFAULT NULL COMMENT '区号',
+  `post` varchar(10) DEFAULT NULL COMMENT '邮编',
+  `hot_city` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0.否 1.是',
+  `area_num` int(11) NOT NULL DEFAULT '0' COMMENT '数量',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`area_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='虚拟抢购区域表';
+
+
+CREATE TABLE `dp_b2b2c_vr_groupbuy_class` (
+  `class_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '分类id',
+  `class_name` varchar(100) NOT NULL COMMENT '分类名称',
+  `parent_class_id` int(11) NOT NULL COMMENT '父类class_id',
+  `class_sort` tinyint(3) unsigned DEFAULT NULL COMMENT '分类排序',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`class_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='虚拟抢购分类表';
+
+
+CREATE TABLE `dp_b2b2c_goods_browse` (
+  `goods_id` int(11) NOT NULL COMMENT '商品ID',
+  `member_id` int(11) NOT NULL COMMENT '会员ID',
+  `browsetime` int(11) NOT NULL COMMENT '浏览时间',
+  `gc_id` int(11) NOT NULL COMMENT '商品分类',
+  `gc_id_1` int(11) NOT NULL COMMENT '商品一级分类',
+  `gc_id_2` int(11) NOT NULL COMMENT '商品二级分类',
+  `gc_id_3` int(11) NOT NULL COMMENT '商品三级分类'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品浏览历史表';
+
+
+
+CREATE TABLE `dp_b2b2c_favorites` (
+  `log_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '记录ID',
+  `member_id` int(10) unsigned NOT NULL COMMENT '会员ID',
+  `member_name` varchar(50) NOT NULL COMMENT '会员名',
+  `fav_id` int(10) unsigned NOT NULL COMMENT '商品或店铺ID',
+  `fav_type` char(5) NOT NULL DEFAULT 'goods' COMMENT '类型:goods为商品,store为店铺,默认为商品',
+  `fav_time` int(10) unsigned NOT NULL COMMENT '收藏时间',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺ID',
+  `store_name` varchar(20) NOT NULL COMMENT '店铺名称',
+  `sc_id` int(10) unsigned DEFAULT '0' COMMENT '店铺分类ID',
+  `goods_name` varchar(50) DEFAULT NULL COMMENT '商品名称',
+  `goods_image` varchar(100) DEFAULT NULL COMMENT '商品图片',
+  `gc_id` int(10) unsigned DEFAULT '0' COMMENT '商品分类ID',
+  `log_price` decimal(10,2) DEFAULT '0.00' COMMENT '商品收藏时价格',
+  `log_msg` varchar(20) DEFAULT NULL COMMENT '收藏备注',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`log_id`),
+  KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='收藏表';
+
+CREATE TABLE `dp_b2b2c_goods_gift` (
+  `gift_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '赠品id ',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '主商品id',
+  `goods_commonid` int(10) unsigned NOT NULL COMMENT '主商品公共id',
+  `gift_goodsid` int(10) unsigned NOT NULL COMMENT '赠品商品id ',
+  `gift_goodsname` varchar(50) NOT NULL COMMENT '主商品名称',
+  `gift_goodsimage` varchar(100) NOT NULL COMMENT '主商品图片',
+  `gift_amount` tinyint(3) unsigned NOT NULL COMMENT '赠品数量',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`gift_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品赠品表';
+
+CREATE TABLE `dp_b2b2c_p_combo_quota` (
+  `cq_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '推荐组合套餐id',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺id',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `cq_starttime` int(10) unsigned NOT NULL COMMENT '套餐开始时间',
+  `cq_endtime` int(10) unsigned NOT NULL COMMENT '套餐结束时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`cq_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='推荐组合套餐表';
+
+CREATE TABLE `dp_b2b2c_p_combo_goods` (
+  `cg_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '推荐组合id ',
+  `cg_class` varchar(10) NOT NULL COMMENT '推荐组合名称',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '主商品id',
+  `goods_commonid` int(10) unsigned NOT NULL COMMENT '主商品公共id',
+  `store_id` int(10) unsigned NOT NULL COMMENT '所属店铺id',
+  `combo_goodsid` int(10) unsigned NOT NULL COMMENT '推荐组合商品id',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`cg_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品推荐组合表';
+
+CREATE TABLE `dp_b2b2c_p_goods_fcode` (
+  `fc_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'F码id',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品sku',
+  `fc_code` varchar(20) NOT NULL COMMENT 'F码',
+  `fc_state` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态 0未使用，1已使用',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`fc_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品F码';
+
+CREATE TABLE `dp_b2b2c_p_fcode_quota` (
+  `fcq_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'F码套餐id',
+  `store_id` int(11) NOT NULL COMMENT '店铺id',
+  `store_name` varchar(50) NOT NULL COMMENT '店铺名称',
+  `fcq_starttime` int(11) NOT NULL COMMENT '套餐开始时间',
+  `fcq_endtime` int(11) NOT NULL COMMENT '套餐结束时间',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`fcq_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='F码商品套餐表';
+
+CREATE TABLE `dp_b2b2c_chain` (
+  `chain_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '门店id',
+  `store_id` int(10) unsigned NOT NULL COMMENT '所属店铺id',
+  `chain_user` varchar(50) NOT NULL COMMENT '登录名',
+  `chain_pwd` char(32) NOT NULL COMMENT '登录密码',
+  `chain_name` varchar(50) NOT NULL COMMENT '门店名称',
+  `chain_img` varchar(50) NOT NULL COMMENT '门店图片',
+  `area_id_1` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '一级地区id',
+  `area_id_2` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '二级地区id',
+  `area_id_3` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '三级地区id',
+  `area_id_4` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '四级地区id',
+  `area_id` int(10) unsigned NOT NULL COMMENT '地区id',
+  `area_info` varchar(50) NOT NULL COMMENT '地区详情',
+  `chain_address` varchar(50) NOT NULL COMMENT '详细地址',
+  `chain_phone` varchar(100) NOT NULL COMMENT '联系方式',
+  `chain_opening_hours` varchar(100) NOT NULL COMMENT '营业时间',
+  `chain_traffic_line` varchar(100) NOT NULL COMMENT '交通线路',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`chain_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='店铺门店表';
+
+CREATE TABLE `dp_b2b2c_chain_stock` (
+  `chain_id` int(10) unsigned NOT NULL COMMENT '门店id',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
+  `goods_commonid` int(10) unsigned NOT NULL COMMENT '商品SPU',
+  `stock` int(10) NOT NULL COMMENT '库存',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`chain_id`,`goods_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='门店商品库存表';
+
+CREATE TABLE `dp_b2b2c_goods_images` (
+  `goods_image_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '商品图片id',
+  `goods_commonid` int(10) unsigned NOT NULL COMMENT '商品公共内容id',
+  `store_id` int(10) unsigned NOT NULL COMMENT '店铺id',
+  `color_id` int(10) unsigned NOT NULL COMMENT '颜色规格值id',
+  `goods_image` varchar(1000) NOT NULL COMMENT '商品图片',
+  `goods_image_sort` tinyint(3) unsigned NOT NULL COMMENT '排序',
+  `is_default` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '默认主题，1是，0否',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`goods_image_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品图片';
+
+
+CREATE TABLE `dp_b2b2c_evaluate_store` (
+  `seval_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '评价ID',
+  `seval_orderid` int(11) unsigned NOT NULL COMMENT '订单ID',
+  `seval_orderno` varchar(100) NOT NULL COMMENT '订单编号',
+  `seval_storeid` int(11) unsigned NOT NULL COMMENT '店铺ID',
+  `seval_storename` varchar(100) NOT NULL COMMENT '店铺名称',
+  `seval_memberid` int(11) unsigned NOT NULL COMMENT '买家ID',
+  `seval_membername` varchar(100) NOT NULL COMMENT '买家名称',
+  `seval_desccredit` tinyint(1) unsigned NOT NULL DEFAULT '5' COMMENT '描述相符评分',
+  `seval_servicecredit` tinyint(1) unsigned NOT NULL DEFAULT '5' COMMENT '服务态度评分',
+  `seval_deliverycredit` tinyint(1) unsigned NOT NULL DEFAULT '5' COMMENT '发货速度评分',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`seval_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='店铺评分表';
+
+CREATE TABLE `dp_b2b2c_store_joinin` (
+  `member_id` int(10) unsigned NOT NULL COMMENT '用户编号',
+  `member_name` varchar(50) DEFAULT NULL COMMENT '店主用户名',
+  `company_name` varchar(50) DEFAULT NULL COMMENT '公司名称',
+  `company_province_id` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '所在地省ID',
+  `company_address` varchar(50) DEFAULT NULL COMMENT '公司地址',
+  `company_address_detail` varchar(50) DEFAULT NULL COMMENT '公司详细地址',
+  `company_phone` varchar(20) DEFAULT NULL COMMENT '公司电话',
+  `company_employee_count` int(10) unsigned DEFAULT NULL COMMENT '员工总数',
+  `company_registered_capital` int(10) unsigned DEFAULT NULL COMMENT '注册资金',
+  `contacts_name` varchar(50) DEFAULT NULL COMMENT '联系人姓名',
+  `contacts_phone` varchar(20) DEFAULT NULL COMMENT '联系人电话',
+  `contacts_email` varchar(50) DEFAULT NULL COMMENT '联系人邮箱',
+  `business_licence_number` varchar(50) DEFAULT NULL COMMENT '营业执照号',
+  `business_licence_address` varchar(50) DEFAULT NULL COMMENT '营业执所在地',
+  `business_licence_start` date DEFAULT NULL COMMENT '营业执照有效期开始',
+  `business_licence_end` date DEFAULT NULL COMMENT '营业执照有效期结束',
+  `business_sphere` varchar(1000) DEFAULT NULL COMMENT '法定经营范围',
+  `business_licence_number_elc` varchar(50) DEFAULT NULL COMMENT '营业执照电子版',
+  `organization_code` varchar(50) DEFAULT NULL COMMENT '组织机构代码',
+  `organization_code_electronic` varchar(50) DEFAULT NULL COMMENT '组织机构代码电子版',
+  `general_taxpayer` varchar(50) DEFAULT NULL COMMENT '一般纳税人证明',
+  `bank_account_name` varchar(50) DEFAULT NULL COMMENT '银行开户名',
+  `bank_account_number` varchar(50) DEFAULT NULL COMMENT '公司银行账号',
+  `bank_name` varchar(50) DEFAULT NULL COMMENT '开户银行支行名称',
+  `bank_code` varchar(50) DEFAULT NULL COMMENT '支行联行号',
+  `bank_address` varchar(50) DEFAULT NULL COMMENT '开户银行所在地',
+  `bank_licence_electronic` varchar(50) DEFAULT NULL COMMENT '开户银行许可证电子版',
+  `is_settlement_account` tinyint(1) DEFAULT NULL COMMENT '开户行账号是否为结算账号 1-开户行就是结算账号 2-独立的计算账号',
+  `settlement_bank_account_name` varchar(50) DEFAULT NULL COMMENT '结算银行开户名',
+  `settlement_bank_account_number` varchar(50) DEFAULT NULL COMMENT '结算公司银行账号',
+  `settlement_bank_name` varchar(50) DEFAULT NULL COMMENT '结算开户银行支行名称',
+  `settlement_bank_code` varchar(50) DEFAULT NULL COMMENT '结算支行联行号',
+  `settlement_bank_address` varchar(50) DEFAULT NULL COMMENT '结算开户银行所在地',
+  `tax_registration_certificate` varchar(50) DEFAULT NULL COMMENT '税务登记证号',
+  `taxpayer_id` varchar(50) DEFAULT NULL COMMENT '纳税人识别号',
+  `tax_registration_certif_elc` varchar(50) DEFAULT NULL COMMENT '税务登记证号电子版',
+  `seller_name` varchar(50) DEFAULT NULL COMMENT '卖家账号',
+  `store_name` varchar(50) DEFAULT NULL COMMENT '店铺名称',
+  `store_class_ids` varchar(1000) DEFAULT NULL COMMENT '店铺分类编号集合',
+  `store_class_names` varchar(1000) DEFAULT NULL COMMENT '店铺分类名称集合',
+  `joinin_state` varchar(50) DEFAULT NULL COMMENT '申请状态 10-已提交申请 11-缴费完成  20-审核成功 30-审核失败 31-缴费审核失败 40-审核通过开店',
+  `joinin_message` varchar(200) DEFAULT NULL COMMENT '管理员审核信息',
+  `joinin_year` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '开店时长(年)',
+  `sg_id` int(10) unsigned DEFAULT NULL COMMENT '店铺等级编号',
+  `sg_name` varchar(50) DEFAULT NULL COMMENT '店铺等级名称',
+  `sg_info` varchar(200) DEFAULT NULL COMMENT '店铺等级下的收费等信息',
+  `sc_id` int(10) unsigned DEFAULT NULL COMMENT '店铺分类编号',
+  `sc_name` varchar(50) DEFAULT NULL COMMENT '店铺分类名称',
+  `sc_bail` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '店铺分类保证金',
+  `store_class_commis_rates` varchar(200) DEFAULT NULL COMMENT '分类佣金比例',
+  `paying_money_certificate` varchar(50) DEFAULT NULL COMMENT '付款凭证',
+  `paying_money_certif_exp` varchar(200) DEFAULT NULL COMMENT '付款凭证说明',
+  `paying_amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '付款金额',
+  `is_person` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否为个人 1是，0否',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='店铺入住表';
+
+CREATE TABLE `dp_area` (
+  `area_id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引ID',
+  `area_parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '地区父ID',
+  `area_name` varchar(50) NOT NULL COMMENT '地区名称',
+  `area_region` varchar(3) DEFAULT NULL COMMENT '大区名称',
+  `area_sort` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `area_deep` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '地区深度，从1开始',
+  `create_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`area_id`),
+  KEY `area_parent_id` (`area_parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='地区表';
+
+CREATE TABLE `dp_store_bind_class` (
+  `bid` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `store_id` int(11) unsigned DEFAULT '0' COMMENT '店铺ID',
+  `commis_rate` tinyint(4) unsigned DEFAULT '0' COMMENT '佣金比例',
+  `class_1` mediumint(9) unsigned DEFAULT '0' COMMENT '一级分类',
+  `class_2` mediumint(9) unsigned DEFAULT '0' COMMENT '二级分类',
+  `class_3` mediumint(9) unsigned DEFAULT '0' COMMENT '三级分类',
+  `state` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态0审核中1已审核 2平台自营店铺',
+  PRIMARY KEY (`bid`),
+  KEY `store_id` (`store_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='店铺可发布商品类目表';
+
+
+
+
 
 
 

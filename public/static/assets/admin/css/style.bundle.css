@@ -9740,7 +9740,8 @@ code {
   text-align: center; }
 
 .table thead th, .table thead td {
-  font-weight: 500;
+  /*font-weight: 500;*/
+  font-weight: bolder;
   border-bottom-width: 1px;
   padding-top: 1rem;
   padding-bottom: 1rem; }
@@ -10095,7 +10096,10 @@ code {
         display: flex;
         align-items: center; }
   .nav-tabs.nav-tabs-line.nav-tabs-bold .nav-item .nav-link {
-    font-weight: 500; }
+    /*font-weight: 500;*/
+    font-weight: bold;
+
+  }
   .nav-tabs.nav-tabs-line.nav-tabs-bolder .nav-item .nav-link {
     font-weight: 600; }
   .nav-tabs.nav-tabs-line.nav-tabs-lg .nav-item {
@@ -10506,8 +10510,9 @@ body {
   height: 100%;
   margin: 0px;
   padding: 0px;
-  font-size: 13px;
-  font-weight: 300;
+  /*font-size: 13px;*/
+  font-size: 12px;
+  font-weight: 600;
   font-family: Poppins;
   -ms-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
@@ -10539,7 +10544,7 @@ canvas {
   -ms-user-select: none; }
 
 /* Customize website's scrollbar like Mac OS */
-/* 
+/*
 ::-webkit-scrollbar {
     background-color:#f6f6f6;
     width:14px;
@@ -16682,7 +16687,7 @@ strong {
         margin: 0;
         padding: 0;
         font-size: 1.2rem;
-        font-weight: 500;
+        font-weight: 600;
         color: #48465b; }
         .kt-portlet .kt-portlet__head .kt-portlet__head-label .kt-portlet__head-title small {
           font-weight: 300;
@@ -30687,7 +30692,7 @@ body {
         min-height: 40px; }
         .kt-aside-menu .kt-menu__nav > .kt-menu__item .kt-menu__submenu .kt-menu__item > .kt-menu__heading .kt-menu__link-text,
         .kt-aside-menu .kt-menu__nav > .kt-menu__item .kt-menu__submenu .kt-menu__item > .kt-menu__link .kt-menu__link-text {
-          font-weight: 400;
+          font-weight: 600;
           font-size: 1rem;
           text-transform: initial; }
         .kt-aside-menu .kt-menu__nav > .kt-menu__item .kt-menu__submenu .kt-menu__item > .kt-menu__heading .kt-menu__link-icon,

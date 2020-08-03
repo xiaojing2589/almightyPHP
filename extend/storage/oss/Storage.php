@@ -62,17 +62,23 @@ class Storage
             'url'               => '', // 可访问url地址
         ];
 
-        $upload_thumb_water = config('upload_thumb_water');     // 系统是否开启水印
+        // 系统是否开启水印
+        $upload_thumb_water = config('upload_thumb_water');
 
-        $upload_thumb_water_pic = config('upload_thumb_water_pic'); // 系统水印图片路径
+        // 系统水印图片路径
+        $upload_thumb_water_pic = config('upload_thumb_water_pic');
 
-        $upload_path_temp_thumb = config('upload_temp_path') . 'thumb/';     // 缩略图文件上传临时目录
+        // 缩略图文件上传临时目录
+        $upload_path_temp_thumb = config('upload_temp_path') . 'thumb/';
 
-        $upload_path_temp_water = config('upload_temp_path') . 'water/';     // 水印文件上传临时目录
+        // 水印文件上传临时目录
+        $upload_path_temp_water = config('upload_temp_path') . 'water/';
 
-        $upload_dir = config('upload_dir'); // 文件上传根目录
+        // 文件上传根目录
+        $upload_dir = config('upload_dir');
 
-        $source_upload_file_path_info = pathinfo($upload_file_path); // 上传文件名称 信息
+        // 上传文件名称 信息
+        $source_upload_file_path_info = pathinfo($upload_file_path);
 
         if (empty($source_upload_file_path_info['extension'])) {
             if (empty($upload_file_path)) {
@@ -88,27 +94,42 @@ class Storage
             }
         }
 
-        $relative_upload_file_path = empty($upload_file_path) ? $upload_dir : $upload_dir . '/' . $upload_file_path; // 相对上传路径名/路径文件名
+        // 相对上传路径名/路径文件名
+        $relative_upload_file_path = empty($upload_file_path) ? $upload_dir : $upload_dir . '/' . $upload_file_path;
 
-        $upload_file_path_info = pathinfo($relative_upload_file_path);  // 存储路径/文件名称 信息
+        // 存储路径/文件名称 信息
+        $upload_file_path_info = pathinfo($relative_upload_file_path);
 
         // 设置存储路径文件，路径形式 例如：upload/test
         if (empty($upload_file_path_info['extension'])) {
             if (is_object($source_file)) {
-                $ext         = pathinfo($source_file->getInfo('name'))['extension']; // 要上传的文件后缀
-                $upload_path = $relative_upload_file_path;// 上传路径
-                $upload_file = md5(microtime(true)) . '.' . $ext; // 上传文件名称
+                // 要上传的文件后缀
+                $ext         = pathinfo($source_file->getInfo('name'))['extension'];
+                // 上传路径
+                $upload_path = $relative_upload_file_path;
+                // 上传文件名称
+                $upload_file = md5(microtime(true)) . '.' . $ext;
             } else {
-                $source_file_info = pathinfo($source_file); // 要上传的文件信息
-                $ext              = $source_file_info['extension']; // 要上传的文件后缀
-                $upload_path      = $relative_upload_file_path; // 上传路径
-                $upload_file      = md5(microtime(true)) . '.' . $ext; // 上传文件名称
+                // 要上传的文件信息
+                $source_file_info = pathinfo($source_file);
+                // 要上传的文件后缀
+                $ext              = $source_file_info['extension'];
+                // 上传路径
+                $upload_path      = $relative_upload_file_path;
+                // 上传文件名称
+                $upload_file      = md5(microtime(true)) . '.' . $ext;
             }
         } // 上传路径文件 upload/test.text
         else {
-            $ext         = $upload_file_path_info['extension']; // 要上传的文件后缀
-            $upload_path = $upload_file_path_info['dirname']; // 上传路径
-            $upload_file = $upload_file_path_info['basename']; // 上传文件名称
+
+            // 要上传的文件后缀
+            $ext         = $upload_file_path_info['extension'];
+
+            // 上传路径
+            $upload_path = $upload_file_path_info['dirname'];
+
+            // 上传文件名称
+            $upload_file = $upload_file_path_info['basename'];
         }
 
 
