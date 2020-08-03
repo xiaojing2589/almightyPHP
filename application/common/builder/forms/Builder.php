@@ -108,8 +108,8 @@ class Builder extends ZBuilder
 
     /**
      * js合并
-     * @author 仇仇天
      * @param $js_files js文件数组
+     * @author 仇仇天
      */
     public function setJsFiles($js_files)
     {
@@ -120,8 +120,8 @@ class Builder extends ZBuilder
 
     /**
      * css合并
-     * @author 仇仇天
      * @param $css_files css文件数组
+     * @author 仇仇天
      */
     public function setCaaFiles($css_files)
     {
@@ -381,6 +381,8 @@ class Builder extends ZBuilder
 
                     // 宽度
                     $item['on_select'] = empty($replace['on_select']) ? '' : $replace['on_select'];
+
+
                     break;
                 /************************************范围*************************************/
                 case 'range':
@@ -447,8 +449,60 @@ class Builder extends ZBuilder
                     break;
                 /************************************下拉联动*************************************/
                 case 'linkage':
-                    $replace['option']['url'] = $replace['option']['url'] ? url($replace['option']['url']) : '';
-                    $replace['option']        = str_replace('"', '”', json_encode($replace['option'], JSON_UNESCAPED_UNICODE));
+
+                    /**
+                     * [必填] select组
+                     * [格式]
+                     *      [
+                     *          ['name'=>'每一组select的名称','class'=>'每一组select的class'],
+                     *          ['name'=>'每一组select的名称','class'=>'每一组select的class']
+                     *       ]
+                     */
+                    $replace['optionconfig'] = empty($replace['optionconfig']) ? [] : $replace['optionconfig'];
+
+                    // 数据的 id 字段名
+                    $replace['set_id'] = empty($replace['set_id']) ? 'id' : $replace['set_id'];
+
+                    // 数据的 text 字段名
+                    $replace['set_text'] = empty($replace['set_text']) ? 'text' : $replace['set_text'];
+
+                    // 数据的 父id 字段名
+                    $replace['set_pid'] = empty($replace['set_pid']) ? 'pid' : $replace['set_pid'];
+
+                    // 数据的 顶级父id 默认值
+                    $replace['set_top_parent_value'] = empty($replace['set_top_parent_value']) ? 0 : $replace['set_top_parent_value'];
+
+                    /**
+                     * [必填] 数据源
+                     * [格式]
+                     *      [
+                     *       'name'=>'[必填项] 数据源javascript名称',
+                     *       'data'=>'[必填项] 数据源(json)'
+                     *      ]
+                     */
+                    $replace['datasourceconfig'] = empty($replace['datasourceconfig']) ? [] : $replace['datasourceconfig'];
+                    if(!empty($replace['datasourceconfig']['data'])){
+                        if(is_array($replace['datasourceconfig']['data'])){
+                            $replace['datasourceconfig']['data'] =json_encode(array_values($replace['datasourceconfig']['data']), JSON_UNESCAPED_UNICODE);
+                        }
+                    }
+
+                    /**
+                     * [选填] 默认选中
+                     * [格式]
+                     *      [
+                     *       'name'=>'[必填项] 选中javascript名称',
+                     *       'data'=>'[必填项] 选中数据(json)'
+                     *      ]
+                     */
+                    $replace['defaultconfig'] = empty($replace['defaultconfig']) ? [] : $replace['defaultconfig'];
+                    if(!empty($replace['defaultconfig']['data'])){
+                        if(is_array($replace['defaultconfig']['data'])){
+                            $replace['defaultconfig']['data'] =json_encode(array_values($replace['defaultconfig']['data']), JSON_UNESCAPED_UNICODE);
+                        }
+                    }
+
+
                     break;
                 /************************************排序*************************************/
                 case 'array':
@@ -513,12 +567,12 @@ class Builder extends ZBuilder
 
     /**
      * 外部设置表单项调用
-     * @author 仇仇天
-     * @param array $items     表单数据
+     * @param array $items 表单数据
      * @param int $columnNumber 列数
      * @return $this
+     * @author 仇仇天
      */
-    public function setFormItemsInfo($items = [],$columnNumber = 0)
+    public function setFormItemsInfo($items = [], $columnNumber = 0)
     {
         $form_data = [];
         if (!empty($items)) {
@@ -531,7 +585,7 @@ class Builder extends ZBuilder
 
         $this->loadMinify();
 
-        if($columnNumber > 0){
+        if ($columnNumber > 0) {
 
             // 分成两列
             $this->listNumber($columnNumber);
@@ -574,18 +628,18 @@ class Builder extends ZBuilder
      * 设置分组
      * @param array $param
      * [
-     * [
-     * 'title'=>'标题', [必填]
-     * 'value'=>'值',   [必填]
-     * 'url'=>'地址',   [必填]
-     * 'default'=>'是否选中' true=是，false=否 [必填]
-     * ],
-     * [
-     * 'title'=>'标题',
-     * 'value'=>'值',
-     * 'url'=>'地址',
-     * 'default'=>'是否选中' true=是，false=否
-     * ]
+     *      [
+     *          'title'=>'标题', [必填]
+     *          'value'=>'值',   [必填]
+     *          'url'=>'地址',   [必填]
+     *          'default'=>'是否选中' true=是，false=否 [必填]
+     *      ],
+     *      [
+     *          'title'=>'标题',
+     *          'value'=>'值',
+     *          'url'=>'地址',
+     *          'default'=>'是否选中' true=是，false=否
+     *      ]
      * ]
      * @author 仇仇天
      */
@@ -599,16 +653,16 @@ class Builder extends ZBuilder
      * 设置分组类型
      * @param array $param
      * [
-     * [
-     * 'name'=>'标题',   [必填]
-     * 'field'=>字段,    [必填]
-     * 'group'=>'分组值' [非必填]
-     * ],
-     * [
-     * 'name'=>'标题',
-     * 'field'=>字段,
-     * 'group'=>'分组值'
-     * ],
+     *      [
+     *          'name'=>'标题',   [必填]
+     *          'field'=>字段,    [必填]
+     *          'group'=>'分组值' [非必填]
+     *      ],
+     *      [
+     *          'name'=>'标题',
+     *          'field'=>字段,
+     *          'group'=>'分组值'
+     *      ],
      * ]
      * @author 仇仇天
      */
@@ -722,9 +776,9 @@ class Builder extends ZBuilder
 
     /**
      * 设置额外自定义html代码
-     * @author 仇仇天
      * @param string $code html 代码
      * @return $this
+     * @author 仇仇天
      */
     public function extraHtmlCode($code = '')
     {
@@ -734,9 +788,9 @@ class Builder extends ZBuilder
 
     /**
      * 设置额外自定义html内容代码
-     * @author 仇仇天
      * @param string $file html 代码
      * @return $this
+     * @author 仇仇天
      */
     public function extraHtmlContentCode($code = '')
     {
@@ -746,9 +800,9 @@ class Builder extends ZBuilder
 
     /**
      * 设置额外自定义html表单内容代码
-     * @author 仇仇天
      * @param string $file html 代码
      * @return $this
+     * @author 仇仇天
      */
     public function extraHtmlContentFormCode($code = '')
     {
@@ -780,8 +834,8 @@ class Builder extends ZBuilder
 
     /**
      * 设置表单列数量
-     * @author 仇仇天
      * @param int $list_number 数量
+     * @author 仇仇天
      */
     public function listNumber($list_number = 1)
     {
@@ -797,11 +851,11 @@ class Builder extends ZBuilder
     {
         // 将表单项分割成多维数组
         $type_group = [];
-        foreach ($this->_vars['form_items'] as $value){
+        foreach ($this->_vars['form_items'] as $value) {
             $type_group[$value['type_group']][] = $value;
         }
 
-        foreach ($type_group as $key=>$type_group_value){
+        foreach ($type_group as $key => $type_group_value) {
             $type_group[$key] = array_chunk($type_group_value, $this->_vars['list_number']);
         }
 
@@ -812,8 +866,8 @@ class Builder extends ZBuilder
 
     /**
      * 根据表单项类型，加载不同js和css文件，并合并
-     * @author 仇仇天
      * @param string $type 表单项类型
+     * @author 仇仇天
      */
     public function loadMinify($type = '')
     {
@@ -887,7 +941,7 @@ class Builder extends ZBuilder
                     break;
                 /************************************百度编辑器*************************************/
                 case 'ueditor':
-                    $this->_vars['_js_files'][]  = 'ueditor_js';
+                    $this->_vars['_js_files'][] = 'ueditor_js';
                     break;
                 /************************************数组*************************************/
                 case 'array':
@@ -914,11 +968,11 @@ class Builder extends ZBuilder
 
     /**
      * 加载模板输出
-     * @author 仇仇天
      * @param string $template 模板文件名
      * @param array $vars 模板输出变量
      * @param array $config 模板参数
      * @return mixed
+     * @author 仇仇天
      */
     public function fetch($template = '', $vars = [], $config = [])
     {
@@ -979,7 +1033,7 @@ class Builder extends ZBuilder
         $this->_vars['btn_extra'] = implode(' ', $this->_vars['btn_extra']);
 
         // 弹窗模式展示
-        if(!empty(input('ispopup'))){
+        if (!empty(input('ispopup'))) {
 
             $this->_vars['ispopup'] = 1;
 
@@ -989,7 +1043,7 @@ class Builder extends ZBuilder
 
             $this->_template = config('app_path') . 'common/builder/forms/popuplayout.html';
 
-            $this->assign('_admin_base_layout', Env::get('app_path').'admin/view/popuplayout.html');
+            $this->assign('_admin_base_layout', Env::get('app_path') . 'admin/view/popuplayout.html');
         }
 
         // 实例化视图并渲染

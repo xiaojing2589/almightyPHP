@@ -3,7 +3,7 @@
 namespace app\admin\controller;
 
 use app\common\controller\Common;
-use app\common\model\AdminUser as AdminUserModel;
+use app\admin\model\AdminUser as AdminUserModel;
 use think\facade\Hook;
 use think\captcha\Captcha;
 
@@ -29,7 +29,7 @@ class Publics extends Common
             // 获取提交信息
             $data = $this->request->post();
 
-            // 记住7天登录
+            // 记住 7 天登录
             $rememberme = isset($data['remember']) ? true : false;
 
             // 登录钩子
@@ -48,10 +48,10 @@ class Publics extends Common
             $captcha = $this->request->post('captcha', '');
 
             // 验证码是否为空
-            $captcha == '' && $this->error('请输入验证码');
+            $captcha == '' && $this->error(lang('Please enter').lang('Verification code'));
 
             // 验证失败
-            if (!captcha_check($captcha)) $this->error('验证码错误或失效');
+            if (!captcha_check($captcha)) $this->error(lang('Verification code').lang('Error'));
 
             // 后台用户model对象
             $UserModel = new AdminUserModel;
@@ -61,11 +61,8 @@ class Publics extends Common
 
             if ($uid) {
 
-                // 记录行为
-                action_log('admin.user_signin');
-
                 // 跳转
-                $this->success('登录成功', url('admin/index/index'));
+                $this->success(lang('Operation completed'), url('admin/index/index'));
 
             } else {
                 $this->error($UserModel->getError());

@@ -4,9 +4,12 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\ZBuilder;
-use app\common\model\AdminUser as UserModel;
-use app\common\model\AdminRole as RoleModel;
+
 use think\helper\Hash;
+
+use app\admin\model\AdminUser as AdminUserModel;
+use app\admin\model\AdminRole as AdminRoleModel;
+
 
 /**
  * 用户默认控制器
@@ -44,7 +47,7 @@ class User extends Admin
             $list_rows = input('list_rows');
 
             // 数据列表
-            $data_list = UserModel::alias('a')
+            $data_list = AdminUserModel::alias('a')
                 ->field('a.*,b.name AS rolename')
                 ->join('admin_role b', 'b.id=a.role')
                 ->where($where)
@@ -70,16 +73,16 @@ class User extends Admin
         ]);
 
         // 设置头部按钮 新增
-        $view->addTopButton('add', ['url' => url('user/add')]);
+        $view->addTopButton('add', ['url' => url('add')]);
 
         // 设置头部按钮 删除
-        $view->addTopButton('delete', ['url' => url('user/delete'), 'query_data' => '{"action":"delete_batch"}']);
+        $view->addTopButton('delete', ['url' => url('delete'), 'query_data' => '{"action":"delete_batch"}']);
 
         // 设置头部按钮 启用
-        $view->addTopButton('enable', ['url' => url('user/editstatus'), 'query_data' => '{"status":1}']);
+        $view->addTopButton('enable', ['url' => url('editstatus'), 'query_data' => '{"status":1}']);
 
         // 设置头部按钮 禁用
-        $view->addTopButton('disable', ['url' => url('user/editstatus'), 'query_data' => '{"status":0}']);
+        $view->addTopButton('disable', ['url' => url('editstatus'), 'query_data' => '{"status":0}']);
 
         // 设置头部按钮 设置列
         $view->setColumn([
@@ -164,14 +167,14 @@ javascript
                         'field' => 'd',
                         'confirm' => '确认删除',
                         'query_jump' => 'ajax',
-                        'url' => url('user/delete'),
+                        'url' => url('delete'),
                         'query_data' => '{"field":["id"],"extentd_field":{"action":"delete"}}',
                         'query_type' => 'post',
 
                     ],
                     [
                         'field' => 'u',
-                        'url' => url('user/edit'),
+                        'url' => url('edit'),
                         'query_data' => '{"field":["id"]}'
                     ]
                 ],
@@ -188,7 +191,7 @@ javascript
         ]);
 
         // 设置行内编辑地址
-        $view->editableUrl(url('user/edit'));
+        $view->editableUrl(url('edit'));
 
         // 设置页面
         return $view->fetch();
@@ -212,17 +215,6 @@ javascript
             // 验证失败 输出错误信息
             if (true !== $result) $this->error($result);
 
-            // 非超级管理需要验证可选择角色
-            if (session('admin_user_info.role') != 1) {
-                if ($data['role'] == session('admin_user_info.role')) {
-                    $this->error('禁止创建与当前角色同级的用户');
-                }
-                $role_list = RoleModel::getChildsId(session('admin_user_info.role'));
-                if (!in_array($data['role'], $role_list)) {
-                    $this->error('权限不足，禁止创建非法角色的用户');
-                }
-            }
-
             // 图片处理
             $files = $this->request->file();
 
@@ -241,9 +233,7 @@ javascript
 
             }
 
-            if ($user = UserModel::create($data)) {
-                // 记录行为
-                adminActionLog('admin.user_add');
+            if ($user = AdminUserModel::create($data)) {
                 $this->success('新增成功', url('index'));
             } else {
                 $this->error('新增失败');
@@ -260,7 +250,7 @@ javascript
         $form->setReturnUrl(url('user/index'));
 
         // 角色数据
-        $role_list = RoleModel::where('id<>1')->field('id,name')->select();
+        $role_list = AdminRoleModel::where('id<>1')->field('id,name')->select();
         $role_list_arr = [];
         foreach ($role_list as $key => $value) {
             $role_list_arr[] = ['title' => $value['name'], 'value' => $value['id']];
@@ -370,7 +360,7 @@ javascript
                     unset($data['password']);
                 }else{
                     // 设置密码
-                    $data['password'] = UserModel::setPasswordAttr($data['password']);
+                    $data['password'] = AdminUserModel::setPasswordAttr($data['password']);
                 }
 
                 // 图片处理
@@ -389,12 +379,7 @@ javascript
                     $data[$file_key] = $file_info['data']['relative_path_url'];
                 }
             }
-            if (UserModel::where(['id' => $data['id']])->update($data)) {
-                // 重新设置session
-                $userModel = new UserModel();
-                $userModel->refreshLoginSession();
-                // 记录行为
-                adminActionLog('admin.user_edit');
+            if (AdminUserModel::where(['id' => $data['id']])->update($data)) {
                 $this->success('编辑成功', url('index'));
             } else {
                 $this->error('编辑失败');
@@ -402,7 +387,7 @@ javascript
         }
 
         // 获取数据
-        $info = UserModel::alias('a')
+        $info = AdminUserModel::alias('a')
             ->field('a.*,b.name AS bname')
             ->join('admin_role b', 'b.id = a.role', 'LEFT')
             ->where('a.id', $id)
@@ -423,10 +408,10 @@ javascript
         $form->setPageTitle('后台用户 - 编辑');
 
         // 设置返回地址
-        $form->setReturnUrl(url('user/index'));
+        $form->setReturnUrl(url('index'));
 
         // 角色数据
-        $role_list = RoleModel::where('id<>1')->field('id,name')->select();
+        $role_list = AdminRoleModel::where('id<>1')->field('id,name')->select();
         $role_list_arr = [];
         foreach ($role_list as $key => $value) {
             $role_list_arr[] = ['title' => $value['name'], 'value' => $value['id']];
@@ -534,9 +519,7 @@ javascript
             $where = ['id' => $data['id']];
         }
 
-        if (false !== UserModel::where($where)->delete()) {
-            // 记录日志
-            adminActionLog('admin.user_delete');
+        if (false !== AdminUserModel::where($where)->delete()) {
 
             $this->success('操作成功');
         } else {
@@ -560,10 +543,10 @@ javascript
         }
         $where= [['id', 'in', $ids]];
 
-        $result = UserModel::where($where)->setField('status', $data['status']);
+        $result = AdminUserModel::where($where)->setField('status', $data['status']);
 
         if (false !== $result) {
-            adminActionLog('admin.user_edit_status');
+
             $this->success('操作成功');
         } else {
             $this->error('操作失败');
@@ -577,7 +560,7 @@ javascript
     public function lock(){
 
         // 获取用户信息
-        $info = UserModel::where(['id'=>session('admin_user_info.uid')])->find();
+        $info = AdminUserModel::where(['id'=>session('admin_user_info.uid')])->find();
 
         // 解锁
         if ($this->request->isAjax()) {
@@ -611,19 +594,17 @@ javascript
             // 验证密码
             if (!Hash::check((string)$inputPassword, $info['password'])){
                 // 记录锁定
-                UserModel::where(['id'=>$info['id']])
-                    ->update(['lock_count'=>$info['lock_count']+1,'lock_time'=>time(),'lock_status'=>1]);
+                AdminUserModel::where(['id'=>$info['id']])->update(['lock_count'=>$info['lock_count']+1,'lock_time'=>time(),'lock_status'=>1]);
                 $this->error('解锁密码错误');
             }
             // 取消锁定
-            UserModel::where(['username'=>session('admin_user_info.username')])
-                ->update(['lock_count'=>0,'lock_time'=>0,'lock_status'=>0]);
+            AdminUserModel::where(['username'=>session('admin_user_info.username')])->update(['lock_count'=>0,'lock_time'=>0,'lock_status'=>0]);
             $this->success('解锁成功', 'index/index');
 
         }
 
         // 锁定
-        UserModel::where(['username'=>session('admin_user_info.username')])->update(['lock_status'=>1]);
+        AdminUserModel::where(['username'=>session('admin_user_info.username')])->update(['lock_status'=>1]);
 
         return $this->fetch();
     }

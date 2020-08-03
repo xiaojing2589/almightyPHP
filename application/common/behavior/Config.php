@@ -2,9 +2,9 @@
 
 namespace app\common\behavior;
 
+use app\admin\model\AdminConfig as AdminConfigModel;
 use think\facade\Env;
 use think\facade\Request;
-use think\facade\Lang;
 
 /**
  * 初始化配置信息行为,将系统配置信息合并到本地配置
@@ -13,12 +13,9 @@ use think\facade\Lang;
  */
 class Config
 {
-    /**
-     * 执行行为 run方法是Behavior唯一的接口
-     * @author 仇仇天
-     */
     public function run()
     {
+
         // 如果是安装操作，直接返回
         if (defined('BIND_MODULE') && BIND_MODULE === 'install') return;
 
@@ -87,7 +84,8 @@ class Config
             // 插件静态资源目录
             config('template.tpl_replace_string.__PLUGINS__', '/plugins');
 
-        } else {
+        } else if(defined('ENTRANCE') && ENTRANCE == 'home'){
+
             if ($module == 'admin') {
                 header("Location: " . $base_dir . ADMIN_FILE . '/admin', true, 302);
                 exit();
@@ -97,14 +95,15 @@ class Config
                 // 修改默认访问控制器层
                 config('url_controller_layer', 'home');
             }
+        } else if(defined('ENTRANCE') && ENTRANCE == 'api'){
+            // 修改默认访问控制器层
+            config('url_controller_layer', 'api');
         }
 
         // 所有配置数据
-        $systemConfigData =  \app\admin\model\AdminConfig::getConfigDataInfo('name','value');
+        $systemConfigData =  AdminConfigModel::getConfigDataInfo('name','value');
 
         // 设置配置信息
         config($systemConfigData, 'app');
-
-        Lang::set('asdasdas','aaaaaa');
     }
 }

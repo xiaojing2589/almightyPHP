@@ -1,1 +1,20 @@
-<div class="js-linkage" data-config="{$form.option}"></div>
+<div class="js-linkage" data-id="{$form.set_id}" data-text="{$form.set_text}" data-pid="{$form.set_pid}" data-topParentValue="{$form.set_top_parent_value}" data-datasourcename="{$form.datasourceconfig.name}" data-defaultname="{$form.defaultconfig.name}">
+    <div class="form-group row">
+        {foreach name="form.optionconfig" item="linkage_data" key="keys_linkage" }
+            <div class="col-lg-4">
+                <select
+                    class="js-linkage-select form-control {$form.class} {notempty name="linkage_data.class"}{$linkage_data.class}{/notempty}"
+                    name="{$linkage_data.name}"
+                >
+                </select>
+            </div>
+        {/foreach}
+    </div>
+    <script>
+        var {$form.datasourceconfig.name} = {$form.datasourceconfig.data|raw};
+        {notempty name="form.defaultconfig.name"}
+            var {$form.defaultconfig.name} = {$form.defaultconfig.data|raw};
+        {/notempty}
+    </script>
+</div>
+

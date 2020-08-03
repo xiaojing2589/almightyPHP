@@ -11,15 +11,14 @@ use think\Model;
  */
 class B2b2cAttribute extends Model
 {
-    protected $name = 'b2b2c_attribute';// 设置当前模型对应的完整数据表名称
-
-    protected static $cacheName = 'b2b2c_attribute'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'b2b2c_attribute';
 
     /**
      * 获取所有属性数据(取缓存)
      * @author 仇仇天
      */
-    public static function getAttributeDataInfo()
+    public static function getAttributeDataAll()
     {
         $goodsClassData = rcache(self::$cacheName, '', ['module' => 'b2b2c']);
         return $goodsClassData;
@@ -34,7 +33,8 @@ class B2b2cAttribute extends Model
     public static function del($where = [])
     {
         if(false !== self::where($where)->delete()){
-            self::delCache(); // 删除缓存
+            // 删除缓存
+            self::delCache();
             return true;
         }else{
             return false;

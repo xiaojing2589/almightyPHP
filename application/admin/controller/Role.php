@@ -4,8 +4,9 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\ZBuilder;
-use app\common\model\AdminRole as RoleModel;
-use app\common\model\AdminMenu as MenuModel;
+
+use app\admin\model\AdminRole as AdminRoleModel;
+use app\admin\model\AdminMenu as AdminMenuModel;
 
 /**
  * 角色控制器
@@ -23,6 +24,33 @@ class Role extends Admin
         // 初始化 表格
         $view = ZBuilder::make('tables');
 
+        if ($this->request->isAjax()) {
+
+            // 筛选参数设置
+            $map = [];
+
+            // 筛选参数
+            $search_field = input('param.searchField/s', '', 'trim'); // 关键词搜索字段名
+
+            $keyword = input('param.searchKeyword/s', '', 'trim'); // 搜索关键词
+
+            // 普通搜索筛选
+            if ($search_field != '' && $keyword !== '') $map[] = [$search_field, 'like', "%" . $keyword . "%"];
+
+            // 每页显示多少条
+            $list_rows = input('list_rows');
+
+            // 数据列表
+            $data_list = AdminRoleModel::where($map)->order('id ASC')->paginate($list_rows);
+
+            foreach ($data_list as $key => $value) {
+                $data_list[$key]['create_time'] = date("Y-m-d H:i:s", $value['create_time']);
+            }
+
+            // 设置表格数据
+            $view->setRowList($data_list);
+        }
+
         // 设置页面标题
         $view->setPageTitle('角色管理');
 
@@ -33,16 +61,16 @@ class Role extends Admin
         ]);
 
         // 设置头部按钮 新增
-        $view->addTopButton('add', ['url' => url('role/add')]); // 新增
+        $view->addTopButton('add', ['url' => url('add')]);
 
         // 设置头部按钮 删除
-        $view->addTopButton('delete', ['url' => url('role/delete'), 'query_data' => '{"action":"delete_batch"}']);
+        $view->addTopButton('delete', ['url' => url('delete'), 'query_data' => '{"action":"delete_batch"}']);
 
         // 设置头部按钮 启用
-        $view->addTopButton('enable', ['url' => url('role/editstatus'), 'query_data' => '{"status":1}']);
+        $view->addTopButton('enable', ['url' => url('editstatus'), 'query_data' => '{"status":1}']);
 
         // 设置头部按钮 禁用
-        $view->addTopButton('disable', ['url' => url('role/editstatus'), 'query_data' => '{"status":0}']);
+        $view->addTopButton('disable', ['url' => url('editstatus'), 'query_data' => '{"status":0}']);
 
         // 设置列
         $view->setColumn([
@@ -110,13 +138,13 @@ javascript
                         'field' => 'd',
                         'confirm' => '确认删除',
                         'query_jump' => 'ajax',
-                        'url' => url('role/delete'),
+                        'url' => url('delete'),
                         'query_data' => '{"field":["id"],"extentd_field":{"action":"delete"}}',
                         'query_type' => 'post'
                     ],
                     [
                         'field' => 'u',
-                        'url' => url('role/edit'),
+                        'url' => url('edit'),
                         'query_data' => '{"field":["id"]}'
                     ]
                 ],
@@ -129,34 +157,7 @@ javascript
         ]);
 
         // 设置行内编辑地址
-        $view->editableUrl(url('role/edit'));
-
-        if ($this->request->isAjax()) {
-
-            // 筛选参数设置
-            $map = [];
-
-            // 筛选参数
-            $search_field = input('param.searchField/s', '', 'trim'); // 关键词搜索字段名
-
-            $keyword = input('param.searchKeyword/s', '', 'trim'); // 搜索关键词
-
-            // 普通搜索筛选
-            if ($search_field != '' && $keyword !== '') $map[] = [$search_field, 'like', "%" . $keyword . "%"];
-
-            // 每页显示多少条
-            $list_rows = input('list_rows');
-
-            // 数据列表
-            $data_list = RoleModel::where($map)->order('id ASC')->paginate($list_rows);
-
-            foreach ($data_list as $key => $value) {
-                $data_list[$key]['create_time'] = date("Y-m-d H:i:s", $value['create_time']);
-            }
-
-            // 设置表格数据
-            $view->setRowList($data_list);
-        }
+        $view->editableUrl(url('edit'));
 
         // 渲染模板
         return $view->fetch();
@@ -169,6 +170,9 @@ javascript
      */
     public function add()
     {
+        // 使用ZBuilder快速创建表单
+        $form = ZBuilder::make('forms');
+
         // 保存数据
         if ($this->request->isPost()) {
 
@@ -181,31 +185,28 @@ javascript
             if (true !== $result) $this->error($result);
 
             // 添加数据
-            if (false !== RoleModel::create($data)) {
+            if (false !== AdminRoleModel::create($data)) {
 
-                // 记录行为
-                adminActionLog('admin.role_add');
+                // 删除缓存
+                AdminRoleModel::delCache();
 
-                $this->success('新增成功', url('role/index'));
+                $this->success('新增成功', url('index'));
             } else {
                 $this->error('新增失败');
             }
         }
 
-        // 使用ZBuilder快速创建表单
-        $form = ZBuilder::make('forms');
-
         // 设置页面标题
         $form->setPageTitle('后台角色 - 新增');
 
         // 设置返回地址
-        $form->setReturnUrl(url('role/index'));
+        $form->setReturnUrl(url('index'));
 
         // 设置 提交地址
-        $form->setFormUrl(url('role/add'));
+        $form->setFormUrl(url('add'));
 
         // 模块数据
-        $system_module = MenuModel::where('pid', 0)->column('id,title');
+        $system_module = AdminMenuModel::where('pid', 0)->column('id,title');
         $system_module_arr = [];
         foreach ($system_module as $key => $value) {
             $system_module_arr[] = ['title' => $value, 'value' => $key];
@@ -258,7 +259,7 @@ javascript
 
         if ($id === null) $this->error('缺少参数');
 
-        if ($id == 1 && $roleId != 1) $this->error('超级管理员不可修改');
+        if ($id == 1 && $roleId < 3 ) $this->error('该角色不可修改');
 
         // 保存数据
         if ($this->request->isPost()) {
@@ -288,13 +289,10 @@ javascript
                 if (true !== $result) $this->error($result);
             }
 
-            if (false !== RoleModel::update($data)) {
+            if (false !== AdminRoleModel::update($data)) {
 
-                // 刷新缓存
-                $this->refreshCache($id);
-
-                // 记录行为
-                adminActionLog('admin.role_edit');
+                // 删除缓存
+                AdminRoleModel::delCache();
 
                 $this->success('编辑成功', url('index'));
             } else {
@@ -303,7 +301,7 @@ javascript
         }
 
         // 获取数据
-        $info = RoleModel::get($id);
+        $info = AdminRoleModel::get($id);
 
         // 使用ZBuilder快速创建表单
         $form = ZBuilder::make('forms');
@@ -312,10 +310,10 @@ javascript
         $form->setPageTitle('后台角色 - 编辑');
 
         // 设置返回地址
-        $form->setReturnUrl(url('role/index'));
+        $form->setReturnUrl(url('index'));
 
         // 设置 提交地址
-        $form->setFormUrl(url('role/edit'));
+        $form->setFormUrl(url('edit'));
 
         // 设置隐藏表单数据
         $form->setFormHiddenData([['name' => 'id', 'value' => $id]]);
@@ -327,7 +325,7 @@ javascript
         ]);
 
         // 模块数据
-        $system_module = MenuModel::where('pid', 0)->column('id,title');
+        $system_module = AdminMenuModel::where('pid', 0)->column('id,title');
         $system_module_arr = [];
         foreach ($system_module as $key => $value) {
             $system_module_arr[] = ['title' => $value, 'value' => $key];
@@ -380,7 +378,7 @@ javascript
 
         if ($id === null) $this->error('缺少参数');
 
-        if ($id == 1) $this->error('超级管理员不可修改');
+        if ($id == 1 && $roleId < 3) $this->error('该角色权限不可修改');
 
         // 保存数据
         if ($this->request->isPost()) {
@@ -390,13 +388,13 @@ javascript
             if(!empty($data['action']) && $data['action'] == "auth"){
 
                 // 获取角色权限
-                $info = RoleModel::where(['id'=>$id])->find();
+                $info = AdminRoleModel::where(['id'=>$id])->find();
 
                 // 设置前台展示
                 $menu_auth = !empty($info['menu_auth']) ? $info['menu_auth'] : [];
 
                 $menusArr = [];
-                $menus = MenuModel::getStatusMenu();
+                $menus = AdminMenuModel::where(['status'=>1])->select();
                 foreach ($menus as $value){
                     if(in_array($value['mark'],$menu_auth)){
                         $value['checked'] = true;
@@ -414,13 +412,10 @@ javascript
                     $menu_auth = json_encode(explode(',',$data['menu_auth']));
                 }
 
-                if (false !== RoleModel::where(['id'=>$data['id']])->update(['menu_auth'=>$menu_auth])) {
+                if (false !== AdminRoleModel::where(['id'=>$data['id']])->update(['menu_auth'=>$menu_auth])) {
 
-                    // 刷新缓存
-                    $this->refreshCache($id);
-
-                    // 记录行为
-                    adminActionLog('admin.role_edit');
+                    // 删除缓存
+                    AdminRoleModel::delCache();
 
                     $this->success('编辑成功', url('index'));
                 } else {
@@ -430,7 +425,7 @@ javascript
         }
 
         // 获取数据
-        $info = RoleModel::get($id);
+        $info = AdminRoleModel::get($id);
 
         // 使用ZBuilder快速创建表单
         $form = ZBuilder::make('forms');
@@ -439,10 +434,10 @@ javascript
         $form->setPageTitle('后台角色 - 编辑');
 
         // 设置返回地址
-        $form->setReturnUrl(url('role/index'));
+        $form->setReturnUrl(url('index'));
 
         // 设置 提交地址
-        $form->setFormUrl(url('role/aut'));
+        $form->setFormUrl(url('aut'));
 
         // 设置隐藏表单数据
         $form->setFormHiddenData([['name' => 'id', 'value' => $id],['name' => 'menu_auth', 'value' =>'']]);
@@ -454,7 +449,7 @@ javascript
         ]);
 
         // 模块数据
-        $system_module = MenuModel::where('pid', 0)->column('id,title');
+        $system_module = AdminMenuModel::where('pid', 0)->column('id,title');
         $system_module_arr = [];
         foreach ($system_module as $key => $value) {
             $system_module_arr[] = ['title' => $value, 'value' => $key];
@@ -564,9 +559,10 @@ javascript;
             $where = ['id' => $data['id']];
         }
 
-        if (false !== RoleModel::del($where)) {
-            // 记录日志
-            adminActionLog('admin.role_delete');
+        if (false !== AdminRoleModel::del($where)) {
+
+            // 删除缓存
+            AdminRoleModel::delCache();
 
             $this->success('操作成功');
         } else {
@@ -590,22 +586,16 @@ javascript;
         }
         $where= [['id', 'in', $ids]];
 
-        $result = RoleModel::where($where)->setField('status', $data['status']);
+        $result = AdminRoleModel::where($where)->setField('status', $data['status']);
 
         if (false !== $result) {
-            adminActionLog('admin.role_edit_status');
+
+            // 删除缓存
+            AdminRoleModel::delCache();
+
             $this->success('操作成功');
         } else {
             $this->error('操作失败');
         }
-    }
-
-    /**
-     * 刷新缓存
-     * @author 仇仇天
-     */
-    private function refreshCache($id)
-    {
-        RoleModel::delCache($id);
     }
 }

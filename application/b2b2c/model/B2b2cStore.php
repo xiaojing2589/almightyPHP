@@ -10,18 +10,38 @@ use think\Model;
  */
 class B2b2cStore extends Model
 {
-
-    protected $name = 'b2b2c_store';// 设置当前模型对应的完整数据表名称
-
-    protected static $cacheName = 'b2b2c_store'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'b2b2c_store';
 
     /**
      * 获取所有店铺数据(取缓存)
      * @author 仇仇天
+     * @param $storeId 店铺id
+     * @return bool|mixed|string
      */
-    public static function getStoreDataInfo()
-    {        $goodsClassData = rcache(self::$cacheName, '', ['module' => 'b2b2c']);
+    public static function getStoreDataInfo($storeId)
+    {
+        $goodsClassData = rcache(self::$cacheName, $storeId, ['module' => 'b2b2c']);
         return $goodsClassData;
+    }
+
+
+    public static function edit($where,$update)
+    {
+        $data = self::where($where)->select();
+        if(!empty($data)){
+            if(false !== self::where($where)->update($update)){
+                foreach ($data as $value){
+                    // 删除缓存
+                    self::delCache($value['store_id']);
+                }
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -35,10 +55,9 @@ class B2b2cStore extends Model
         $data = self::where($where)->select();
         if(!empty($data)){
             if(false !== self::where($where)->delete()){
-                self::delCache(); // 删除缓存
                 foreach ($data as $value){
-                    attaDel($value['brand_pic']); // 删除图片
-                    attaDel($value['brand_bgpic']); // 删除图片
+                    // 删除缓存
+                    self::delCache($value['store_id']);
                 }
                 return true;
             }else{
@@ -53,8 +72,8 @@ class B2b2cStore extends Model
      * 删除缓存
      * @author 仇仇天
      */
-    public static function delCache()
+    public static function delCache($storeId)
     {
-        dkcache(self::$cacheName);
+        dkcache(self::$cacheName,$storeId);
     }
 }

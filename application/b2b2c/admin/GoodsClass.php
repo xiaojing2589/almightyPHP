@@ -22,28 +22,35 @@ use app\b2b2c\model\B2b2cBrand as B2b2cBrandModel;
  */
 class GoodsClass extends Admin
 {
+
     /**
      * 列表
-     * @param int $id
-     * @param int $pid
+     * @author 仇仇天
+     * @param int $gc_id
+     * @param int $gc_parent_id
      * @return mixed
      * @throws \think\Exception
      * @throws \think\exception\DbException
-     * @author 仇仇天
      */
     public function index($gc_id = 0, $gc_parent_id = 0)
     {
         $view = ZBuilder::make('tables');  // 初始化 表格
 
         if ($this->request->isAjax()) {
-            $list_rows = input('list_rows'); // 每页显示多少条
-            $data_list = B2b2cGoodsClassModel::where(['gc_parent_id' => $gc_id])->order('gc_sort ASC,gc_id ASC')->paginate($list_rows);  // 数据列表
+
+            // 每页显示多少条
+            $list_rows = input('list_rows');
+
+            // 数据列表
+            $data_list = B2b2cGoodsClassModel::where(['gc_parent_id' => $gc_id])->order('gc_sort ASC,gc_id ASC')->paginate($list_rows);
+
             foreach ($data_list as &$value) {
                 $value['gc_img'] = getB2b2cImg($value['gc_img'], ['type' => 'goods_class']);
                 $trrData         = B2b2cGoodsClassModel::getGoodsClassInfo($value['gc_id']);
                 $value['level']  = empty($trrData['level']) ? '' : $trrData['level'];
             }
-            $view->setRowList($data_list);// 设置表格数据
+            // 设置表格数据
+            $view->setRowList($data_list);
         }
 
         // 设置头部按钮新增
@@ -582,7 +589,7 @@ javascript
             [
                 'field'     => 'gc_name',
                 'name'      => 'gc_name',
-                'form_type' => 'text',
+                'form_type' => 'linkage',
                 'require'   => true,
                 'title'     => '分类名称'
             ],
@@ -816,10 +823,19 @@ javascript
                 $this->error('导入失败');
             }
         }
-        $form = ZBuilder::make('forms'); // 使用ZBuilder快速创建表单
-        $form->setPageTitle('导入-商品分类'); // 设置页面标题
-        $form->setReturnUrl(url('index')); // 设置返回地址
-        $form->setFormUrl(url('import')); // 设置 提交地址
+
+        // 使用ZBuilder快速创建表单
+        $form = ZBuilder::make('forms');
+
+        // 设置页面标题
+        $form->setPageTitle('导入-商品分类');
+
+        // 设置返回地址
+        $form->setReturnUrl(url('index'));
+
+        // 设置 提交地址
+        $form->setFormUrl(url('import'));
+
         // 设置表单项
         $form->addFormItems([
             [
@@ -831,6 +847,7 @@ javascript
                 'tips'      => '如果导入速度较慢，建议您把文件拆分为几个小文件，然后分别导入'
             ]
         ]);
+
         return $form->fetch('import');
     }
 

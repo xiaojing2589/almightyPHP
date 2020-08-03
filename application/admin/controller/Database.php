@@ -360,9 +360,6 @@ class Database extends Admin
             // 备份完成，删除锁定文件
             unlink($lock);
 
-            // 记录行为
-            adminActionLog('admin.database_export');
-
             $this->success('备份完成！');
         } else {
             $this->error('初始化失败，备份文件创建失败！');
@@ -410,8 +407,6 @@ class Database extends Admin
                     $start = $Database->import($start[0]);
                 }
             }
-            // 记录行为
-            adminActionLog('admin.database_import');
             $this->success('还原完成！');
         } else {
             $this->error('备份文件可能已经损坏，请检查！');
@@ -434,8 +429,6 @@ class Database extends Admin
             if(empty($data['Name']))$this->error('请选择要优化的表');
             $result =   $list = Db::query("OPTIMIZE TABLE `{$data['Name']}`");;
             if (false !== $result) {
-                // 记录行为
-                adminActionLog('admin.database_optimize');
                 $this->success("数据表'{$data['Name']}'优化完成！");
             }else{
                 $this->error("数据表'{$data['Name']}'优化出错请重试！");
@@ -452,8 +445,6 @@ class Database extends Admin
             $tables = implode('`,`', $ids);
             $result = Db::query("OPTIMIZE TABLE `{$tables}`");
             if (false !== $result) {
-                // 记录行为
-                adminActionLog('admin.database_optimize');
                 $this->success("数据表优化完成！");
             }else{
                 $this->error("数据表优化出错请重试！");
@@ -479,8 +470,6 @@ class Database extends Admin
             if(empty($data['Name']))$this->error('请指定要修复的表');
             $result =   $list = Db::query("REPAIR TABLE `{$data['Name']}`");;
             if (false !== $result) {
-                // 记录行为
-                adminActionLog('admin.database_repair');
                 $this->success("数据表'{$data['Name']}'修复完成！");
             }else{
                 $this->error("数据表'{$data['Name']}'修复出错请重试！");
@@ -497,8 +486,6 @@ class Database extends Admin
             $tables = implode('`,`', $ids);
             $result = Db::query("REPAIR TABLE `{$tables}`");
             if (false !== $result) {
-                // 记录行为
-                adminActionLog('admin.database_repair');
                 $this->success("数据表修复完成！");
             }else{
                 $this->error("数据表修复出错请重试！");
@@ -522,8 +509,6 @@ class Database extends Admin
         if(count(glob($path))){
             $this->error('备份文件删除失败，请检查权限！');
         } else {
-            // 记录行为
-            adminActionLog('admin.database_backup_delete');
             $this->success('备份文件删除成功！');
         }
     }

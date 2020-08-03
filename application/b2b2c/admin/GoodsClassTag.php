@@ -30,26 +30,26 @@ class GoodsClassTag extends Admin
 
         if ($this->request->isAjax()) {
 
-            // 关键词搜索字段名
-            $search_field     = input('param.searchField/s', '', 'trim');
-
-            // 搜索关键词
-            $keyword          = input('param.searchKeyword/s', '', 'trim');
+            // 传递数据
+            $data = input();
 
             // 筛选参数设置
-            $map   = [];
+            $where = [];
 
-            // 普通搜索筛选
-            if ($search_field != '' && $keyword !== '')$map[] = [$search_field, 'like', "%".$keyword."%"];
-
-            // 每页显示多少条
-            $list_rows = input('list_rows');
+            // 快捷筛选 关键词
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
+                    $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
+                } else {
+                    $where[] = [$data['searchField'], $data['searchCondition'], $data['searchKeyword']];
+                }
+            }
 
             // 数据列表
-            $data_list = B2b2cGoodsClassTagModel::where($map)->order('gc_tag_id ASC')->paginate($list_rows);
+            $dataList = B2b2cGoodsClassTagModel::where($where)->order('gc_tag_id ASC')->paginate($data['list_rows']);
 
             // 设置表格数据
-            $view->setRowList($data_list);
+            $view->setRowList($dataList);
         }
 
         // 设置头部按钮更新
@@ -72,10 +72,10 @@ class GoodsClassTag extends Admin
 
         // 设置搜索框
         $view->setSearch([
-            ['title' => '标签值', 'field' => 'gc_tag_value', 'default' => true],
-            ['title' => '一级分类ID', 'field' => 'gc_id_1', 'default' => false],
-            ['title' => '二级分类ID', 'field' => 'gc_id_2', 'default' => false],
-            ['title' => '三级分类ID', 'field' => 'gc_id_3', 'default' => false],
+            ['title' => '标签值', 'field' => 'gc_tag_value','condition'=>'like', 'default' => true],
+            ['title' => '一级分类ID', 'field' => 'gc_id_1','condition'=>'=', 'default' => false],
+            ['title' => '二级分类ID', 'field' => 'gc_id_2','condition'=>'=', 'default' => false],
+            ['title' => '三级分类ID', 'field' => 'gc_id_3','condition'=>'=', 'default' => false],
         ]);
 
         // 提示信息
@@ -144,7 +144,7 @@ class GoodsClassTag extends Admin
                 'title' => '操作',
                 'align' => 'center',
                 'type'  => 'btn',
-                'width' => 50,
+                'width' => 100,
                 'btn'   => [
                     [
                         'field'      => 'u',
@@ -188,8 +188,8 @@ class GoodsClassTag extends Admin
             }
 
             if (false !== B2b2cGoodsClassTagModel::update($save_data, ['gc_tag_id' => $gc_tag_id])) {
-                action_log('b2b2c.b2b2c_goods_class_tag_edit');// 记录行为
-                $this->refreshCache();
+                // 删除缓存
+                B2b2cGoodsClassTagModel::delCache();
                 $this->success('编辑成功', url('index'));
             } else {
                 $this->error('编辑失败');
@@ -265,11 +265,8 @@ class GoodsClassTag extends Admin
         if(!empty($data)){
             if(false !== B2b2cGoodsClassTagModel::insertAll($data)){
 
-                // 记录行为
-                action_log('b2b2c.b2b2c_goods_class_tag_reset');
-
-                // 刷新缓存
-                $this->refreshCache();
+                // 删除缓存
+                B2b2cGoodsClassTagModel::delCache();
 
                 $this->success('重置成功', url('index'));
 
@@ -314,9 +311,6 @@ class GoodsClassTag extends Admin
         }
         $B2b2cGoodsClassTagModel = new B2b2cGoodsClassTagModel();
         if(false !== $B2b2cGoodsClassTagModel->saveAll($data)){
-
-            // 记录行为
-            action_log('b2b2c.b2b2c_goods_class_tag_update');
 
             // 刷新缓存
             $this->refreshCache();

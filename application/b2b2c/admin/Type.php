@@ -23,8 +23,6 @@ class Type extends Admin
 {
     /**
      * 列表
-     * @param int $id
-     * @param int $pid
      * @return mixed
      * @throws \think\Exception
      * @throws \think\exception\DbException
@@ -37,17 +35,20 @@ class Type extends Admin
 
         if ($this->request->isAjax()) {
 
-            // 关键词搜索字段名
-            $search_field = input('param.searchField/s', '', 'trim');
-
-            // 搜索关键词
-            $keyword = input('param.searchKeyword/s', '', 'trim');
+            // 传递数据
+            $data = input();
 
             // 筛选参数设置
-            $map = [];
+            $where = [];
 
-            // 普通搜索筛选
-            if ($search_field != '' && $keyword !== '') $map[] = [$search_field, 'like', "%" . $keyword . "%"];
+            // 快捷筛选 关键词
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
+                    $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
+                } else {
+                    $where[] = [$data['searchField'], $data['searchCondition'], $data['searchKeyword']];
+                }
+            }
 
             //  排序字段
             $orderSort = input('sort/s', '', 'trim');
@@ -55,13 +56,18 @@ class Type extends Admin
             // 排序方式
             $orderMode = input('order/s', '', 'trim');
             $order     = $orderSort . ' ' . $orderMode;
-            $order     = empty($orderSort) ? 'type_sort ASC' : $order;
+            $order     = empty($orderSort) ? 'a.type_sort ASC' : $order;
 
             // 每页显示多少条
             $list_rows = input('list_rows');
 
             // 数据列表
-            $data_list = B2b2cTypeModel::where($map)->order($order)->paginate($list_rows);
+            $data_list = B2b2cTypeModel::alias('a')
+                ->field('a.*,b.gc_name')
+                ->join('b2b2c_goods_class b', 'a.gc_id = b.gc_id', 'LEFT')
+                ->where($where)
+                ->order($order)
+                ->paginate($list_rows);
 
             // 设置表格数据
             $view->setRowList($data_list);
@@ -75,8 +81,8 @@ class Type extends Admin
 
         // 设置搜索框
         $view->setSearch([
-            ['title' => 'ID', 'field' => 'type_id', 'default' => false],
-            ['title' => '类型名称', 'field' => 'type_name', 'default' => true]
+            ['title' => 'ID', 'field' => 'a.type_id', 'condition' => '=', 'default' => false],
+            ['title' => '类型名称', 'field' => 'a.type_name', 'condition' => 'like', 'default' => true]
         ]);
 
         // 提示信息
@@ -90,22 +96,22 @@ class Type extends Admin
         // 设置行内编辑地址
         $view->editableUrl(url('edit'));
 
-        // 商品分类数据
-        $goodsClassData      = B2b2cGoodsClassModel::getGoodsClassDataInfo();
-        $goodsClassDataArr   = [];
-        $goodsClassDataArr[] = ['text' => '无', 'id' => 0, 'title_prefix' => ''];
-        foreach ($goodsClassData AS $key => $value) {
-            $goodsClassDataArr[] = ['text' => $value['gc_name'], 'id' => $value['gc_id'], 'title_prefix' => $value['title_prefix']];
-        }
-
-        // 设置展示
-        $goodsClassDataSelect2 = <<<javascript
-                function(repo){
-                    console.log(repo);
-                    return  $('<span>' + repo.title_prefix + repo.text + '</span>');
-                }
-javascript;
-        $view->setJsFunctionArr([['name' => 'goodsClassDataSelect2', 'value' => $goodsClassDataSelect2]]);
+//        // 商品分类数据
+//        $goodsClassData      = B2b2cGoodsClassModel::getGoodsClassTreeDataAll();
+//        $goodsClassDataArr   = [];
+//        $goodsClassDataArr[] = ['text' => '无', 'id' => 0, 'title_prefix' => ''];
+//        foreach ($goodsClassData AS $key => $value) {
+//            $goodsClassDataArr[] = ['text' => $value['gc_name'], 'id' => $value['gc_id'], 'title_prefix' => $value['title_prefix']];
+//        }
+//
+//        // 设置展示
+//        $goodsClassDataSelect2 = <<<javascript
+//                function(repo){
+//                    console.log(repo);
+//                    return  $('<span>' + repo.title_prefix + repo.text + '</span>');
+//                }
+//javascript;
+//        $view->setJsFunctionArr([['name' => 'goodsClassDataSelect2', 'value' => $goodsClassDataSelect2]]);
 
         // 设置列
         $view->setColumn([
@@ -131,19 +137,25 @@ javascript;
                 ]
             ],
             [
-                'field'    => 'gc_id',
-                'title'    => '快捷定位',
-                'align'    => 'center',
-                'width'    => 100,
-                'editable' => [
-                    'type'    => 'select2',
-                    'select2' => [
-                        'templateResult'    => 'goodsClassDataSelect2',
-                        'templateSelection' => 'goodsClassDataSelect2'
-                    ],
-                    'source'  => $goodsClassDataArr,
-                ]
+                'field' => 'gc_name',
+                'title' => '快捷定位',
+                'align' => 'center',
             ],
+
+//            [
+//                'field'    => 'gc_id',
+//                'title'    => '快捷定位',
+//                'align'    => 'center',
+//                'width'    => 100,
+//                'editable' => [
+//                    'type'    => 'select2',
+//                    'select2' => [
+//                        'templateResult'    => 'goodsClassDataSelect2',
+//                        'templateSelection' => 'goodsClassDataSelect2'
+//                    ],
+//                    'source'  => $goodsClassDataArr,
+//                ]
+//            ],
             [
                 'field'    => 'type_sort',
                 'title'    => '排序',
@@ -177,8 +189,7 @@ javascript;
                     [
                         'field'      => 'c',
                         'text'       => '设置属性',
-                        'ico'        => 'fa fa-edit',
-                        'class'      => 'btn btn-xs blue',
+                        'class'      => 'btn btn-primary',
                         'url'        => url('attribute'),
                         'query_data' => '{"field":["type_id"]}',
                         'query_jump' => 'form',
@@ -187,8 +198,7 @@ javascript;
                     [
                         'field'      => 'c',
                         'text'       => '自定义属性',
-                        'ico'        => 'fa fa-edit',
-                        'class'      => 'btn btn-xs purple',
+                        'class'      => 'btn btn-primary',
                         'url'        => url('custom'),
                         'query_data' => '{"field":["type_id"]}',
                         'query_jump' => 'form',
@@ -205,6 +215,10 @@ javascript;
      * 编辑
      * @param int $type_id 类型id
      * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      * @author 仇仇天
      */
     public function edit($type_id = 0)
@@ -268,11 +282,8 @@ javascript;
                     B2b2cTypeSpecModel::delCache();
                 }
 
-                // 记录行为
-                action_log('b2b2c.b2b2c_type_edit');
-
-                // 刷新缓存
-                $this->refreshCache();
+                // 删除缓存
+                B2b2cTypeModel::delCache();
 
                 $this->success('编辑成功', url('index'));
             } else {
@@ -315,23 +326,23 @@ javascript;
         ]);
 
         // 商品分类数据
-        $pids                = B2b2cGoodsClassModel::getGoodsClassDataInfo();
+        $goodsClassTopData   = B2b2cGoodsClassModel::getGoodsClassTreeDataAll();
         $goodsClassDataArr   = [];
         $goodsClassDataArr[] = ['title' => '无', 'value' => 0];
-        foreach ($pids AS $key => $value) {
-            $goodsClassDataArr[] = ['title' => $value['title_display'], 'value' => $value['type_id']];
+        foreach ($goodsClassTopData AS $key => $value) {
+            $goodsClassDataArr[] = ['title' => $value['title_display'], 'value' => $value['gc_id']];
         }
 
         // 所有品牌
         $BrandArr  = [];
-        $BrandData = B2b2cBrandModel::getBrandDataInfo();
+        $BrandData = B2b2cBrandModel::getBrandDataAll();
         foreach ($BrandData as $brand_k => $brand_v) {
             $BrandArr[] = ['title' => $brand_v['brand_name'], 'value' => $brand_v['brand_id']];
         }
 
         // 所有规格
         $SpecArr  = [];
-        $SpecData = B2b2cSpecModel::getSpecDataInfo();
+        $SpecData = B2b2cSpecModel::getSpecDataAll();
         foreach ($SpecData as $spec_k => $spec_v) {
             $SpecArr[] = ['title' => $spec_v['sp_name'], 'value' => $spec_v['sp_id']];
         }
@@ -439,8 +450,8 @@ javascript;
                 // 记录行为
                 action_log('b2b2c.b2b2c_type_add');
 
-                // 刷新缓存
-                $this->refreshCache();
+                // 删除缓存
+                B2b2cTypeModel::delCache();
 
                 $this->success('新增成功', url('index'));
             } else {
@@ -569,9 +580,10 @@ javascript;
         }
     }
 
+
     /**
      * 属性列表
-     * @param int $type_id
+     * @param int $type_id 类型id
      * @author 仇仇天
      */
     public function attribute($type_id = 0)
@@ -579,47 +591,71 @@ javascript;
 
         if ($type_id === 0) $this->error('参数错误');
 
-        $view = ZBuilder::make('tables');  // 初始化 表格
+        // 初始化 表格
+        $view = ZBuilder::make('tables');
+
         if ($this->request->isAjax()) {
 
-            // 筛选参数
-            $search_field = input('param.searchField/s', '', 'trim'); // 关键词搜索字段名
-            $keyword      = input('param.searchKeyword/s', '', 'trim'); // 搜索关键词
+            // 传递数据
+            $data = input();
 
-            $map   = [];// 筛选参数设置
-            $map[] = ['a.type_id', '=', $type_id];
-            if ($search_field != '' && $keyword !== '') {
-                if ($search_field == 'attr_name') {
-                    $map[] = ['a.attr_name', 'like', "%" . $keyword . "%"];  // 普通搜索筛选
+            // 筛选参数设置
+            $where = [];
+
+            $where[] = ['a.type_id', '=', $type_id];
+
+            // 快捷筛选 关键词
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
+                    $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
+                } else {
+                    $where[] = [$data['searchField'], $data['searchCondition'], $data['searchKeyword']];
                 }
             }
 
-            $list_rows = input('list_rows'); // 每页显示多少条
+            //  排序字段
+            $orderSort = input('sort/s', '', 'trim');
+
+            // 排序方式
+            $orderMode = input('order/s', '', 'trim');
+            $order     = $orderSort . ' ' . $orderMode;
+            $order     = empty($orderSort) ? 'a.attr_sort ASC' : $order;
 
             // 数据列表
-            $data_list = B2b2cAttributeModel::alias('a')
+            $dataList = B2b2cAttributeModel::alias('a')
                 ->field('a.*,b.type_name')
-                ->join('b2b2c_type b', 'a.type_id = b.type_id')
-                ->where($map)
-                ->paginate($list_rows);
-            $view->setRowList($data_list);// 设置表格数据
+                ->join('b2b2c_type b', 'a.type_id = b.type_id', 'LEFT')
+                ->where($where)
+                ->order($order)
+                ->paginate($data['list_rows']);
+
+            // 设置表格数据
+            $view->setRowList($dataList);
         }
 
-        //设置头部按钮
-        $view->addTopButton('add', ['url' => url('attributeadd', ['type_id' => $type_id])]); // 新增
+        //设置头部按钮新增
+        $view->addTopButton('add', ['url' => url('attributeadd', ['type_id' => $type_id])]);
 
         // 设置搜索框
         $view->setSearch([
-            ['title' => '属性名称', 'field' => 'attr_name', 'default' => true]
+            ['title' => '属性名称', 'field' => 'a.attr_name', 'condition' => 'like', 'default' => true]
         ]);
 
         // 提示信息
         $view->setExplanation([
             '属性的“显示”选项，该属性将会在商品列表页显示',
         ]);
-        $view->setReturnUrl(url('index')); // 设置返回地址
-        $view->editableUrl(url('attributeedit')); // 设置行内编辑地址
-        $view->setPageTitle('属性列表'); // 设置页面标题
+
+        // 设置返回地址
+        $view->setReturnUrl(url('index'));
+
+        // 设置行内编辑地址
+        $view->editableUrl(url('attributeedit'));
+
+        // 设置页面标题
+        $view->setPageTitle('属性列表');
+
+        // 设置列
         $view->setColumn([
             [
                 'field' => 'type_name',
@@ -638,6 +674,7 @@ javascript;
                 'field'    => 'attr_sort',
                 'title'    => '排序',
                 'align'    => 'center',
+                'sortable' => true,
                 'editable' => [
                     'type' => 'number'
                 ]
@@ -673,8 +710,7 @@ javascript;
                     [
                         'field'      => 'c',
                         'text'       => '设置属性值',
-                        'ico'        => 'fa fa-edit',
-                        'class'      => 'btn btn-xs blue',
+                        'class'      => 'btn btn-primary',
                         'url'        => url('attributevalue'),
                         'query_data' => '{"field":["attr_id","type_id"]}',
                         'query_jump' => 'form',
@@ -682,7 +718,8 @@ javascript;
                     ],
                 ]
             ]
-        ]); // 设置列
+        ]);
+
         return $view->fetch();
     }
 
@@ -706,33 +743,57 @@ javascript;
 
             // 是否行内修改
             if (!empty($data['extend_field'])) {
+
                 $save_data[$data['extend_field']] = $data[$data['extend_field']];
-                $result                           = $this->validate($data, 'Attribute.' . $data['extend_field']); // 验证
-                if (true !== $result) $this->error($result);// 验证提示报错
+
+                // 验证
+                $result = $this->validate($data, 'Attribute.' . $data['extend_field']);
+
+                // 验证提示报错
+                if (true !== $result) $this->error($result);
+
             } // 普通编辑
             else {
                 $save_data['attr_name'] = $data['attr_name'];
                 $save_data['attr_show'] = $data['attr_show'];
                 $save_data['attr_sort'] = $data['attr_sort'];
                 $save_data['type_id']   = $type_id;
-                $result                 = $this->validate($save_data, 'Attribute'); // 验证
-                if (true !== $result) $this->error($result);// 验证提示报错
+
+                // 验证
+                $result = $this->validate($save_data, 'Attribute');
+
+                // 验证提示报错
+                if (true !== $result) $this->error($result);
             }
 
             if (false !== B2b2cAttributeModel::update($save_data, ['attr_id' => $attr_id])) {
-                action_log('b2b2c.b2b2c_type_attribute_edit');// 记录行为
+
+                // 删除缓存
+                B2b2cAttributeModel::delCache();
+
                 $this->success('编辑成功', url('attribute', ['type_id' => $type_id]));
             } else {
                 $this->error('编辑失败');
             }
         }
 
-        $info = B2b2cAttributeModel::where(['attr_id' => $attr_id])->find(); // 获取数据
-        $form = ZBuilder::make('forms'); // 使用ZBuilder快速创建表单
-        $form->setPageTitle('属性 - 编辑'); // 设置页面标题
-        $form->setReturnUrl(url('attribute', ['type_id' => $type_id])); // 设置返回地址
-        $form->setFormUrl(url('attributeedit')); // 设置 提交地址
-        $form->setFormHiddenData([['name' => 'type_id', 'value' => $type_id], ['name' => 'attr_id', 'value' => $attr_id]]); // 设置隐藏表单数据
+        // 获取数据
+        $info = B2b2cAttributeModel::where(['attr_id' => $attr_id])->find();
+
+        // 使用ZBuilder快速创建表单
+        $form = ZBuilder::make('forms');
+
+        // 设置页面标题
+        $form->setPageTitle('属性 - 编辑');
+
+        // 设置返回地址
+        $form->setReturnUrl(url('attribute', ['type_id' => $type_id]));
+
+        // 设置 提交地址
+        $form->setFormUrl(url('attributeedit'));
+
+        // 设置隐藏表单数据
+        $form->setFormHiddenData([['name' => 'type_id', 'value' => $type_id], ['name' => 'attr_id', 'value' => $attr_id]]);
 
         // 设置表单项
         $form->addFormItems([
@@ -764,7 +825,10 @@ javascript;
                 'tips'      => '数字范围为0~255，数字越小越靠前'
             ]
         ]);
-        $form->setFormdata($info); // 设置表单数据
+
+        // 设置表单数据
+        $form->setFormdata($info);
+
         return $form->fetch();
     }
 
@@ -777,6 +841,7 @@ javascript;
     public function attributeAdd($type_id = 0)
     {
         if ($type_id === 0) $this->error('参数错误');
+
         if ($this->request->isPost()) {
             // 表单数据
             $data                   = $this->request->post();
@@ -785,21 +850,39 @@ javascript;
             $save_data['attr_show'] = $data['attr_show'];
             $save_data['attr_sort'] = $data['attr_sort'];
             $save_data['type_id']   = $data['type_id'];
-            $result                 = $this->validate($save_data, 'Attribute'); // 验证
-            if (true !== $result) $this->error($result);// 验证提示报错
+
+            // 验证
+            $result = $this->validate($save_data, 'Attribute');
+            // 验证提示报错
+            if (true !== $result) $this->error($result);
 
             if (false !== B2b2cAttributeModel::insert($save_data)) {
-                action_log('b2b2c.b2b2c_type_attribute_add');// 记录行为
+
+                // 删除缓存
+                B2b2cAttributeModel::delCache();
+
                 $this->success('新增成功', url('attribute', ['type_id' => $type_id]));
             } else {
                 $this->error('新增失败');
             }
         }
-        $form = ZBuilder::make('forms'); // 使用ZBuilder快速创建表单
-        $form->setPageTitle('属性 - 新增'); // 设置页面标题
-        $form->setReturnUrl(url('attribute', ['type_id' => $type_id])); // 设置返回地址
-        $form->setFormUrl(url('attributeadd')); // 设置 提交地址
-        $form->setFormHiddenData([['name' => 'type_id', 'value' => $type_id]]); // 设置隐藏表单数据
+
+        // 使用ZBuilder快速创建表单
+        $form = ZBuilder::make('forms');
+
+        // 设置页面标题
+        $form->setPageTitle('属性 - 新增');
+
+        // 设置返回地址
+        $form->setReturnUrl(url('attribute', ['type_id' => $type_id]));
+
+
+        // 设置 提交地址
+        $form->setFormUrl(url('attributeadd'));
+
+        // 设置隐藏表单数据
+        $form->setFormHiddenData([['name' => 'type_id', 'value' => $type_id]]);
+
         // 设置表单项
         $form->addFormItems([
             [
@@ -832,6 +915,7 @@ javascript;
                 'tips'      => '数字范围为0~255，数字越小越靠前'
             ]
         ]);
+
         return $form->fetch();
     }
 
@@ -848,7 +932,9 @@ javascript;
             ['attr_id', '=', $data['attr_id']]
         ];
         if (false !== B2b2cAttributeModel::del($map)) {
-            action_log('b2b2c.b2b2c_type_attribute_del');
+            // 删除缓存
+            B2b2cAttributeModel::delCache();
+
             $this->success('删除成功');
         } else {
             $this->error('操作失败，请重试');
@@ -866,44 +952,67 @@ javascript;
 
         if ($type_id == 0 || $type_id == 0) $this->error('参数错误');
 
-        $view = ZBuilder::make('tables');  // 初始化 表格
+        // 初始化 表格
+        $view = ZBuilder::make('tables');
+
         if ($this->request->isAjax()) {
 
-            // 筛选参数
-            $search_field = input('param.searchField/s', '', 'trim'); // 关键词搜索字段名
-            $keyword      = input('param.searchKeyword/s', '', 'trim'); // 搜索关键词
+            // 传递数据
+            $data = input();
 
-            $map   = [];// 筛选参数设置
-            $map[] = ['a.type_id', '=', $type_id];
-            $map[] = ['a.attr_id', '=', $attr_id];
-            if ($search_field != '' && $keyword !== '') {
-                if ($search_field == 'attr_value') {
-                    $map[] = ['a.attr_value', 'like', "%" . $keyword . "%"];  // 普通搜索筛选
+            // 筛选参数设置
+            $where = [];
+
+            $where[] = ['a.type_id', '=', $type_id];
+            $where[] = ['a.attr_id', '=', $attr_id];
+
+            // 快捷筛选 关键词
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
+                    $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
+                } else {
+                    $where[] = [$data['searchField'], $data['searchCondition'], $data['searchKeyword']];
                 }
             }
 
-            $list_rows = input('list_rows'); // 每页显示多少条
+            //  排序字段
+            $orderSort = input('sort/s', '', 'trim');
+
+            // 排序方式
+            $orderMode = input('order/s', '', 'trim');
+            $order     = $orderSort . ' ' . $orderMode;
+            $order     = empty($orderSort) ? 'a.attr_value_sort ASC' : $order;
 
             // 数据列表
-            $data_list = B2b2cAttributeValueModel::alias('a')
+            $dataList = B2b2cAttributeValueModel::alias('a')
                 ->field('a.*,b.type_name')
-                ->join('b2b2c_type b', 'a.type_id = b.type_id')
-                ->join('b2b2c_attribute c', 'a.attr_id = c.attr_id')
-                ->where($map)
-                ->paginate($list_rows);
-            $view->setRowList($data_list);// 设置表格数据
+                ->join('b2b2c_type b', 'a.type_id = b.type_id','LEFT')
+                ->join('b2b2c_attribute c', 'a.attr_id = c.attr_id','LEFT')
+                ->where($where)
+                ->order($order)
+                ->paginate($data['list_rows']);
+            // 设置表格数据
+            $view->setRowList($dataList);
         }
 
-        //设置头部按钮
-        $view->addTopButton('add', ['url' => url('attributevalueadd', ['attr_id' => $attr_id, 'type_id' => $type_id])]); // 新增
+        //设置头部按钮新增
+        $view->addTopButton('add', ['url' => url('attributevalueadd', ['attr_id' => $attr_id, 'type_id' => $type_id])]);
 
         // 设置搜索框
         $view->setSearch([
-            ['title' => '属性值', 'field' => 'attr_value', 'default' => true]
+            ['title' => '属性值', 'field' => 'a.attr_value', 'condition' => 'like', 'default' => true]
         ]);
-        $view->setReturnUrl(url('attribute', ['attr_id' => $attr_id, 'type_id' => $type_id])); // 设置返回地址
-        $view->editableUrl(url('attributevalueedit')); // 设置行内编辑地址
-        $view->setPageTitle('属性列表'); // 设置页面标题
+
+        // 设置返回地址
+        $view->setReturnUrl(url('attribute', ['attr_id' => $attr_id, 'type_id' => $type_id]));
+
+        // 设置行内编辑地址
+        $view->editableUrl(url('attributevalueedit'));
+
+        // 设置页面标题
+        $view->setPageTitle('属性列表');
+
+        // 设置列
         $view->setColumn([
             [
                 'field' => 'type_name',
@@ -922,6 +1031,7 @@ javascript;
                 'field'    => 'attr_value_sort',
                 'title'    => '排序',
                 'align'    => 'center',
+                'sortable' => true,
                 'editable' => [
                     'type' => 'number'
                 ]
@@ -947,7 +1057,8 @@ javascript;
                     ],
                 ]
             ]
-        ]); // 设置列
+        ]);
+
         return $view->fetch();
     }
 
@@ -971,9 +1082,15 @@ javascript;
 
             // 是否行内修改
             if (!empty($data['extend_field'])) {
+
                 $save_data[$data['extend_field']] = $data[$data['extend_field']];
-                $result                           = $this->validate($data, 'AttributeValue.' . $data['extend_field']); // 验证
-                if (true !== $result) $this->error($result);// 验证提示报错
+
+                // 验证
+                $result                           = $this->validate($data, 'AttributeValue.' . $data['extend_field']);
+
+                // 验证提示报错
+                if (true !== $result) $this->error($result);
+
             } // 普通编辑
             else {
                 $save_data['attr_value']      = $data['attr_value'];
@@ -981,23 +1098,39 @@ javascript;
                 $save_data['type_id']         = $type_id;
                 $save_data['attr_id']         = $attr_id;
 
-                $result = $this->validate($save_data, 'AttributeValue'); // 验证
-                if (true !== $result) $this->error($result);// 验证提示报错
+                // 验证
+                $result = $this->validate($save_data, 'AttributeValue');
+
+                // 验证提示报错
+                if (true !== $result) $this->error($result);
             }
 
             if (false !== B2b2cAttributeValueModel::update($save_data, ['attr_value_id' => $attr_value_id])) {
-                action_log('b2b2c.b2b2c_type_attribute_value_edit');// 记录行为
+
+                // 删除缓存
+                B2b2cAttributeValueModel::delCache();
+
                 $this->success('编辑成功', url('attributevalue', ['type_id' => $type_id, 'attr_id' => $attr_id]));
             } else {
                 $this->error('编辑失败');
             }
         }
 
-        $info = B2b2cAttributeValueModel::where(['attr_value_id' => $attr_value_id])->find(); // 获取数据
-        $form = ZBuilder::make('forms'); // 使用ZBuilder快速创建表单
-        $form->setPageTitle('属性值 - 编辑'); // 设置页面标题
-        $form->setReturnUrl(url('attributevalue', ['type_id' => $type_id, 'attr_id' => $attr_id])); // 设置返回地址
-        $form->setFormUrl(url('attributevalueedit')); // 设置 提交地址
+        // 获取数据
+        $info = B2b2cAttributeValueModel::where(['attr_value_id' => $attr_value_id])->find();
+
+        // 使用ZBuilder快速创建表单
+        $form = ZBuilder::make('forms');
+
+        // 设置页面标题
+        $form->setPageTitle('属性值 - 编辑');
+
+        // 设置返回地址
+        $form->setReturnUrl(url('attributevalue', ['type_id' => $type_id, 'attr_id' => $attr_id]));
+
+        // 设置 提交地址
+        $form->setFormUrl(url('attributevalueedit'));
+
         // 设置隐藏表单数据
         $form->setFormHiddenData([
             ['name' => 'type_id', 'value' => $type_id],
@@ -1022,7 +1155,10 @@ javascript;
                 'tips'      => '数字范围为0~255，数字越小越靠前'
             ]
         ]);
-        $form->setFormdata($info); // 设置表单数据
+
+        // 设置表单数据
+        $form->setFormdata($info);
+
         return $form->fetch();
     }
 
@@ -1035,6 +1171,7 @@ javascript;
     public function attributeValueAdd($attr_id = 0, $type_id = 0)
     {
         if ($type_id == 0 || $attr_id == 0) $this->error('参数错误');
+
         if ($this->request->isPost()) {
             // 表单数据
             $data                         = $this->request->post();
@@ -1043,20 +1180,35 @@ javascript;
             $save_data['attr_value_sort'] = $data['attr_value_sort'];
             $save_data['type_id']         = $type_id;
             $save_data['attr_id']         = $attr_id;
-            $result                       = $this->validate($save_data, 'AttributeValue'); // 验证
-            if (true !== $result) $this->error($result);// 验证提示报错
+
+            // 验证
+            $result                       = $this->validate($save_data, 'AttributeValue');
+
+            // 验证提示报错
+            if (true !== $result) $this->error($result);
 
             if (false !== B2b2cAttributeValueModel::insert($save_data)) {
-                action_log('b2b2c.b2b2c_type_attribute_value_add');// 记录行为
+
+                // 删除缓存
+                B2b2cAttributeValueModel::delCache();
+
                 $this->success('新增成功', url('attributevalue', ['type_id' => $type_id, 'attr_id' => $attr_id]));
             } else {
                 $this->error('新增失败');
             }
         }
-        $form = ZBuilder::make('forms'); // 使用ZBuilder快速创建表单
-        $form->setPageTitle('属性 - 新增'); // 设置页面标题
-        $form->setReturnUrl(url('attributevalue', ['type_id' => $type_id, 'attr_id' => $attr_id])); // 设置返回地址
-        $form->setFormUrl(url('attributevalueadd')); // 设置 提交地址
+
+        // 使用ZBuilder快速创建表单
+        $form = ZBuilder::make('forms');
+
+        // 设置页面标题
+        $form->setPageTitle('属性 - 新增');
+
+        // 设置返回地址
+        $form->setReturnUrl(url('attributevalue', ['type_id' => $type_id, 'attr_id' => $attr_id]));
+
+        // 设置 提交地址
+        $form->setFormUrl(url('attributevalueadd'));
 
         // 设置隐藏表单数据
         $form->setFormHiddenData([
@@ -1081,6 +1233,7 @@ javascript;
                 'tips'      => '数字范围为0~255，数字越小越靠前'
             ]
         ]);
+
         return $form->fetch();
     }
 
@@ -1097,7 +1250,8 @@ javascript;
             ['attr_value_id', '=', $data['attr_value_id']]
         ];
         if (false !== B2b2cAttributeValueModel::del($map)) {
-            action_log('b2b2c.b2b2c_type_attribute_value_del');
+            // 删除缓存
+            B2b2cAttributeValueModel::delCache();
             $this->success('删除成功');
         } else {
             $this->error('删除失败，请重试');
@@ -1115,47 +1269,71 @@ javascript;
 
         if ($type_id === 0) $this->error('参数错误');
 
-        $view = ZBuilder::make('tables');  // 初始化 表格
+        // 初始化 表格
+        $view = ZBuilder::make('tables');
+
         if ($this->request->isAjax()) {
 
-            // 筛选参数
-            $search_field = input('param.searchField/s', '', 'trim'); // 关键词搜索字段名
-            $keyword      = input('param.searchKeyword/s', '', 'trim'); // 搜索关键词
+            // 传递数据
+            $data = input();
 
-            $map   = [];// 筛选参数设置
-            $map[] = ['a.type_id', '=', $type_id];
-            if ($search_field != '' && $keyword !== '') {
-                if ($search_field == 'custom_name') {
-                    $map[] = ['a.custom_name', 'like', "%" . $keyword . "%"];  // 普通搜索筛选
+            // 筛选参数设置
+            $where = [];
+
+            $where[] = ['a.type_id', '=', $type_id];
+
+            // 快捷筛选 关键词
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
+                    $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
+                } else {
+                    $where[] = [$data['searchField'], $data['searchCondition'], $data['searchKeyword']];
                 }
             }
 
-            $list_rows = input('list_rows'); // 每页显示多少条
+            //  排序字段
+            $orderSort = input('sort/s', '', 'trim');
+
+            // 排序方式
+            $orderMode = input('order/s', '', 'trim');
+            $order     = $orderSort . ' ' . $orderMode;
+            $order     = empty($orderSort) ? 'a.custom_id ASC' : $order;
 
             // 数据列表
             $data_list = B2b2cTypeCustomModel::alias('a')
                 ->field('a.*,b.type_name')
-                ->join('b2b2c_type b', 'a.type_id = b.type_id')
-                ->where($map)
-                ->paginate($list_rows);
-            $view->setRowList($data_list);// 设置表格数据
+                ->join('b2b2c_type b', 'a.type_id = b.type_id','LEFT')
+                ->where($where)
+                ->order($order)
+                ->paginate($data['list_rows']);
+
+            // 设置表格数据
+            $view->setRowList($data_list);
         }
 
-        //设置头部按钮
-        $view->addTopButton('add', ['url' => url('customadd', ['type_id' => $type_id])]); // 新增
+        //设置头部按钮新增
+        $view->addTopButton('add', ['url' => url('customadd', ['type_id' => $type_id])]);
 
         // 设置搜索框
         $view->setSearch([
-            ['title' => '自定义属性名称', 'field' => 'custom_name', 'default' => true]
+            ['title' => '自定义属性名称', 'field' => 'custom_name', 'condition' => 'like', 'default' => true]
         ]);
 
         // 提示信息
         $view->setExplanation([
             '自定义属性的属性值由商家自行填写。注意：自定义属性不作为商品检索项使用',
         ]);
-        $view->setReturnUrl(url('index')); // 设置返回地址
-        $view->editableUrl(url('customedit')); // 设置行内编辑地址
-        $view->setPageTitle('自定义属性列表'); // 设置页面标题
+
+        // 设置返回地址
+        $view->setReturnUrl(url('index'));
+
+        // 设置行内编辑地址
+        $view->editableUrl(url('customedit'));
+
+        // 设置页面标题
+        $view->setPageTitle('自定义属性列表');
+
+        // 设置列
         $view->setColumn([
             [
                 'field' => 'type_name',
@@ -1191,7 +1369,8 @@ javascript;
                     ],
                 ]
             ]
-        ]); // 设置列
+        ]);
+
         return $view->fetch();
     }
 
@@ -1227,19 +1406,30 @@ javascript;
             }
 
             if (false !== B2b2cTypeCustomModel::update($save_data, ['custom_id' => $custom_id])) {
-                action_log('b2b2c.b2b2c_type_custom_edit');// 记录行为
+                B2b2cTypeCustomModel::delCache();
                 $this->success('编辑成功', url('custom', ['type_id' => $type_id]));
             } else {
                 $this->error('编辑失败');
             }
         }
 
-        $info = B2b2cTypeCustomModel::where(['custom_id' => $custom_id])->find(); // 获取数据
-        $form = ZBuilder::make('forms'); // 使用ZBuilder快速创建表单
-        $form->setPageTitle('自定义属性 - 编辑'); // 设置页面标题
-        $form->setReturnUrl(url('custom', ['type_id' => $type_id])); // 设置返回地址
-        $form->setFormUrl(url('customedit')); // 设置 提交地址
-        $form->setFormHiddenData([['name' => 'type_id', 'value' => $type_id], ['name' => 'custom_id', 'value' => $custom_id]]); // 设置隐藏表单数据
+        // 获取数据
+        $info = B2b2cTypeCustomModel::where(['custom_id' => $custom_id])->find();
+
+        // 使用ZBuilder快速创建表单
+        $form = ZBuilder::make('forms');
+
+        // 设置页面标题
+        $form->setPageTitle('自定义属性 - 编辑');
+
+        // 设置返回地址
+        $form->setReturnUrl(url('custom', ['type_id' => $type_id]));
+
+        // 设置 提交地址
+        $form->setFormUrl(url('customedit'));
+
+        // 设置隐藏表单数据
+        $form->setFormHiddenData([['name' => 'type_id', 'value' => $type_id], ['name' => 'custom_id', 'value' => $custom_id]]);
 
         // 设置表单项
         $form->addFormItems([
@@ -1251,7 +1441,10 @@ javascript;
                 'title'     => '自定义属性名称',
             ]
         ]);
-        $form->setFormdata($info); // 设置表单数据
+
+        // 设置表单数据
+        $form->setFormdata($info);
+
         return $form->fetch();
     }
 
@@ -1264,27 +1457,46 @@ javascript;
     public function customAdd($type_id = 0)
     {
         if ($type_id === 0) $this->error('参数错误');
+
         if ($this->request->isPost()) {
             // 表单数据
             $data                     = $this->request->post();
             $save_data                = [];
             $save_data['custom_name'] = $data['custom_name'];
             $save_data['type_id']     = $type_id;
-            $result                   = $this->validate($save_data, 'Custom'); // 验证
-            if (true !== $result) $this->error($result);// 验证提示报错
+
+            // 验证
+            $result                   = $this->validate($save_data, 'Custom');
+
+            // 验证提示报错
+            if (true !== $result) $this->error($result);
 
             if (false !== B2b2cTypeCustomModel::insert($save_data)) {
-                action_log('b2b2c.b2b2c_type_custom_add');// 记录行为
+
+                // 删除缓存
+                B2b2cTypeCustomModel::delCache();
+
                 $this->success('新增成功', url('custom', ['type_id' => $type_id]));
             } else {
                 $this->error('新增失败');
             }
         }
-        $form = ZBuilder::make('forms'); // 使用ZBuilder快速创建表单
-        $form->setPageTitle('属性 - 新增'); // 设置页面标题
-        $form->setReturnUrl(url('custom', ['type_id' => $type_id])); // 设置返回地址
-        $form->setFormUrl(url('customadd')); // 设置 提交地址
-        $form->setFormHiddenData([['name' => 'type_id', 'value' => $type_id]]); // 设置隐藏表单数据
+
+        // 使用ZBuilder快速创建表单
+        $form = ZBuilder::make('forms');
+
+        // 设置页面标题
+        $form->setPageTitle('属性 - 新增');
+
+        // 设置返回地址
+        $form->setReturnUrl(url('custom', ['type_id' => $type_id]));
+
+        // 设置 提交地址
+        $form->setFormUrl(url('customadd'));
+
+        // 设置隐藏表单数据
+        $form->setFormHiddenData([['name' => 'type_id', 'value' => $type_id]]);
+
         // 设置表单项
         $form->addFormItems([
             [
@@ -1295,6 +1507,7 @@ javascript;
                 'title'     => '自定义属性名称',
             ]
         ]);
+
         return $form->fetch();
     }
 
@@ -1311,20 +1524,11 @@ javascript;
             ['custom_id', '=', $data['custom_id']]
         ];
         if (false !== B2b2cTypeCustomModel::del($map)) {
-            action_log('b2b2c.b2b2c_type_custom_del');
+            // 删除缓存
+            B2b2cTypeCustomModel::delCache();
             $this->success('删除成功');
         } else {
             $this->error('操作失败，请重试');
         }
-    }
-
-
-    /**
-     * 刷新缓存
-     * @author 仇仇天
-     */
-    private function refreshCache()
-    {
-        B2b2cTypeModel::delCache();// 删除缓存
     }
 }

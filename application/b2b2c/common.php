@@ -14,40 +14,54 @@ function getB2b2cImg($file_path='',$param=[])
     if(!empty($param['type'])){
         switch ($param['type'])
         {
-            case 'goods': // 商品图片
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/default_goods_image.gif';
+            // 商品图片
+            case 'goods':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/default_goods_image.gif';
                 break;
-            case 'goods_class': // 商品分类图片
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/default_goods_class.gif';
+            // 商品分类图片
+            case 'goods_class':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/default_goods_class.gif';
                 break;
-            case 'goods_category': // 商品分类分组图片
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/default_goods_class.gif';
+            // 商品分类分组图片
+            case 'goods_category':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/default_goods_class.gif';
                 break;
-            case 'goods_brand': // 商品分类广告图片
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/default_goods_class.gif';
+            // 商品分类广告图片
+            case 'goods_brand':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/default_goods_class.gif';
                 break;
-            case 'aclass_cover': // 相册封面
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/default_aclass_cover.gif';
+            // 相册封面
+            case 'aclass_cover':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/default_aclass_cover.gif';
                 break;
-            case 'aclass': // 相册图片
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/default_aclass.gif';
+            // 相册图片
+            case 'aclass':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/default_aclass.gif';
                 break;
-            case 'video': // 视频
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/default_video.gif';
+            // 视频
+            case 'video':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/default_video.gif';
                 break;
-            case 'brand': // 品牌图片
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/default_brand_image.gif';
+            // 品牌图片
+            case 'brand':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/default_brand_image.gif';
                 break;
-            case 'brand_bgpic': // 品牌大图
-                $param['default'] = $upload_dir.'/'.config('b2b2c.brand_common_path').'/brand_default_max.gif';
+            // 品牌大图
+            case 'brand_bgpic':
+                $param['default'] = $upload_dir.'/'.config('b2b2c.common_path').'/brand_default_max.gif';
                 break;
-            case 'store_avatar': // 店铺头像
+            // 店铺头像
+            case 'store_avatar':
                 $param['default'] = $upload_dir.'/'.config('b2b2c.store_avatar_path').'/store_avatar_default.gif';
                 break;
-            case 'store_logo': // 店铺log
+            // 店铺log
+            case 'store_logo':
                 $param['default'] = $upload_dir.'/'.config('b2b2c.store_avatar_path').'/store_logo_default.gif';
                 break;
-
+            // 店铺等级图标
+            case 'store_ioc':
+                $param['default'] = '';
+                break;
 
         }
     }

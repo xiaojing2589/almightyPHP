@@ -15,10 +15,27 @@ class AdminMenu extends Model
     // 设置当前模型对应的完整数据表名称
     protected $table = '__ADMIN_MENU__';
 
-    protected static $cacheName = 'admin_menu'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'admin_menu';
 
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
+
+    /**
+     * @describe 获取状态开启所有菜单
+     * @author 仇仇天
+     */
+    public static function getStatusMenu(){
+        $adminMenuData = rcache('admin_menu'); // 全部节点数据
+        $topMenu = []; // 所有顶部菜单节点数据
+        foreach ($adminMenuData as $key=>$value){
+            if($value['status'] == 1){
+                $topMenu[$key] = $value;
+            }
+        }
+        return $topMenu;
+    }
+
 
     // 将节点url转为小写
     public function setUrlValueAttr($value)
@@ -173,21 +190,6 @@ class AdminMenu extends Model
     }
 
     /**
-     * @describe 获取状态开启所有菜单
-     * @author 仇仇天
-     */
-    public static function getStatusMenu(){
-        $adminMenuData = rcache('admin_menu'); // 全部节点数据
-        $topMenu = []; // 所有顶部菜单节点数据
-        foreach ($adminMenuData as $key=>$value){
-            if($value['status'] == 1){
-                $topMenu[$key] = $value;
-            }
-        }
-        return $topMenu;
-    }
-
-    /**
      * @describe 获取指定节点ID的位置
      * @author 仇仇天
      * @param string $id 节点id，如果没有指定，则取当前节点id
@@ -227,19 +229,24 @@ class AdminMenu extends Model
 
 
 
+
+
+
     /**
-     * @describe 根据分组获取节点
+     * 根据分组获取节点
+     * @author 仇仇天
      * @param string $group 分组名称
      * @param bool|string $fields 要返回的字段
      * @param array $map 查找条件
      * @return array
-     * @author 仇仇天
      */
     public static function getMenusByGroup($group = '', $fields = true, $map = [])
     {
         $map['module'] = $group;
         return self::where($map)->order('sort,id')->column($fields, 'id');
     }
+
+
 
     /**
      * @describe 获取节点分组

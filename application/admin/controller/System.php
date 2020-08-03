@@ -4,11 +4,15 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\ZBuilder;
-use app\common\model\AdminConfig as AdminConfigModel;
-use app\common\model\AdminModule as AdminModuleModel;
+use app\admin\model\AdminConfig as AdminConfigModel;
+use app\admin\model\AdminConfigGroup as AdminConfigGroupModel;
+use app\admin\model\AdminModule as AdminModuleModel;
+
 
 /**
  * 系统模块控制器
+ * Class System
+ * @package app\admin\controller
  */
 class System extends Admin
 {
@@ -238,9 +242,6 @@ class System extends Admin
             // 删除缓存
             AdminConfigModel::delCache();
 
-            // 记录行为
-            adminActionLog('admin.system_config_update');
-
             // 跳转
             $this->success('更新成功', url('index', ['module_group' => $module_group]));
         }
@@ -258,22 +259,27 @@ class System extends Admin
         $where['is_hide'] = 0;
 
         // 数据列表
-        $data_list = AdminConfigModel::where($where)->field('*')->order('sort asc,id asc')->select();
+        $dataList = AdminConfigModel::where($where)->field('*')->order('sort asc,id asc')->select();
 
         // 设置字段
         $FormItem = [];
-        foreach ($data_list as $key => $value) {
+
+        // 获取所有开启的模块数据
+        $getModuleDataInfoAll = AdminModuleModel::getOpenModuleAll();
+
+        foreach ($dataList as $key => $value) {
 
             // 前台默认模块 单独设置
-            if ($value['name'] == 'home_default_module') {
-                $optionsArr   = [];
-                $optionsArr[] = ['title' => '默认', 'value' => 'index'];
-                foreach (AdminModuleModel::getModuleDataInfo() as $module_key => $module_value) {
-                    $optionsArr[] = ['title' => $module_value['title'], 'value' => $module_value['name']];
-                }
-                $options = $optionsArr;
-            }
+//            if ($value['name'] == 'home_default_module') {
+//                $optionsArr   = [];
+//                $optionsArr[] = ['title' => '默认', 'value' => 'index'];
+//                foreach ($getModuleDataInfoAll as $module_key => $module_value) {
+//                    $optionsArr[] = ['title' => $module_value['title'], 'value' => $module_value['name']];
+//                }
+//                $options = $optionsArr;
+//            }
 
+            // 选项
             $options = json_decode($value['options'], true);
 
             $FormItemLS = [
@@ -300,7 +306,7 @@ class System extends Admin
 
         // 设置字段值
         $FormItemVlue = [];
-        foreach ($data_list as $key => $value) {
+        foreach ($dataList as $key => $value) {
             // 单图
             if ($value['type'] == 'image') {
                 $options                      = json_decode($value['options'], true);
@@ -395,19 +401,19 @@ class System extends Admin
         $form->setPageTitle('系统设置');
 
         // 设置分列数
-        $form->listNumber(2);
+//        $form->listNumber(2);
 
         //设置隐藏表单
         $form->setFormHiddenData([['name' => 'module_group', 'value' => $module_group]]);
 
-        // 获取模块数据
-        $module_group_arr_info = AdminModuleModel::getModuleDataInfo();
-        $module_group_arr      = [];
-        foreach ($module_group_arr_info as $key => $value) {
+        // 获取所有开启的模块数据
+        $modileData = AdminModuleModel::getOpenModuleAll();
+        $moduleGroupArr      = [];
+        foreach ($modileData as $key => $value) {
             // 检查模块下配置数量
             $data_num = AdminConfigModel::where(['module'=>$value['name'],'is_hide'=>0])->count();
             if(!empty($data_num)){
-                $module_group_arr[] = [
+                $moduleGroupArr[] = [
                     'title'   => $value['title'],
                     'field'   => $value['name'],
                     'ico'     => $value['icon'],
@@ -416,23 +422,25 @@ class System extends Admin
                 ];
             }
         }
+
         // 设置页面分组
-        $form->setGroup($module_group_arr);
+        $form->setGroup($moduleGroupArr);
 
         // 获取配置分组
-        $group_arr_info = rcache('module_config_group');
-
-        $group_arr      = [];
-        foreach ($group_arr_info[$module_group] as $key => $value) {
-            $group_arr[] = [
-                'name'  => $value['title'],
-                'field' => $value['name'],
-                'group' => $module_group
-            ];
+        $configGroupData = AdminConfigGroupModel::getConfigGroupAll();
+        $groupArr      = [];
+        foreach ($configGroupData as $key => $value) {
+            if($value['module'] == $module_group){
+                $groupArr[] = [
+                    'name'  => $value['title'],
+                    'field' => $value['name'],
+                    'group' => $module_group
+                ];
+            }
         }
 
         // 设置页面内分组
-        $form->setTypeGroup($group_arr);
+        $form->setTypeGroup($groupArr);
 
         // 设置表单项
         $form->addFormItems($FormItem);

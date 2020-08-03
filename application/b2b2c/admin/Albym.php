@@ -17,50 +17,60 @@ class Albym extends Admin
 {
     /**
      * 列表
-     * @param int $id
-     * @param int $pid
-     * @return mixed
-     * @throws \think\Exception
-     * @throws \think\exception\DbException
      * @author 仇仇天
+     * @return mixed
      */
     public function index()
     {
-        $view = ZBuilder::make('tables');  // 初始化 表格
+        // 初始化 表格
+        $view = ZBuilder::make('tables');
 
         if ($this->request->isAjax()) {
 
-            // 筛选参数
-            $search_field = input('param.searchField/s', '', 'trim'); // 关键词搜索字段名
-            $keyword      = input('param.searchKeyword/s', '', 'trim'); // 搜索关键词
+            // 传递数据
+            $data = input();
 
-            $map = [];// 筛选参数设置
+            // 筛选参数设置
+            $where = [];
 
-            if ($search_field == 'aclass_id' && $keyword !== '') $map[] = ['a.aclass_id', '=', $keyword];
-            if ($search_field == 'aclass_name' && $keyword !== '') $map[] = ['a.aclass_name', 'like', "%" . $keyword . "%"];  // 普通搜索筛选
-            if ($search_field == 'store_name' && $keyword !== '') $map[] = ['b.store_name', 'like', "%" . $keyword . "%"];  // 普通搜索筛选
+            // 快捷筛选 关键词
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
+                    $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
+                } else {
+                    $where[] = [$data['searchField'], $data['searchCondition'], $data['searchKeyword']];
+                }
+            }
 
-            $list_rows = input('list_rows'); // 每页显示多少条
-            $data_list = B2b2cAlbumClassModel::alias('a')
+            // 数据列表
+            $dataList = B2b2cAlbumClassModel::alias('a')
                 ->field('a.*,b.store_name,(SELECT count(*) FROM ' . config('database.prefix') . 'b2b2c_album_pic WHERE aclass_id=a.aclass_id) AS pic_num')
-                ->where($map)
+                ->where($where)
                 ->join('b2b2c_store b', 'a.store_id = b.store_id', 'LEFT')
                 ->order('a.aclass_id DESC')
-                ->paginate($list_rows);  // 数据列表
-            foreach ($data_list as &$value) {
+                ->paginate($data['list_rows']);
+
+            foreach ($dataList as &$value) {
                 $value['aclass_cover'] = getB2b2cImg($value['aclass_cover'], ['type' => 'aclass_cover']);
             }
-            $view->setRowList($data_list);// 设置表格数据
+
+            // 设置表格数据
+            $view->setRowList($dataList);
         }
 
-        $view->setExplanation(['相册删除后，相册内全部图片都会删除，不能恢复，请谨慎操作']); // 提示
+        // 提示
+        $view->setExplanation(['相册删除后，相册内全部图片都会删除，不能恢复，请谨慎操作']);
+
         // 设置搜索框
         $view->setSearch([
-            ['title' => 'ID', 'field' => 'aclass_id', 'default' => true],
-            ['title' => '相册名称', 'field' => 'aclass_name', 'default' => false],
-            ['title' => '店铺名称', 'field' => 'store_name', 'default' => false]
+            ['title' => 'ID', 'field' => 'a.aclass_id','condition'=>'=', 'default' => true],
+            ['title' => '相册名称', 'field' => 'a.aclass_name','condition'=>'like', 'default' => false],
+            ['title' => '店铺名称', 'field' => 'b.store_name','condition'=>'like', 'default' => false]
         ]);
-        $view->setPageTitle('图片空间'); // 设置页面标题
+
+        // 设置页面标题
+        $view->setPageTitle('图片空间');
+
         // 设置列
         $view->setColumn([
             [
@@ -119,20 +129,20 @@ class Albym extends Admin
                 ]
             ]
         ]);
+
+        // 渲染页面
         return $view->fetch();
     }
 
     /**
      * 删除
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
      * @author 仇仇天
+     * @throws \Exception
      */
     public function del()
     {
         $data = $this->request->post();
         if (false !== B2b2cAlbumClassModel::del(['apic_id' => $data['apic_id']])) {
-            action_log('b2b2c.b2b2c_goods_class_del');
             $this->success('删除成功');
         } else {
             $this->error('操作失败，请重试');
@@ -142,50 +152,75 @@ class Albym extends Admin
     /**
      * 相册图片列表
      * @author 仇仇天
+     * @param int $aclass_id 相册id
+     * @return mixed
      */
     public function pic($aclass_id = 0)
     {
-        $view = ZBuilder::make('tables');  // 初始化 表格
+        if(empty($aclass_id))$this->error('参数错误',url('index'));
+
+        // 初始化 表格
+        $view = ZBuilder::make('tables');
+
         if ($this->request->isAjax()) {
 
-            // 筛选参数
-            $search_field = input('param.searchField/s', '', 'trim'); // 关键词搜索字段名
-            $keyword      = input('param.searchKeyword/s', '', 'trim'); // 搜索关键词
+            // 传递数据
+            $data = input();
 
-            $map   = [];// 筛选参数设置
-            $map[] = ['a.aclass_id ', '=', $aclass_id];
-            if ($search_field == 'apic_id' && $keyword !== '') $map[] = ['a.apic_id', '=', $keyword];
-            if ($search_field == 'apic_name' && $keyword !== '') $map[] = ['a.apic_name', 'like', "%" . $keyword . "%"];
+            // 筛选参数设置
+            $where = [];
+            $where[] = ['a.aclass_id','=',$aclass_id];
 
-            // 排序
-            $orderSort = input('sort/s', '', 'trim'); //  排序字段
-            $orderMode = input('order/s', '', 'trim'); // 排序方式
-            if ($orderSort == 'apic_size') $order = 'a.apic_size' . ' ' . $orderMode;
-            $order = empty($order) ? 'a.apic_id DESC' : $order;
-            $list_rows = input('list_rows'); // 每页显示多少条
-            $data_list = B2b2cAlbumPicModel::alias('a')
-                ->field('
-                a.*,
-                b.store_name,
-                c.aclass_name
-                ')
-                ->where($map)
+            // 快捷筛选 关键词
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
+                    $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
+                } else {
+                    $where[] = [$data['searchField'], $data['searchCondition'], $data['searchKeyword']];
+                }
+            }
+
+            //  排序字段
+            $orderSort = input('sort/s', '', 'trim');
+
+            // 排序方式
+            $orderMode = input('order/s', '', 'trim');
+
+            // 拼接排序语句
+            $order = $orderSort . ' ' . $orderMode;
+
+            // 拼接排序语句
+            $order = empty($orderSort) ? 'a.apic_id DESC' : $order;
+
+            // 数据列表
+            $dataList = B2b2cAlbumPicModel::alias('a')
+                ->field('a.*, b.store_name,c.aclass_name')
+                ->where($where)
                 ->join('b2b2c_store b', 'a.store_id = b.store_id', 'LEFT')
                 ->join('b2b2c_album_class c', 'a.aclass_id = c.aclass_id', 'LEFT')
                 ->order($order)
-                ->paginate($list_rows);  // 数据列表
-            foreach ($data_list as &$value) {
+                ->paginate($data['list_rows']);
+
+            foreach ($dataList as &$value) {
                 $value['apic_cover'] = getB2b2cImg($value['apic_cover'], ['type' => 'aclass']);
             }
-            $view->setRowList($data_list);// 设置表格数据
+
+            // 设置表格数据
+            $view->setRowList($dataList);
         }
+
         // 设置搜索框
         $view->setSearch([
-            ['title' => 'ID', 'field' => 'aclass_id', 'default' => true],
-            ['title' => '图片名称', 'field' => 'aclass_name', 'default' => false]
+            ['title' => 'ID', 'field' => 'a.apic_id','condition'=>'=', 'default' => true],
+            ['title' => '图片名称', 'field' => 'a.apic_name','condition'=>'like', 'default' => false]
         ]);
-        $view->setPageTitle('相册图片'); // 设置页面标题
-        $view->setReturnUrl(url('index')); // 设置返回地址
+
+        // 设置页面标题
+        $view->setPageTitle('相册图片');
+
+        // 设置返回地址
+        $view->setReturnUrl(url('index'));
+
         // 设置列
         $view->setColumn([
             [
@@ -257,20 +292,20 @@ class Albym extends Admin
                 ]
             ]
         ]);
+
+        // 渲染页面
         return $view->fetch();
     }
 
     /**
      * 删除
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
      * @author 仇仇天
+     * @throws \Exception
      */
     public function picdel()
     {
         $data = $this->request->post();
         if (false !== B2b2cAlbumPicModel::del(['apic_id' => $data['apic_id']])) {
-            action_log('b2b2c.b2b2c_goods_album_pic_del');
             $this->success('删除成功');
         } else {
             $this->error('操作失败，请重试');

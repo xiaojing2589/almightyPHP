@@ -3,10 +3,12 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\ZBuilder;
-use app\common\model\AdminPlugin as PluginModel;
-use app\common\model\AdminHookPlugin as HookPluginModel;
+
 use util\Sql;
 use think\Db;
+
+use app\admin\model\AdminPlugin as AdminPluginModel;
+use app\admin\model\AdminHookPlugin as AdminHookAdminPluginModel;
 
 /**
  * 插件管理控制器
@@ -17,9 +19,8 @@ class Plugin extends Admin
     /**
      * 首页
      * @author 仇仇天
-     * @param string $group 分组
-     * @param string $type 显示类型
-     * @return mixed|string
+     * @return mixed
+     * @throws \think\Exception
      */
     public function index()
     {
@@ -31,9 +32,9 @@ class Plugin extends Admin
             // 搜索关键词
             $keyword = input('param.searchKeyword/s', '', 'trim');
 
-            $PluginModel = new PluginModel;
+            $AdminPluginModel = new AdminPluginModel;
 
-            $result = $PluginModel->getAll($keyword);
+            $result = $AdminPluginModel->getAll($keyword);
 
             $data_list = [];
 
@@ -255,7 +256,7 @@ javascript;
 
         // 添加钩子
         if (isset($plugin_config['hook']) && !empty($plugin_config['hook'])) {
-            if (!HookPluginModel::addHooks($plugin_config['hook'], $name)){
+            if (!AdminHookAdminPluginModel::addHooks($plugin_config['hook'], $name)){
                 $this->error('安装插件钩子时出现错误，请重新安装');
             }
         }
@@ -290,13 +291,10 @@ javascript;
         }
 
         // 将插件信息写入数据库
-        if (PluginModel::insert($pluginDataInfo)) {
+        if (AdminPluginModel::insert($pluginDataInfo)) {
 
             // 刷新缓存
-            $this->refreshCache();
-
-            // 记录行为
-            adminActionLog('admin.plugin_install');
+            AdminPluginModel::delCache();
 
             $this->success('插件安装成功');
         } else {
@@ -326,7 +324,7 @@ javascript;
         if(!$plugin->uninstall()) $this->error('插件预卸载失败!原因：'. $plugin->getError());
 
         // 卸载插件自带钩子
-        HookPluginModel::deleteHooks($plug_name);
+        AdminHookAdminPluginModel::deleteHooks($plug_name);
 
         // 执行卸载插件sql文件
         $sql_file = realpath(config('plugin_path').$plug_name.'/uninstall.sql');
@@ -343,13 +341,10 @@ javascript;
         }
 
         // 删除插件信息
-        if (PluginModel::where('name', $plug_name)->delete()) {
+        if (AdminPluginModel::where('name', $plug_name)->delete()) {
 
             // 刷新缓存
-            $this->refreshCache();
-
-            // 记录行为
-            adminActionLog('admin.plugin_uninstall');
+            AdminPluginModel::delCache();
 
             $this->success('插件卸载成功');
         } else {
@@ -366,8 +361,8 @@ javascript;
     public function manage($name = '')
     {
         // 加载自定义后台页面
-        if (plugin_action_exists($name, 'Admin', 'index')) {
-            return plugin_action($name, 'Admin', 'index');
+        if (checkPluginControllerExists($name, 'Admin', 'index')) {
+            return pluginAction($name, 'Admin', 'index');
         }
     }
 
@@ -387,7 +382,7 @@ javascript;
         if ($name === null) $this->error('缺少参数');
 
         // 插件配置值
-        $info      = PluginModel::where('name', $name)->field('id,name,config')->find();
+        $info      = AdminPluginModel::where('name', $name)->field('id,name,config')->find();
 
         // 配置参数
         $db_config = json_decode($info['config'], true);
@@ -413,13 +408,10 @@ javascript;
                 'update_time'=>time()
             ];
 
-            if (false !== PluginModel::where('name', $name)->update($allowField)) {
+            if (false !== AdminPluginModel::where('name', $name)->update($allowField)) {
 
-                // 记录行为
-                adminActionLog('admin.plugin_config');
-
-                // 刷新缓存
-                $this->refreshCache();
+                // 删除缓存
+                AdminPluginModel::delCache();
 
                 $this->success('更新成功', 'index');
             } else {
@@ -458,31 +450,16 @@ javascript;
         // 需要修改的数据
         $where= [['name', 'in', $data['name']]];
 
-        $result = PluginModel::where($where)->setField('status', $data['status']);
+        $result = AdminPluginModel::where($where)->setField('status', $data['status']);
 
         if (false !== $result) {
 
-            adminActionLog('admin.config_edit_status');
-
-            $this->refreshCache();
+            // 删除缓存
+            AdminPluginModel::delCache();
 
             $this->success('操作成功');
         } else {
             $this->error('操作失败');
         }
-    }
-
-    /**
-     * 刷新缓存
-     * @author 仇仇天
-     * @throws \Exceptionsa
-     */
-    private function refreshCache(){
-
-        // 删除插件钩子缓存
-        HookPluginModel::delCache();
-
-        // 删除插件信息
-        PluginModel::delCache();
     }
 }

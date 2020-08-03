@@ -2,8 +2,9 @@
 namespace app\admin\controller;
 
 use app\common\controller\Admin;
-use app\common\model\AdminHook as HookModel;
 use app\common\builder\ZBuilder;
+
+use app\admin\model\AdminHook as AdminHookModel;
 
 /**
  * 钩子控制器
@@ -39,7 +40,7 @@ class Hook extends Admin
             $list_rows = input('list_rows');
 
             // 数据列表
-            $data_list = HookModel::where($where)->order('id ASC')->paginate($list_rows);
+            $data_list = AdminHookModel::where($where)->order('id ASC')->paginate($list_rows);
 
             foreach ($data_list as $key=>$value){
                 $data_list[$key]['plugin'] = empty($value['plugin']) ? '系统' : $value['plugin'];
@@ -69,10 +70,13 @@ class Hook extends Admin
         $view->addTopButton('enable',['url'=>url('hook/editstatus'),'query_data'=>'{"status":1}']);
 
         // 设置头部按钮 禁用
-        $view->addTopButton('disable',['url'=>url('hook/editstatus'),'query_data'=>'{"status":0}']);
+        $view->addTopButton('disable',['url'=>url('hook/editstatus'),'query_data'=>'{"status":2}']);
 
         // 设置行内编辑地址
         $view->editableUrl(url('edit'));
+
+        // 获取登录管理员的 id
+        $uid = session('admin_user_info.uid');
 
         // 设置列
         $view->setColumn([
@@ -106,7 +110,16 @@ class Hook extends Admin
                 'field' => 'system',
                 'title' => '是否系统插件',
                 'align'=>'center',
-                'show_type'=>'yesno'
+                'editable'=>[
+                    'type'=>'switch',
+                    'config'=>['on_text'=>'是','on_value'=>1,'off_text'=>'否','off_value'=>2]
+                ],
+                'hide' => <<<javascript
+                var _uid = {$uid};
+                if(_uid > 1){                    
+                    return '<span class="kt-badge kt-badge--inline kt-badge--danger">不可操作</span>';
+                }
+javascript
             ],
             [
                 'field' => 'status',
@@ -114,8 +127,14 @@ class Hook extends Admin
                 'align'=>'center',
                 'editable'=>[
                     'type'=>'switch',
-                    'config'=>['on_text'=>'启用','on_value'=>1,'off_text'=>'禁用','off_value'=>0]
-                ]
+                    'config'=>['on_text'=>'启用','on_value'=>1,'off_text'=>'禁用','off_value'=>2]
+                ],
+                'hide' => <<<javascript
+                var _uid = {$uid};
+                if(_uid > 1){                    
+                    return '<span class="kt-badge kt-badge--inline kt-badge--danger">不可操作</span>';
+                }
+javascript
             ],
             [
                 'field' => 'peration',
@@ -136,7 +155,17 @@ class Hook extends Admin
                         'url'=>url('edit'),
                         'query_data'=>'{"field":["id"]}'
                     ]
-                ]
+                ],
+                'peration_hide' => <<<javascript
+                    $.each(perationArr,function(i,v){
+                        if(v.indexOf('hide_d') > -1){
+                           var _uid = {$uid};
+                            if(_uid > 1){   
+                                delete perationArr[i]
+                            }
+                        }
+                    });   
+javascript
             ]
         ]);
 
@@ -154,6 +183,11 @@ class Hook extends Admin
         if ($id === 0) $this->error('参数错误');
 
         if ($this->request->isPost()) {
+
+            // 获取登录管理员的 id
+            $uid = session('admin_user_info.uid');
+
+            if($uid > 3) $this->error('您无权限！');
 
             $data = input();
 
@@ -178,13 +212,10 @@ class Hook extends Admin
 
             }
 
-            if (HookModel::where(['id'=>$data['id']])->update($save_data)) {
+            if (AdminHookModel::where(['id'=>$data['id']])->update($save_data)) {
 
-                // 更新 钩子缓存
-                dkcache('hooks');
-
-                // 记录行为
-                adminActionLog('admin.hook_edit');
+                // 删除缓存
+                AdminHookModel::delCache();
 
                 $this->success('编辑成功', url('index'));
             } else {
@@ -192,7 +223,7 @@ class Hook extends Admin
             }
         }
 
-        $info = HookModel::get($id);
+        $info = AdminHookModel::get($id);
 
         if (empty($info)) $this->error('数据不存在');
 
@@ -242,14 +273,25 @@ class Hook extends Admin
     public function add()
     {
         if ($this->request->isPost()) {
-            $data = $this->request->post();
+
+            // 获取登录管理员的 id
+            $uid = session('admin_user_info.uid');
+
+            if($uid > 3) $this->error('您无权限！');
+
+            $data = input();
+
             $data['system'] = 1;
+
             $result = $this->validate($data, 'Hook');
+
             if(true !== $result) $this->error($result);
 
-            if ($hook = HookModel::create($data)) {
-                $this->refreshCache();
-                adminActionLog('admin.hook_add');
+            if ($hook = AdminHookModel::create($data)) {
+
+                // 删除缓存
+                AdminHookModel::delCache();
+
                 $this->success('新增成功', 'index');
             } else {
                 $this->error('新增失败');
@@ -294,9 +336,13 @@ class Hook extends Admin
      */
     public function editStatus()
     {
+        // 获取登录管理员的 id
+        $uid = session('admin_user_info.uid');
+
+        if($uid > 3) $this->error('您无权限！');
 
         // 表单数据
-        $data = $this->request->post();
+        $data = input();
 
         // 需要修改的数据id
         $ids = [];
@@ -305,11 +351,12 @@ class Hook extends Admin
         }
         $where= [['id', 'in', $ids]];
 
-        $result = HookModel::where($where)->setField('status', $data['status']);
+        $result = AdminHookModel::where($where)->setField('status', $data['status']);
 
         if (false !== $result) {
 
-            adminActionLog('admin.hook_status');
+            // 删除缓存
+            AdminHookModel::delCache();
 
             $this->success('操作成功');
 
@@ -344,9 +391,7 @@ class Hook extends Admin
             $where = ['id' => $data['id']];
         }
 
-        if (false !== HookModel::del($where)) {
-            // 记录日志
-            adminActionLog('admin.delete');
+        if (false !== AdminHookModel::del($where)) {
 
             $this->success('操作成功');
         } else {
@@ -354,11 +399,4 @@ class Hook extends Admin
         }
     }
 
-    /**
-     * 刷新缓存
-     * @author 仇仇天
-     */
-    private function refreshCache(){
-        HookModel::delCache();
-    }
 }

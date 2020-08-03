@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{$language}">
 
 <!-- begin::Head -->
 <head>
@@ -9,7 +9,7 @@
 
     <!--end::Base Path -->
     <meta charset="utf-8" />
-    <title> {:lang('signin')} | {:config('web_site_title')}</title>
+    <title> {:lang('Signin')} | {:config('web_site_title')}</title>
     <meta name="description" content="Login page example">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -53,20 +53,20 @@
                             <img src="__ADMIN_IMG__/logos/logo-5.png">
                         </a>
                     </div>
-                    <div class="kt-login__signin">
+                        <div class="kt-login__signin">
                         <div class="kt-login__head">
-                            <h3 class="kt-login__title">{:config('web_site_title')}{:lang('asdasdas')}</h3>
+                            <h3 class="kt-login__title">{:config('web_site_title')}</h3>
                         </div>
                         <form class="kt-form" action="{:url('signin')}" method="post">
                             <div class="input-group">
-                                <input class="form-control" type="text" placeholder="{:lang('please enter')}{:lang('username')}" name="username">
+                                <input class="form-control" type="text" placeholder="{:lang('Please enter')} {:lang('Username')}" name="username">
                             </div>
                             <div class="input-group">
-                                <input class="form-control" type="password" placeholder="{:lang('please enter')}{:lang('password')}" name="password">
+                                <input class="form-control" type="password" placeholder="{:lang('Please enter')} {:lang('Password')}" name="password">
                             </div>
                             <div class="input-group">
                                 <div style="width: 70%;">
-                                    <input class="form-control" type="text" name="captcha" placeholder="{:lang('please enter')}{:lang('verification code')}">
+                                    <input class="form-control" type="text" name="captcha" placeholder="{:lang('Please enter')} {:lang('Verification code')}">
                                 </div>
 
                                 <div style="width: 30%;margin-top: 19px;">
@@ -76,13 +76,13 @@
                             <div class="row kt-login__extra">
                                 <div class="col">
                                     <label class="kt-checkbox">
-                                        <input type="checkbox" name="remember"> 7天内自动登录?
+                                        <input type="checkbox" name="remember"> 7 {:lang('Automatic')} {:lang('Sign in')}?
                                         <span></span>
                                     </label>
                                 </div>
                             </div>
                             <div class="kt-login__actions">
-                                <button id="kt_login_signin_submit" class="btn btn-brand btn-elevate kt-login__btn-primary">{:lang('signin')}</button>
+                                <button id="kt_login_signin_submit" class="btn btn-brand btn-elevate kt-login__btn-primary">{:lang('Sign in')}</button>
                             </div>
                         </form>
                     </div>
@@ -180,10 +180,10 @@
                 },
                 messages:{
                     username: {
-                        required: '请输入用户名'
+                        required: "{:lang('Please enter')} {:lang('Username')}"
                     },
                     password: {
-                        required: '请输入密码'
+                        required: "{:lang('Please enter')} {:lang('Password')}"
                     }
                 }
             });

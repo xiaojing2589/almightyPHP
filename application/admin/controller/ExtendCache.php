@@ -3,11 +3,10 @@
 namespace app\admin\controller;
 
 use app\common\controller\Admin;
-
-use app\common\model\ExtendCache as ExtendCacheModel;
 use app\common\builder\ZBuilder;
-use think\facade\Cache;
-use app\common\model\AdminModule as AdminModuleModel;
+
+use app\admin\model\AdminCache as AdminCacheModel;
+use app\admin\model\AdminModule as AdminModuleModel;
 
 /**
  * 缓存管理控制器
@@ -16,9 +15,9 @@ class ExtendCache extends Admin
 {
     /**
      * 配置首页
-     * @author 仇仇天
      * @param string $module_group 分组
      * @return mixed
+     * @author 仇仇天
      */
     public function index($module_group = 'admin')
     {
@@ -37,10 +36,10 @@ class ExtendCache extends Admin
             $where[] = ['module', '=', $module_group];
 
             // 快捷筛选 关键词
-            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])){
-                if ($data['searchCondition'] == 'like'){
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
                     $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
-                }else{
+                } else {
                     $where[] = [$data['searchField'], $data['searchCondition'], "%" . $data['searchKeyword'] . "%"];
                 }
             }
@@ -49,7 +48,7 @@ class ExtendCache extends Admin
             $list_rows = input('list_rows');
 
             // 数据列表
-            $data_list = ExtendCacheModel::where($where)->order('id ASC,field_name DESC')->paginate($list_rows);
+            $data_list = AdminCacheModel::where($where)->order('id ASC,field_name DESC')->paginate($list_rows);
 
             // 设置表格数据
             $view->setRowList($data_list);
@@ -60,30 +59,30 @@ class ExtendCache extends Admin
 
         // 设置搜索框
         $view->setSearch([
-            ['title' => '标题', 'field' => 'name','condition'=>'like', 'default' => true],
-            ['title' => '标识', 'field' => 'field_name','condition'=>'like', 'default' => false]
+            ['title' => '标题', 'field' => 'name', 'condition' => 'like', 'default' => true],
+            ['title' => '标识', 'field' => 'field_name', 'condition' => 'like', 'default' => false]
         ]);
 
         // 标签分组信息
-        $list_group = AdminModuleModel::getModuleDataInfo();
+        $list_group = AdminModuleModel::getOpenModuleAll();
         $tab_list   = [];
         foreach ($list_group as $key => $value) {
             $tab_list[$key]['title']   = $value['title'];
             $tab_list[$key]['value']   = $value['name'];
-            $tab_list[$key]['ico']    = $value['icon'];
+            $tab_list[$key]['ico']     = $value['icon'];
             $tab_list[$key]['url']     = url('index', ['module_group' => $value['name']]);
             $tab_list[$key]['default'] = ($module_group == $value['name']) ? true : false;
         }
         $view->setGroup($tab_list);
 
         // 设置头部按钮 新增
-        $view->addTopButton('add', ['url' => url('extend_cache/add', ['module_group' => $module_group])]);
+        $view->addTopButton('add', ['url' => url('add', ['module_group' => $module_group])]);
 
         // 设置头部按钮 删除
-        $view->addTopButton('delete', ['url' => url('extend_cache/del'), 'query_data' => '{"action":"delete_batch"}']);
+        $view->addTopButton('delete', ['url' => url('del'), 'query_data' => '{"action":"delete_batch"}']);
 
         // 设置行内编辑地址
-        $view->editableUrl(url('extend_cache/edit'));
+        $view->editableUrl(url('edit'));
 
         // 设置列
         $view->setColumn([
@@ -153,9 +152,9 @@ class ExtendCache extends Admin
 
     /**
      * 新增配置项
-     * @author 仇仇天
      * @param string $module_group 分组
      * @return mixed
+     * @author 仇仇天
      */
     public function add($module_group = '')
     {
@@ -168,7 +167,7 @@ class ExtendCache extends Admin
             $data = $this->request->post();
 
             // 验证
-            $result = $this->validate($data, 'ExtendCache');
+            $result = $this->validate($data, 'AdminCache');
             if (true !== $result) $this->error($result);
 
             // 解析配置参数
@@ -182,10 +181,10 @@ class ExtendCache extends Admin
             $save_data['project_config'] = $options;
             $save_data['describes']      = $data['describes'];
             $save_data['type']           = $data['type'];
-            if ($config = ExtendCacheModel::create($save_data)) {
-                Cache::connect(config('system.extend_cache'))->pull('extend_cache'); // 删除缓存
-                adminActionLog('admin.extend_cache_add');
-                $this->success('新增成功', url('extend_cache/index', ['module_group' => $data['module_group']]));
+            if ($config = AdminCacheModel::create($save_data)) {
+                // 删除缓存
+                AdminCacheModel::delCache();
+                $this->success('新增成功', url('index', ['module_group' => $data['module_group']]));
             } else {
                 $this->error('新增失败');
             }
@@ -336,9 +335,9 @@ javascript;
 
     /**
      * 编辑
-     * @author 仇仇天
      * @param int $id 缓存id
      * @return mixed
+     * @author 仇仇天
      */
     public function edit($id = 0)
     {
@@ -355,16 +354,14 @@ javascript;
             if (!empty($data['extend_field'])) {
                 $save_data[$data['extend_field']] = $data[$data['extend_field']];
                 // 验证
-                $result = $this->validate($data, 'ExtendCache.' . $data['extend_field']);
+                $result = $this->validate($data, 'AdminCache.' . $data['extend_field']);
                 // 验证提示报错
                 if (true !== $result) $this->error($result);
-            }
-
-            // 普通修改
+            } // 普通修改
             else {
 
                 // 验证
-                $result = $this->validate($data, 'ExtendCache');
+                $result = $this->validate($data, 'AdminCache');
 
                 // 验证提示报错
                 if (true !== $result) $this->error($result);
@@ -379,27 +376,29 @@ javascript;
                 $save_data['type']           = $data['type'];
             }
 
-            // 原配置内容
-            $config_info = ExtendCacheModel::where('id', $id)->find();
 
-            if ($config = ExtendCacheModel::update($save_data, ['id' => $id])) {
-                Cache::connect(config('system.extend_cache'))->pull('extend_cache'); // 删除缓存
-                adminActionLog('admin.extend_cache_edit');
-                $this->success('编辑成功', url('extend_cache/index', ['module_group' => $config_info['module']]));
+            // 原配置内容
+            $config_info = AdminCacheModel::where('id', $id)->find();
+
+            if ($config = AdminCacheModel::update($save_data, ['id' => $id])) {
+
+                // 删除缓存
+                AdminCacheModel::delCache();
+
+                $this->success('编辑成功', url('index', ['module_group' => $config_info['module']]));
             } else {
                 $this->error('编辑失败');
             }
         }
 
         // 获取数据
-        $info = ExtendCacheModel::get($id);
-        $info = to_arrays($info);
+        $info = to_arrays(AdminCacheModel::get($id));
 
         // 获取配置信息
         $config_info = json_decode($info['project_config'], true);
 
         // 合并配置信息
-        $info = array_merge($config_info,$info);
+        $info = array_merge($config_info, $info);
 
         // 使用ZBuilder快速创建表单
         $form = ZBuilder::make('forms');
@@ -408,10 +407,10 @@ javascript;
         $form->setPageTitle('缓存管理 - 编辑');
 
         // 设置返回地址
-        $form->setReturnUrl(url('extend_cache/index', ['module_group' => $info['module']]));
+        $form->setReturnUrl(url('index', ['module_group' => $info['module']]));
 
         // 设置 提交地址
-        $form->setFormUrl(url('extend_cache/edit'));
+        $form->setFormUrl(url('edit'));
 
         // 设置隐藏表单数据
         $form->setFormHiddenData([['name' => 'id', 'value' => $id]]);
@@ -565,18 +564,13 @@ javascript;
                 $ids[] = $value['id'];
             }
             $where = [['id', 'in', $ids]];
-        }
-        // 删除
+        } // 删除
         else {
             if (empty($data['id'])) $this->error('参数错误');
             $where = ['id' => $data['id']];
         }
 
-        if (false !== ExtendCacheModel::where($where)->delete()) {
-            // 记录日志
-            adminActionLog('admin.extend_cache_del');
-            // 删除缓存
-            Cache::connect(config('system.extend_cache'))->pull('extend_cache');
+        if (false !== AdminCacheModel::del($where)) {
             $this->success('操作成功');
         } else {
             $this->error('操作失败');
@@ -586,8 +580,9 @@ javascript;
     /**
      * 解析
      * @author 仇仇天
-     * @param $type String 类型
-     * @param $config_param Array 配置参数
+     * @param $type  类型
+     * @param array $value 配置参数
+     * @return false|string
      */
     private function optisonsConfig($type, $value = [])
     {

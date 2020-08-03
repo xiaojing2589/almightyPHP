@@ -3,13 +3,6 @@
 namespace app\admin\controller;
 
 use app\common\controller\Admin;
-use app\common\model\AdminModule as ModuleModel;
-use app\common\model\AdminPlugin as PluginModel;
-use app\common\model\AdminMenu as MenuModel;
-use app\common\model\AdminConfigGroup as AdminConfigGroup;
-use app\common\model\AdminConfig as AdminConfig;
-use app\common\model\AdminAction as AdminActionModel;
-use app\common\model\ExtendCache as ExtendCacheModel;
 use app\common\builder\ZBuilder;
 use util\Database;
 use util\Sql;
@@ -18,6 +11,14 @@ use util\PHPZip;
 use util\Tree;
 use think\Db;
 use think\facade\Env;
+
+use app\admin\model\AdminModule as AdminModuleModel;
+use app\admin\model\AdminPlugin as AdminPluginModel;
+use app\admin\model\AdminMenu as AdminMenuModel;
+use app\admin\model\AdminConfigGroup as AdminConfigGroupModel;
+use app\admin\model\AdminConfig as AdminConfigModel;
+use app\admin\model\AdminAction as AdminActionModel;
+use app\admin\model\AdminCache as AdminCacheModel;
 
 /**
  * 模块管理控制器
@@ -46,8 +47,8 @@ class Module extends Admin
                 $keyword = $data['searchKeyword'];
             }
 
-            $ModuleModel = new ModuleModel();
-            $result      = $ModuleModel->getAll($keyword);
+            $AdminModuleModel = new AdminModuleModel();
+            $result      = $AdminModuleModel->getAll($keyword);
             $data_list   = [];
             foreach ($result['modules'] as $value) {
                 $data_list[] = $value;
@@ -370,7 +371,9 @@ html;
             $module_config_info = [];
             if ($name != '') {
                 // 从配置文件获取
-                if (is_file(config('app_path') . $name . '/config.php')) $module_config_info = include config('app_path') . $name . '/config.php';
+                if (is_file(config('app_path') . $name . '/config.php')){
+                    $module_config_info = include config('app_path') . $name . '/config.php';
+                }
             }
 
             // 执行安装文件
@@ -385,7 +388,8 @@ html;
             // 添加菜单
             if (!empty($module_config_info['menus'])) {
                 if (false === $this->addMenus($module_config_info['menus'], $name)) {
-                    Db::rollback();// 回滚事务
+                    // 回滚事务
+                    Db::rollback();
                     $this->error('菜单添加失败,请检查清除菜单配置，请重新安装');
                 }
             }
@@ -417,14 +421,15 @@ html;
             // 添加模块缓存信息
             if (!empty($module_config_info['cache'])) {
                 if (false === $this->addCache($module_config_info['cache'], $name)) {
-                    Db::rollback();// 回滚事务
+                    // 回滚事务
+                    Db::rollback();
                     $this->error('请检查缓存配置，请重新安装');
                 }
             }
 
 
             // 将模块信息写入数据库
-            $ModuleModel        = new ModuleModel($module_config_info['info']);
+            $AdminModuleModel        = new AdminModuleModel($module_config_info['info']);
             $allowField         = [
                 // 模块名称(唯一标识符)
                 'name',
@@ -445,7 +450,7 @@ html;
                 // 状态
                 'status'
             ];
-            $save_module_status = $ModuleModel->allowField($allowField)->save();
+            $save_module_status = $AdminModuleModel->allowField($allowField)->save();
 
             if ($save_module_status) {
 
@@ -479,10 +484,8 @@ html;
                 // 删除静态资源目录
                 File::del_dir(config('app_path') . $name . '/public');
 
-                $this->refreshCache();
-
-                // 记录行为
-                adminActionLog('admin.module_install');
+                // 删除缓存
+                AdminModuleModel::delCache();
 
                 $this->success('模块安装成功', 'index');
             } else {
@@ -540,6 +543,18 @@ html;
                         ['title'=>'是','value'=>1],
                         ['title'=>'否','value'=>0]
                     ]
+                ],
+                [
+                    'field'     => 'existing',
+                    'name'      => 'existing',
+                    'form_type' => 'radio',
+                    'value'     => 1,
+                    'title'     => '是否保留先在配置',
+                    'tips'      => '选择“是”，将以现在的 节点数据，配置数据，行为数据 进行生成性的模块信息',
+                    'option'    =>[
+                        ['title'=>'是','value'=>1],
+                        ['title'=>'否','value'=>0]
+                    ]
                 ]
             ]);
 
@@ -549,11 +564,17 @@ html;
 
         // 执行
         else{
+
+            $data =  input();
+
             // 模块配置信息
             $module_config_info = [];
 
+            // 模块配置文件路径
+            $moduleConfigPath = config('app_path') . $name . '/config.php';
+
             // 获取模块信息
-            if (is_file(config('app_path') . $name . '/config.php')) $module_config_info = include config('app_path') . $name . '/config.php';
+            if (is_file($moduleConfigPath)) $module_config_info = include $moduleConfigPath;
 
             if (empty($module_config_info['info'])) $this->error('模块不存在！');
 
@@ -567,9 +588,7 @@ html;
             $sql_file = realpath(config('app_path') . $name . '/sql/uninstall.sql');
 
             // 是否清除表和数据
-            $clear    = input('clear');
-
-            if ($clear == 1) {
+            if ($data['clear'] == 1) {
                 if (file_exists($sql_file)) {
                     if (isset($module_config_infop['info']['database_prefix']) && !empty($module_config_infop['info']['database_prefix'])) {
                         $sql_statement = Sql::getSqlFromFile($sql_file, false, [$module_config_infop['info']['database_prefix'] => config('database.prefix')]);
@@ -588,20 +607,93 @@ html;
                 }
             }
 
+            if ($data['existing'] == 1) {
+
+                // 获取 模块菜单数据
+                $fields = 'id,pid,title,icon,url_value,url_target,is_hide,sort,status';
+                $menus  = AdminMenuModel::getMenusByGroup($name, $fields);
+                $menusInfo = '[]';
+                if(!empty($menus)){
+                    $menusInfo = $this->buildMenu($menus, $name);
+                }
+
+                // 获取 配置分组数据
+                $configGroup = AdminConfigGroupModel::where(['module' => $name])->select();
+                $configGroupInfo = '[]';
+                if (!empty($configGroup)) {
+                    $configGroup = to_arrays($configGroup);
+                    $configGroupInfo = $this->buildConfigGroup($configGroup);
+                }
+
+                // 获取 配置数据
+                $config = AdminConfigModel::where(['module' => $name])->select();
+                $configInfo = '[]';
+                if (!empty($config)) {
+                    $config = to_arrays($config);
+                    $configInfo = $this->buildConfig($config);
+                }
+
+
+                // 获取 缓存数据
+                $cache = AdminCacheModel::where(['module' => $name])->select();
+                $cacheInfo = '[]';
+                if (!empty($cacher)) {
+                    $cache = to_arrays($cache);
+                    $cacheInfo = $this->buildCache($cache);
+                }
+
+                // 获取 模块行为数据
+                $action = Db::name('admin_action')->where('module', $name)->field('module,name,title,remark')->select();
+                $actionInfo = '[]';
+                if (!empty($action)) {
+                    $action = to_arrays($action);
+                    $actionInfo = $this->buildAction($action);
+                }
+
+                // 获取 模块信息数据
+                // 模块本地配置信息
+                $module_info = AdminModuleModel::getInfoFromFile($name);
+                $moduleConfigInfo = '[]';
+                if(!empty($module_info) && !empty($module_info['info'])){
+                    $moduleConfigInfo = $this->buildInfo($module_info['info']);
+                }
+
+                // 写入配置文件
+                $content = <<<INFO
+<?php
+// 模块信息
+return [
+    'infro' =>{$moduleConfigInfo},
+    'config'=>[
+        'group'=>{$configGroupInfo},
+        'info' =>{$configInfo}
+    ],
+    'cache'=>{$cacheInfo},
+    'action'=>{$actionInfo},
+    'menus' =>{$menusInfo},
+];
+INFO;
+
+                if (!unlink($moduleConfigPath))$this->error('配置文件有误！');
+
+                // 生成新的配置文件
+                file_put_contents($moduleConfigPath, $content);
+            }
+
             // 删除菜单
-            if (false === MenuModel::where('module', $name)->delete())$this->error('菜单删除失败，请重新卸载');
+            if (false === AdminMenuModel::where('module', $name)->delete())$this->error('菜单删除失败，请重新卸载');
 
             // 删除配置分组
-            if (false === AdminConfigGroup::where('module', $name)->delete())$this->error('删除配置分组失败，请重新卸载');
+            if (false === AdminConfigGroupModel::where('module', $name)->delete())$this->error('删除配置分组失败，请重新卸载');
 
             // 删除配置
-            if (false === AdminConfig::where('module', $name)->delete())$this->error('删除配置失败，请重新卸载');
+            if (false === AdminConfigModel::where('module', $name)->delete())$this->error('删除配置失败，请重新卸载');
 
             // 删除行为规则
             if (false === AdminActionModel::where('module', $name)->delete())$this->error('删除行为信息失败，请重新卸载');
 
             // 删除模块信息
-            if (ModuleModel::where('name', $name)->delete()) {
+            if (AdminModuleModel::where('name', $name)->delete()) {
 
                 // 复制静态资源目录
                 File::copy_dir(Env::get('root_path') . 'public/static/assets/' . $name, config('app_path') . $name . '/public/' . $name);
@@ -609,11 +701,8 @@ html;
                 // 删除静态资源目录
                 File::del_dir(Env::get('root_path') . 'public/static/assets/' . $name);
 
-                // 刷新缓存
-                $this->refreshCache();
-
-                // 记录行为
-                adminActionLog('admin.module_uninstall');
+                // 删除缓存
+                AdminModuleModel::delCache();
 
                 $this->success('模块卸载成功', 'index');
             } else {
@@ -650,10 +739,10 @@ html;
         File::copy_dir(config('app_path') . $name, $module_dir);
 
         // 模块本地配置信息
-        $module_info = ModuleModel::getInfoFromFile($name);
+        $module_info = AdminModuleModel::getInfoFromFile($name);
 
         // 获取 配置分组数据
-        $configGroup = AdminConfigGroup::where(['module' => $name])->select();
+        $configGroup = AdminConfigGroupModel::where(['module' => $name])->select();
         $configGroupInfo = '[]';
         if (!empty($configGroup)) {
             $configGroup = to_arrays($configGroup);
@@ -661,7 +750,7 @@ html;
         }
 
         // 获取 配置数据
-        $config = AdminConfig::where(['module' => $name])->select();
+        $config = AdminConfigModel::where(['module' => $name])->select();
         $configInfo = '[]';
         if (!empty($config)) {
             $config = to_arrays($config);
@@ -669,7 +758,7 @@ html;
         }
 
         // 获取 缓存数据
-        $cache = ExtendCacheModel::where(['module' => $name])->select();
+        $cache = AdminCacheModel::where(['module' => $name])->select();
         $cacheInfo = '[]';
         if (!empty($cacher)) {
             $cache = to_arrays($cache);
@@ -692,7 +781,7 @@ html;
 
         // 获取 模块菜单数据
         $fields = 'id,pid,title,icon,url_value,url_target,is_hide,sort,status';
-        $menus  = MenuModel::getMenusByGroup($name, $fields);
+        $menus  = AdminMenuModel::getMenusByGroup($name, $fields);
         $menusInfo = '[]';
         if(!empty($menus)){
             $menusInfo = $this->buildMenu($menus, $name);
@@ -728,9 +817,6 @@ INFO;
 
         File::copy_dir(Env::get('root_path') . 'public/static/assets/' . $name, $module_dir . '/public/' . $name);   // 复制静态资源目录
 
-        // 记录行为
-        adminActionLog('admin.module_export');
-
         // 打包下载
         $archive = new PHPZip;
         return $archive->ZipAndDownload($module_dir, $name);
@@ -745,7 +831,7 @@ INFO;
     {
         $name == '' && $this->error('缺少模块名！');
 
-        $Module = ModuleModel::get(['name' => $name]);
+        $Module = AdminModuleModel::get(['name' => $name]);
 
         !$Module && $this->error('模块不存在，或未安装');
 
@@ -771,7 +857,7 @@ INFO;
                 $array_keys_data[$value_config_group['name']] = $value_config_group;
             }
             $where_config_group = [['name', 'in', $in],['module', '=', $name]];
-            $data_config_group  = AdminConfigGroup::where($where_config_group)->column('module,name,title', 'name');
+            $data_config_group  = AdminConfigGroupModel::where($where_config_group)->column('module,name,title', 'name');
             $data_config_group  = to_arrays($data_config_group);
 
             // 处理表里没有的数据并加入
@@ -784,11 +870,11 @@ INFO;
                 }
             }
             else if (!empty($config_group)) {
-                AdminConfigGroup::insertAll($config_group, false);
+                AdminConfigGroupModel::insertAll($config_group, false);
             }
 
             if (!empty($save_data_config_group)) {
-                AdminConfigGroup::insertAll($save_data_config_group, false);
+                AdminConfigGroupModel::insertAll($save_data_config_group, false);
             }
         }
 
@@ -809,7 +895,7 @@ INFO;
                     ['name', 'in', $in],
                     ['module', '=', $name],
                 ];
-                $data_config  = AdminConfig::where($where_config)->column('*', 'name');
+                $data_config  = AdminConfigModel::where($where_config)->column('*', 'name');
                 $data_config  = to_arrays($data_config);
 
                 // 处理表里没有的数据并加入
@@ -822,10 +908,10 @@ INFO;
                         }
                     }
                 } else if (!empty($config)) {
-                    AdminConfig::insertAll($config, false);
+                    AdminConfigModel::insertAll($config, false);
                 }
                 if (!empty($save_data_config)) {
-                    AdminConfig::insertAll($save_data_config, false);
+                    AdminConfigModel::insertAll($save_data_config, false);
                 }
 
             }
@@ -966,9 +1052,9 @@ INFO;
             }
             // 当前版本
             if ($type == 'module') {
-                $curr_version = ModuleModel::where('identifier', $value[1])->value('version');
+                $curr_version = AdminModuleModel::where('identifier', $value[1])->value('version');
             } else {
-                $curr_version = PluginModel::where('identifier', $value[1])->value('version');
+                $curr_version = AdminPluginModel::where('identifier', $value[1])->value('version');
             }
 
             // 比对版本
@@ -1018,7 +1104,7 @@ INFO;
             ];
 
             // 存储 菜单
-            $result = MenuModel::create($data);
+            $result = AdminMenuModel::create($data);
 
             if (!$result) return false;
 
@@ -1046,7 +1132,7 @@ INFO;
             $array_keys_data[$value['name']] = $value;
         }
         $where_config_group = [['name', 'in', $in], ['module', '=', $module]];
-        $data_config_group  = AdminConfigGroup::where($where_config_group)->column('module,name,title', 'name');
+        $data_config_group  = AdminConfigGroupModel::where($where_config_group)->column('module,name,title', 'name');
         $data_config_group  = to_arrays($data_config_group);
 
         // 处理表里没有的数据并加入
@@ -1058,12 +1144,12 @@ INFO;
                 }
             }
         } else if (!empty($config_group)) {
-            if (!AdminConfigGroup::insertAll($config_group, false)) {
+            if (!AdminConfigGroupModel::insertAll($config_group, false)) {
                 return false;
             }
         }
         if (!empty($save_data_config_group)) {
-            if (!AdminConfigGroup::insertAll($save_data_config_group, false)) {
+            if (!AdminConfigGroupModel::insertAll($save_data_config_group, false)) {
                 return false;
             }
         }
@@ -1088,7 +1174,7 @@ INFO;
             $config[$key_config]['options']         = !empty($value_config['options']) ? json_encode($value_config['options'], JSON_UNESCAPED_UNICODE) : '';
         }
         $where_config = [['name', 'in', $in], ['module', '=', $module]];
-        $data_config  = AdminConfig::where($where_config)->column('*', 'name');
+        $data_config  = AdminConfigModel::where($where_config)->column('*', 'name');
         $data_config  = to_arrays($data_config);
 
         // 处理表里没有的数据并加入
@@ -1101,13 +1187,13 @@ INFO;
                 }
             }
         } else if (!empty($config)) {
-            if (!AdminConfig::insertAll($config, false)) {
+            if (!AdminConfigModel::insertAll($config, false)) {
                 return false;
             }
         }
 
         if (!empty($save_data_config)) {
-            if (!AdminConfig::insertAll($save_data_config, false)) {
+            if (!AdminConfigModel::insertAll($save_data_config, false)) {
                 return false;
             }
         }
@@ -1145,13 +1231,13 @@ INFO;
                 }
             }
         } else if (!empty($cache)) {
-            if (!AdminConfig::insertAll($cache, false)) {
+            if (!AdminConfigModel::insertAll($cache, false)) {
                 return false;
             }
         }
 
         if (!empty($save_data_config)) {
-            if (!AdminConfig::insertAll($save_data_config, false)) {
+            if (!AdminConfigModel::insertAll($save_data_config, false)) {
                 return false;
             }
         }

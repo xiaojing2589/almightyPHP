@@ -16,11 +16,11 @@ class Common extends Controller
      */
     protected function initialize()
     {
-        // 后台公共模板
-        $this->assign('_admin_base_layout', config('admin_base_layout'));
+        // 设置语言
+        $this->assign('language', $this->request->langset());
 
         // 输出弹出层参数
-        $this->assign('_pop', $this->request->param('_pop'));
+//        $this->assign('_pop', $this->request->param('_pop'));
     }
 
     /**

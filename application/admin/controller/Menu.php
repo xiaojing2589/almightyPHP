@@ -4,9 +4,9 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\ZBuilder;
-use app\common\model\AdminModule as AdminModuleModel;
-use app\common\model\AdminMenu as AdminMenuModel;
-use app\common\model\AdminRole as AdminRoleModel;
+
+use app\admin\model\AdminModule as AdminModuleModel;
+use app\admin\model\AdminMenu as AdminMenuModel;
 
 /**
  * 节点管理
@@ -14,10 +14,11 @@ use app\common\model\AdminRole as AdminRoleModel;
 class Menu extends Admin
 {
     /**
-     * 节点首页
+     * 列表
      * @author 仇仇天
-     * @param string $group 分组
+     * @param string $group    模块分组
      * @return mixed
+     * @throws \think\Exception
      */
     public function index($group = 'admin')
     {
@@ -26,12 +27,13 @@ class Menu extends Admin
 
         // 获取数据
         if ($this->request->isAjax()) {
-            $data_list  = AdminMenuModel::getMenusByGroup($group);
+            $data_list  = AdminMenuModel::where(['module'=>$group])->select();
             $data_listT = [];
             foreach ($data_list as $value) {
                 $data_listT[] = $value;
             }
-            $view->setRowList($data_listT); // 设置表格数据
+            // 设置表格数据
+            $view->setRowList($data_listT);
         }
 
         // 设置页面标题
@@ -45,33 +47,32 @@ class Menu extends Admin
 
         // 设置标签
         $tab_list   = [];
-        $list_group = AdminModuleModel::getModuleDataInfo();
-//        $list_group = AdminMenuModel::where(['pid'=>0])->order('sort')->select();
+        $list_group = AdminModuleModel::getOpenModuleAll();
         foreach ($list_group as $key => $value) {
             $tab_list[] = [
-                'title' => $value['title'],
-                'value' => $value['name'],
-                'ico'   => $value['icon'],
-                'url' => url('index', ['group' => $value['name']]),
+                'title'   => $value['title'],
+                'value'   => $value['name'],
+                'ico'     => $value['icon'],
+                'url'     => url('index', ['group' => $value['name']]),
                 'default' => ($group == $value['name']) ? true : false
             ];
         }
-        $tab_list[] = ['title' => '模块排序', 'value' => 'module_sort','ico'=> 'fab fa-gitter', 'url' => url('modulesort'), 'default' => false];
+        $tab_list[] = ['title' => '模块排序', 'value' => 'module_sort', 'ico' => 'fab fa-gitter', 'url' => url('modulesort'), 'default' => false];
 
         // 设置分组标签
         $view->setGroup($tab_list);
 
         // 设置头部按钮新增
-        $view->addTopButton('add', ['url' => url('menu/add', ['module' => $group])]);
+        $view->addTopButton('add', ['url' => url('add', ['module' => $group])]);
 
         // 设置头部按钮删除
-        $view->addTopButton('delete', ['url' => url('menu/del'), 'query_data' => '{"action":"delete_batch"}']);
+        $view->addTopButton('delete', ['url' => url('del'), 'query_data' => '{"action":"delete_batch"}']);
 
         // 设置头部按钮启用
-        $view->addTopButton('enable', ['url' => url('menu/editstatus'), 'query_data' => '{"status":1}']);
+        $view->addTopButton('enable', ['url' => url('editstatus'), 'query_data' => '{"status":1}']);
 
         // 设置头部按钮禁用
-        $view->addTopButton('disable', ['url' => url('menu/editstatus'), 'query_data' => '{"status":0}']);
+        $view->addTopButton('disable', ['url' => url('editstatus'), 'query_data' => '{"status":0}']);
 
         // 设置列
         $view->setColumn([
@@ -136,6 +137,16 @@ class Menu extends Admin
                 'editable' => [
                     'type'   => 'switch',
                     'config' => ['on_text' => '是', 'on_value' => 1, 'off_text' => '否', 'off_value' => 0]
+                ]
+            ],
+            [
+                'field'    => 'is_log',
+                'title'    => '记录日志',
+                'width'    => 80,
+                'align'    => 'center',
+                'editable' => [
+                    'type'   => 'switch',
+                    'config' => ['on_text' => '是', 'on_value' => 1, 'off_text' => '否', 'off_value' => 2]
                 ]
             ],
             [
@@ -214,11 +225,8 @@ class Menu extends Admin
                 $MenuModel = new AdminMenuModel();
                 if (false !== $MenuModel->saveAll($data)) {
 
-                    // 记录日志
-                    adminActionLog('admin.menu_edit');
-
                     // 刷新缓存
-                    $this->refreshCache();
+                    AdminMenuModel::delCache();
 
                     $this->success('保存成功');
                 } else {
@@ -228,7 +236,7 @@ class Menu extends Admin
         }
 
         // 配置分组信息
-        $list_group = AdminModuleModel::getModuleDataInfo();
+        $list_group = AdminModuleModel::getOpenModuleAll();
         foreach ($list_group as $key => $value) {
             $tab_list[$key]['title'] = $value['title'];
             $tab_list[$key]['ico']   = $value['icon'];
@@ -252,10 +260,10 @@ class Menu extends Admin
 
     /**
      * 新增节点
-     * @author 仇仇天
      * @param string $module 所属模块
      * @param string $pid 所属节点id
      * @return mixed
+     * @author 仇仇天
      */
     public function add($module = 'admin', $id = 0)
     {
@@ -274,21 +282,17 @@ class Menu extends Admin
             if (true !== $result) $this->error($result);
 
             if ($menu = AdminMenuModel::create($data)) {
-
-                // 记录日志
-                adminActionLog('admin.menu_add');
-
                 // 刷新缓存
-                $this->refreshCache();
+                AdminMenuModel::delCache();
 
-                $this->success('新增成功', url('menu/index', ['group' => $module]));
+                $this->success('新增成功', url('index', ['group' => $module]));
             } else {
                 $this->error('新增失败');
             }
         }
 
         // 模块信息数据
-        $modules    = AdminModuleModel::getModuleDataInfo();
+        $modules    = AdminModuleModel::getOpenModuleAll();
         $module_arr = [];
         foreach ($modules AS $key => $value) {
             $module_arr[] = ['title' => $value['title'], 'value' => $value['name']];
@@ -309,7 +313,6 @@ class Menu extends Admin
             $mark      = $adminMenuInfo['mark'];
             $url_value = $adminMenuInfo['url_value'];
         }
-
 
 
         // 使用ZBuilder快速创建表单
@@ -419,6 +422,9 @@ class Menu extends Admin
             ]
         ]);
 
+        // 分成两列
+//        $form->listNumber(2);
+
         // 设置隐藏表单数据
         $form->setFormHiddenData([['name' => 'module', 'value' => $module]]);
 
@@ -454,9 +460,7 @@ class Menu extends Admin
                 // 验证提示报错
                 if (true !== $result) $this->error($result);
 
-            }
-
-            // 普通编辑
+            } // 普通编辑
             else {
 
                 // 验证
@@ -475,17 +479,14 @@ class Menu extends Admin
 
             $map['id'] = $data['id'];
 
-            $module    = AdminMenuModel::where($map)->value('module');
+            $module = AdminMenuModel::where($map)->value('module');
 
             if (false !== AdminMenuModel::where($map)->update($save_data)) {
 
-                // 记录行为
-                adminActionLog('admin.menu_edit');
+                // 删除缓存
+                AdminMenuModel::delCache();
 
-                // 刷新缓存
-                $this->refreshCache();
-
-                $this->success('编辑成功', url('menu/index', ['group' => $module]));
+                $this->success('编辑成功', url('index', ['group' => $module]));
 
             } else {
                 $this->error('编辑失败');
@@ -496,7 +497,7 @@ class Menu extends Admin
         $info = AdminMenuModel::get($id);
 
         // 节点数据
-        $role_menu_data     = AdminModuleModel::getModuleDataInfo();
+        $role_menu_data     = AdminModuleModel::getOpenModuleAll();
         $role_menu_data_arr = [];
         foreach ($role_menu_data as $role_menu_data_arr_key => $role_menu_data_arr_value) {
             $role_menu_data_arr[] = ['title' => $role_menu_data_arr_value['title'], 'value' => $role_menu_data_arr_value['name']];
@@ -510,13 +511,13 @@ class Menu extends Admin
         }
 
         // 使用ZBuilder快速创建表单
-        $form           = ZBuilder::make('forms');
+        $form = ZBuilder::make('forms');
 
         // 设置页面标题
         $form->setPageTitle('节点管理 - 编辑节点');
 
         // 设置返回地址
-        $form->setReturnUrl(url('menu/index', ['group' => $info['module']]));
+        $form->setReturnUrl(url('index', ['group' => $info['module']]));
 
         // 设置隐藏表单
         $form->setFormHiddenData([['name' => 'id', 'value' => $id]]);
@@ -543,7 +544,7 @@ class Menu extends Admin
                 'name'      => 'title',
                 'form_type' => 'text',
                 'title'     => '节点标题',
-                'require'   =>true
+                'require'   => true
             ],
             [
                 'field'     => 'mark',
@@ -610,7 +611,8 @@ class Menu extends Admin
             ]
         ]);
 
-        $form->listNumber(2);
+        // 分成两列
+//        $form->listNumber(2);
 
         // 设置表单数据
         $form->setFormdata($info);
@@ -646,10 +648,7 @@ class Menu extends Admin
 
             }
             $where = [['id', 'in', $ids]];
-        }
-
-        // 删除
-        else {
+        } else {
             if (empty($data['id'])) $this->error('参数错误');
 
             // 获取该节点的所有后辈节点id
@@ -667,11 +666,8 @@ class Menu extends Admin
 
         if (false !== AdminMenuModel::del($where)) {
 
-            // 记录日志
-            adminActionLog('admin.menu_del');
-
-            // 刷新缓存
-            $this->refreshCache();
+            // 删除缓存
+            AdminMenuModel::delCache();
 
             $this->success('操作成功');
         } else {
@@ -695,18 +691,19 @@ class Menu extends Admin
             $ids[] = $value['id'];
         }
 
-        $where= [['id', 'in', $ids]];
+        $where = [['id', 'in', $ids]];
 
         $result = AdminMenuModel::where($where)->setField('status', $data['status']);
 
         if (false !== $result) {
-            adminActionLog('admin.menu_edit_status');
-            $this->refreshCache();
+
+            // 删除缓存
+            AdminMenuModel::delCache();
+
             $this->success('操作成功');
         } else {
             $this->error('操作失败');
         }
-
     }
 
     /**
@@ -725,10 +722,10 @@ class Menu extends Admin
                     }
                     AdminMenuModel::update($menu);
                 }
-                // 刷新缓存
-                $this->refreshCache();
-                // 记录行为
-                adminActionLog('admin.menu_edit');
+
+                // 删除缓存
+                AdminMenuModel::delCache();
+
                 $this->success('保存成功');
             } else {
                 $this->error('没有需要保存的节点');
@@ -760,21 +757,5 @@ class Menu extends Admin
             $sort++;
         }
         return $result;
-    }
-
-    /**
-     * 刷新缓存
-     * @author 仇仇天
-     */
-    private function refreshCache()
-    {
-        // 删除权限菜单缓存
-        $roleData = AdminRoleModel::field('id')->select();
-        foreach ($roleData as $roleValue) {
-            AdminRoleModel::delCache($roleValue['id']);
-        }
-
-        // 删除节点缓存
-        AdminMenuModel::delCache();
     }
 }

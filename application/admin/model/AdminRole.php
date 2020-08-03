@@ -2,9 +2,10 @@
 
 namespace app\admin\model;
 
-use app\admin\model\AdminMenu as AdminMenuModel;
 use think\Model;
 use util\Tree;
+
+use app\admin\model\AdminMenu as AdminMenuModel;
 
 /**
  * 角色模型
@@ -14,10 +15,178 @@ use util\Tree;
 class AdminRole extends Model
 {
     // 缓存名称
-    protected static $cacheName = 'admin_role_menu_auth';
+    protected static $cacheName = 'admin_role_data';
 
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
+
+    /**
+     * 获取所有角色信息缓存
+     * @author 仇仇天
+     */
+    public static function getRoleAll(){
+        return rcache(self::$cacheName,'',['module'=>'admin']);
+    }
+
+    /**
+     * 获取所有启用的角色缓存
+     * @author 仇仇天
+     */
+    public static function getOpenRoleAll(){
+        // 获取所有模块
+        $data = self::getRoleAll();
+
+        $resData = [];
+
+        foreach ($data as $key=>$value){
+            if($value['status'] == 1){
+                $resData[] = $value;
+            }
+        }
+
+        return  $resData;
+    }
+
+    /**
+     * 获取单个角色信息缓存
+     * @author 仇仇天
+     * @param string $idOrMark id
+     * @return array|mixed
+     */
+    public static function getRoleDataInfo($idOrMark)
+    {
+        $moduleDataInfo = self::getOpenRoleAll();
+        $moduleInfo     = [];
+        foreach ($moduleDataInfo as $key => $value) {
+            if ($value['id'] == $idOrMark){
+                $moduleInfo = $value;
+            }
+        }
+        return $moduleInfo;
+    }
+
+    /**
+     * 根据角色id获取角色权限 缓存
+     * @author 仇仇天
+     * @param $roleId  角色id
+     * @return bool|mixed|string
+     */
+    public static function getByAdminRoleIdAuth($roleId){
+        // 获取角色权限缓存
+        $adminRoleMenuAuth = self::getOpenRoleAll();
+
+        if(!empty($adminRoleMenuAuth[$roleId])){
+            return  $adminRoleMenuAuth[$roleId];
+        }
+
+        return  false;
+    }
+
+    /**
+     * 删除（包括重置缓存）
+     * @param array $where 条件
+     * @throws \Exception
+     * @author 仇仇天
+     */
+    public static function del($where = [])
+    {
+        $data = self::where($where)->select();
+
+        if (false !== self::where($where)->delete()) {
+            // 删除缓存
+            foreach ($data as $value) {
+                self::delCache();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 删除类型缓存
+     * @author 仇仇天
+     */
+    public static function delCache()
+    {
+        dkcache(self::$cacheName);
+    }
+
+    /**
+     * 检查访问权限
+     * @author 仇仇天
+     * @param int $id 需要检查的节点ID，默认检查当前操作节点
+     * @return bool
+     */
+    public static function checkAuth($id = 0)
+    {
+        // 当前用户的角色id
+        $roleId = session('admin_user_info.role');
+
+        //  是否拥有最高权限
+        if ($roleId == 1) {
+            return true;
+        }
+
+        // 所有开启节点菜单
+        $menu = AdminMenuModel::getMenuOpenAll();
+
+
+        // 当前访问的模块
+        $model = request()->module();
+
+        // 当前访问控制器
+        $controller = request()->controller();
+
+        // 当前访问操作
+        $action = request()->action();
+
+        // 当前节点信息
+        $current_menu = strtolower($model . '/' . $controller . '/' . $action);
+
+        // 管理员
+        if($roleId == 2){
+           $adminExceptMenuNode = config('system.admin_except_menu_node');
+
+           // 不能访问的控制器
+           $adminExceptMenuNodeController = $adminExceptMenuNode['controller'];
+
+           if(in_array(strtolower($controller),$adminExceptMenuNodeController)) return false;
+
+           // 不能访问的行为
+           $adminExceptMenuNodeAction = $adminExceptMenuNode['action'];
+
+           if(in_array(strtolower($controller.','.$action),$adminExceptMenuNodeAction)) return false;
+
+           return true;
+        }
+        // 获取角色权限缓存
+        $adminRoleMenuAuth = self::getByAdminRoleIdAuth($roleId);
+
+        if (empty($adminRoleMenuAuth)) return false;
+
+        $adminRoleMenuAuth = json_decode($adminRoleMenuAuth);
+
+        $current_menu_info = [];
+
+        foreach ($menu as $key => $value) {
+            if (!empty($id)) {
+                if ($value['id'] == $id) {
+                    $current_menu_info = $value;
+                }
+            } else {
+                if ($value['url_value'] == $current_menu) {
+                    $current_menu_info = $value;
+                }
+            }
+        }
+        if (in_array($current_menu_info['mark'], $adminRoleMenuAuth)) {
+            return true;
+        }
+        return false;
+    }
+
+
 
     /**
      * 写入时，将菜单id转成json格式
@@ -114,58 +283,6 @@ class AdminRole extends Model
     }
 
     /**
-     * 检查访问权限
-     * @param int $id 需要检查的节点ID，默认检查当前操作节点
-     * @param bool $url 是否为节点url，默认为节点id
-     * @return bool
-     * @author 仇仇天
-     */
-    public static function checkAuth($id = 0)
-    {
-        // 当前用户的角色id
-        $role = session('admin_user_info.role');
-
-        // id为1的是超级管理员，或者角色为1的，拥有最高权限
-        if (session('admin_user_info.uid') == '1' || $role == '1') {
-            return true;
-        }
-
-        $menu = AdminMenuModel::getStatusMenu(); // 与所有开启节点菜单
-
-        $admin_role_menu_auth = rcache('admin_role_menu_auth', $role); // 获取角色权限
-
-        if (empty($admin_role_menu_auth)) return false;
-
-        $admin_role_menu_auth = json_decode($admin_role_menu_auth);
-
-        $model = request()->module(); // 当前访问的模块
-
-        $controller = request()->controller(); // 当前访问控制器
-
-        $action = request()->action(); // 当前访问操作
-
-        $current_menu = strtolower($model . '/' . $controller . '/' . $action); // 当前节点信息
-
-        $current_menu_info = [];
-
-        foreach ($menu as $key => $value) {
-            if (!empty($id)) {
-                if ($value['id'] == $id) {
-                    $current_menu_info = $value;
-                }
-            } else {
-                if ($value['url_value'] == $current_menu) {
-                    $current_menu_info = $value;
-                }
-            }
-        }
-        if (in_array($current_menu_info['mark'], $admin_role_menu_auth)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * 读取当前角色权限
      * @return mixed
      * @author 仇仇天
@@ -239,33 +356,5 @@ class AdminRole extends Model
         }
     }
 
-    /**
-     * 删除（包括重置缓存）
-     * @param array $where 条件
-     * @throws \Exception
-     * @author 仇仇天
-     */
-    public static function del($where = [])
-    {
-        $data = self::where($where)->select();
 
-        if (false !== self::where($where)->delete()) {
-            // 删除缓存
-            foreach ($data as $value) {
-                self::delCache($value['id']);
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * 删除类型缓存
-     * @author 仇仇天
-     */
-    public static function delCache($id)
-    {
-        dkcache(self::$cacheName, $id);
-    }
 }

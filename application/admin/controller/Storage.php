@@ -2,10 +2,11 @@
 namespace app\admin\controller;
 
 use app\common\controller\Admin;
-use app\common\model\PStorage as PStorageModel;
-use app\common\model\AdminConfig as AdminConfigModel;
 use app\common\builder\ZBuilder;
 use think\facade\Env;
+
+use app\admin\model\PStorage as PStorageModel;
+use app\admin\model\AdminConfig as AdminConfigModel;
 
 /**
  * 云存储控制器
@@ -216,9 +217,10 @@ javascript
         ];
 
         if (false !== PStorageModel::insert($allowField)) {
-            // 记录行为
-            adminActionLog('admin.storage_install');
-            $this->refreshCache();
+
+            // 删除缓存
+            PStorageModel::delCache();
+
             $this->success('模块安装成功', 'index');
         }else{
             $this->error('安装失败！');
@@ -243,9 +245,10 @@ javascript
         if($info['system'] == 1)$this->error('系统插件不可卸载');
 
         if(false !== PStorageModel::del(['mark'=>$mark])){
-            // 记录行为
-            adminActionLog('admin.storage_uninstall');
-            $this->refreshCache();
+
+            // 删除缓存
+            PStorageModel::delCache();
+
             $this->success('卸载成功', url('index'));
         }else{
             $this->error('卸载失败');
@@ -287,9 +290,10 @@ javascript
             ];
 
             if (PStorageModel::where(['mark'=>$mark])->update($allowField)) {
-                // 记录行为
-                adminActionLog('admin.storage_edit');
-                $this->refreshCache();
+
+                // 删除缓存
+                PStorageModel::delCache();
+
                 $this->success('设置成功', url('index'));
             } else {
                 $this->error('设置失败');
@@ -349,9 +353,7 @@ javascript
             $save_data          = [];
             $save_data['value'] = $data['upload_driver'];
             if (false !== AdminConfigModel::where(['name' => 'upload_driver'])->update($save_data)) {
-                // 记录行为
-                adminActionLog('admin.storage_setting');
-                // 刷新缓存
+                // 删除缓存
                 AdminConfigModel::delCache();
                 $this->success('设置成功', url('storagesetting'));
             } else {
@@ -359,16 +361,15 @@ javascript
             }
         }
 
-        // 获取配置
-        $data_config_info = rcache('system_config_info.upload_driver');
+        // 获取上传驱动配置(缓存)
+        $data_config_info = rcache('admin_config_data.upload_driver');
 
         // 所有短信驱动数据
-        $smsData = PStorageModel::getStorageDataInfo();
+        $smsData = PStorageModel::getStorageAll();
         $smsArr = [];
         foreach ($smsData as $ka => $va) {
             $smsArr[] = ['title' => $va['name'], 'value' => $va['mark']];
         }
-        $options = $smsArr;
 
         // 使用ZBuilder快速创建表单
         $form             = ZBuilder::make('forms');
@@ -393,19 +394,11 @@ javascript
                 'title'     => '选择上传驱动',
                 'form_type' => $data_config_info['type'],
                 'value'     => $data_config_info['value'],
-                'option'    => $options,
+                'option'    => $smsArr,
                 'tips'      => $data_config_info['tips']
-            ],
+            ]
         ]);
 
         return $form->fetch();
-    }
-
-    /**
-     *  刷新缓存
-     * @author 仇仇天
-     */
-    private function refreshCache(){
-        PStorageModel::delCache();
     }
 }

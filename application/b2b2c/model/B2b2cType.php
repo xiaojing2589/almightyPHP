@@ -11,9 +11,8 @@ use think\Model;
  */
 class B2b2cType extends Model
 {
-    protected $name = 'b2b2c_type';// 设置当前模型对应的完整数据表名称
-
-    protected static $cacheName = 'b2b2c_type'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'b2b2c_type';
 
     /**
      * 获取所有类型数据(取缓存)

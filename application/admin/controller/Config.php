@@ -3,12 +3,15 @@
 namespace app\admin\controller;
 
 use app\common\controller\Admin;
-use app\common\model\AdminConfig as AdminConfigModel;
-use app\common\model\AdminModule as AdminModuleModel;
+use app\admin\model\AdminConfig as AdminConfigModel;
+use app\admin\model\AdminModule as AdminModuleModel;
 use app\common\builder\ZBuilder;
+
 
 /**
  * 系统配置控制器
+ * Class Config
+ * @package app\admin\controller
  */
 class Config extends Admin
 {
@@ -85,18 +88,18 @@ class Config extends Admin
         ]);
 
         // 标签分组信息
-        $list_group = AdminModuleModel::getModuleDataInfo();
-        $tab_list   = [];
-        foreach ($list_group as $key => $value) {
-            $tab_list[$key]['title']   = $value['title'];
-            $tab_list[$key]['field']   = $value['name'];
-            $tab_list[$key]['ico']     = $value['icon'];
-            $tab_list[$key]['url']     = url('index', ['module_group' => $value['name']]);
-            $tab_list[$key]['default'] = $module_group == $value['name'] ? true : false;
+        $moduleData = AdminModuleModel::getOpenModuleAll();
+        $moduleTagData   = [];
+        foreach ($moduleData as $key => $value) {
+            $moduleTagData[$key]['title']   = $value['title'];
+            $moduleTagData[$key]['field']   = $value['name'];
+            $moduleTagData[$key]['ico']     = $value['icon'];
+            $moduleTagData[$key]['url']     = url('index', ['module_group' => $value['name']]);
+            $moduleTagData[$key]['default'] = $module_group == $value['name'] ? true : false;
         }
 
         // 设置分组
-        $view->setGroup($tab_list);
+        $view->setGroup($moduleTagData);
 
         // 设置头部按钮 新增
         $view->addTopButton('add', ['url' => url('add', ['module_group' => $module_group])]);
@@ -259,10 +262,7 @@ class Config extends Admin
                 // 删除缓存
                 AdminConfigModel::delCache();
 
-                // 日志
-                adminActionLog('admin.config_add');
-
-                $this->success('新增成功', url('config/index', ['module_group' => $data['module_group']]));
+                $this->success('新增成功', url('index', ['module_group' => $data['module_group']]));
             } else {
                 $this->error('新增失败');
             }
@@ -287,7 +287,7 @@ class Config extends Admin
         $form->setFormHiddenData([['name' => 'module_group', 'value' => $module_group]]);
 
         // 设置 提交地址
-        $form->setFormUrl(url('config/add'));
+        $form->setFormUrl(url('add'));
 
         // 分列
         $form->listNumber(2);
@@ -410,9 +410,6 @@ class Config extends Admin
 
                 // 删除缓存
                 AdminConfigModel::delCache();
-
-                // 记录行为
-                adminActionLog('admin.config_edit');
 
                 $this->success('编辑成功', url('index', ['module_group' => $config_info['module']]));
 
@@ -537,9 +534,6 @@ class Config extends Admin
 
         if (false !== AdminConfigModel::del($where)) {
 
-            // 记录日志
-            adminActionLog('admin.config_delete');
-
             $this->success('删除成功');
         } else {
             $this->error('删除失败');
@@ -565,7 +559,6 @@ class Config extends Admin
         $result = AdminConfigModel::where($where)->setField('status', $data['status']);
 
         if (false !== $result) {
-            adminActionLog('admin.config_edit_status');
             $this->success('操作成功');
         } else {
             $this->error('操作失败');

@@ -2,9 +2,10 @@
 
 namespace app\common\controller;
 
-use app\common\model\AdminMenu as AdminMenuModel;
-use app\common\model\AdminIcon as AdminIconModel;
+use app\admin\model\AdminMenu as AdminMenuModel;
+use app\admin\model\AdminIcon as AdminIconModel;
 use app\admin\model\AdminRole as AdminRoleModel;
+
 
 /**
  * 后台公共类
@@ -19,8 +20,12 @@ class Admin extends Common
      */
     protected function initialize()
     {
+
         //  调用父类 初始方法
         parent::initialize();
+
+        // 后台公共模板
+        $this->assign('_admin_base_layout', config('admin_base_layout'));
 
         // 是否拒绝ie浏览器访问
         if (config('system.deny_ie') && get_browser_type() == 'ie') {
@@ -42,21 +47,31 @@ class Admin extends Common
         if (!$this->request->isAjax()) {
 
             // 读取顶部菜单
-            $this->assign('_top_menus', AdminMenuModel::getTopMenu(session('admin_user_info.role')));
+            $this->assign('_top_menus', AdminMenuModel::getByRoleIdAuthTopMenu(session('admin_user_info.role')));
 
             // 获取侧边栏菜单
             $this->assign('_sidebar_menus', AdminMenuModel::getSidebarMenu());
 
             // 获取面包屑导航
-            $this->assign('_location', AdminMenuModel::getLocation('', true));
+            $this->assign('_location', AdminMenuModel::getLocation());
 
             // 获取自定义图标
             $this->assign('_icons', AdminIconModel::getUrls());
+
         }
+
+        // 可设置语言列表
+        $languageType    = config('system.language_type');
+
+        $this->assign('languageType', $languageType);
+
+        // 默认语言
+        $this->assign('defaultLangType', $this->request->langset());
+
     }
 
     /**
-     * 检查是 否登录/锁定，没有登录则跳转到登录页面
+     * 检查是 否登录，没有登录则跳转到登录页面
      * @return mixed
      * @author 仇仇天
      */

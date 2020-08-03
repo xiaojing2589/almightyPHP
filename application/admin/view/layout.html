@@ -1,18 +1,6 @@
 <!DOCTYPE html>
 
-<!--
-Template Name: Metronic - Responsive Admin Dashboard Template build with Twitter Bootstrap 4 & Angular 8
-Author: KeenThemes
-Website: http://www.keenthemes.com/
-Contact: support@keenthemes.com
-Follow: www.twitter.com/keenthemes
-Dribbble: www.dribbble.com/keenthemes
-Like: www.facebook.com/keenthemes
-Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes
-Renew Support: http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes
-License: You must have a valid license purchased only from themeforest(the above link) in order to legally use the theme for your project.
--->
-<html lang="en">
+<html lang="{$language}">
 
 <!-- begin::Head -->
 <head>
@@ -868,7 +856,6 @@ License: You must have a valid license purchased only from themeforest(the above
                                         </div>
                                     </div>
                                 </div>
-
                                 <!-- end:: Mycart -->
                             </form>
                         </div>
@@ -895,29 +882,25 @@ License: You must have a valid license purchased only from themeforest(the above
                     <!--begin: Language bar -->
                     {// 开始 语言选择}
                     <div class="kt-header__topbar-item kt-header__topbar-item--langs">
+                        {// 默认语言}
                         <div class="kt-header__topbar-wrapper" data-toggle="dropdown" data-offset="10px,0px">
-									<span class="kt-header__topbar-icon">
-										<img class="" src="__ADMIN_IMG__/flags/020-flag.svg" alt="" />
-									</span>
+                            <span class="kt-header__topbar-icon">
+                                <img class="" src="__ADMIN_IMG__/flags/{$defaultLangType}.svg" alt="" class="default_lang" />
+                            </span>
                         </div>
+
                         <div class="dropdown-menu dropdown-menu-fit dropdown-menu-right dropdown-menu-anim dropdown-menu-top-unround">
                             <ul class="kt-nav kt-margin-t-10 kt-margin-b-10">
                                 <li class="kt-nav__item kt-nav__item--active">
-                                    <a href="#" class="kt-nav__link">
-                                        <span class="kt-nav__link-icon"><img src="__ADMIN_IMG__/flags/020-flag.svg" alt="" /></span>
-                                        <span class="kt-nav__link-text">English</span>
+                                    <a href="zh-cn" class="kt-nav__link lang">
+                                        <span class="kt-nav__link-icon"><img src="__ADMIN_IMG__/flags/zh-cn.svg" alt="" /></span>
+                                        <span class="kt-nav__link-text">{:lang('chinese')}</span>
                                     </a>
                                 </li>
-                                <li class="kt-nav__item">
-                                    <a href="#" class="kt-nav__link">
-                                        <span class="kt-nav__link-icon"><img src="__ADMIN_IMG__/flags/016-spain.svg" alt="" /></span>
-                                        <span class="kt-nav__link-text">Spanish</span>
-                                    </a>
-                                </li>
-                                <li class="kt-nav__item">
-                                    <a href="#" class="kt-nav__link">
-                                        <span class="kt-nav__link-icon"><img src="__ADMIN_IMG__/flags/017-germany.svg" alt="" /></span>
-                                        <span class="kt-nav__link-text">German</span>
+                                <li class="kt-nav__item ">
+                                    <a href="en" class="kt-nav__link lang">
+                                        <span class="kt-nav__link-icon"><img src="__ADMIN_IMG__/flags/en.svg" alt="" /></span>
+                                        <span class="kt-nav__link-text">{:lang('english')}</span>
                                     </a>
                                 </li>
                             </ul>
@@ -931,8 +914,8 @@ License: You must have a valid license purchased only from themeforest(the above
                     <div class="kt-header__topbar-item kt-header__topbar-item--user">
                         <div class="kt-header__topbar-wrapper" data-toggle="dropdown" data-offset="0px,0px">
                             <div class="kt-header__topbar-user">
-                                <span class="kt-header__topbar-welcome kt-hidden-mobile">您好,</span>
                                 <span class="kt-header__topbar-username kt-hidden-mobile">{$Think.session.admin_user_info.username}</span>
+                                <span class="kt-header__topbar-welcome kt-hidden-mobile">,{:lang('Welcome')}</span>
                                 <img alt="Pic" src="{$Think.session.admin_user_info.avatar|attaUrl='admin_avatar'}" />
                             </div>
                         </div>
@@ -1934,7 +1917,61 @@ License: You must have a valid license purchased only from themeforest(the above
 {// 页面js代码}
 {block name="page_script"}{/block}
 
+<script>
+$(function(){
+    $('.lang').click(function(){
 
+        /**
+         * 添加 或者 修改 url中参数的值
+         * @param name 名称
+         * @param val 值
+         * @constructor
+         */
+        function UpdateUrlParam(name, val) {
+            var thisURL = document.location.href;
+
+            // 如果 url中包含这个参数 则修改
+            if (thisURL.indexOf(name+'=') > 0) {
+                var v = getUrlParam(name);
+                if (v != null) {
+                    // 是否包含参数
+                    thisURL = thisURL.replace(name + '=' + v, name + '=' + val);
+
+                }
+                else {
+                    thisURL = thisURL.replace(name + '=', name + '=' + val);
+                }
+
+            } // 不包含这个参数 则添加
+            else {
+                if (thisURL.indexOf("?") > 0) {
+                    thisURL = thisURL + "&" + name + "=" + val;
+                }
+                else {
+                    thisURL = thisURL + "?" + name + "=" + val;
+                }
+            }
+            location.href = thisURL;
+
+        }
+
+        /**
+         * 检测连接是否有该参数
+         * @param name 参数
+         * @returns {string}
+         */
+        function getUrlParam(name){
+            var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r!=null) return unescape(r[2]); return '';
+        }
+
+        UpdateUrlParam('lang',$(this).attr('href'));
+
+        return false;
+    });
+});
+</script>
 </body>
 <!-- end::Body -->
 

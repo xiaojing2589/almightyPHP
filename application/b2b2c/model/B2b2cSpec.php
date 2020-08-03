@@ -11,37 +11,17 @@ use think\Model;
  */
 class B2b2cSpec extends Model
 {
-    protected $name = 'b2b2c_spec';// 设置当前模型对应的完整数据表名称
-
-    protected static $cacheName = 'b2b2c_spec'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'b2b2c_spec';
 
     /**
      * 获取所有类型数据(取缓存)
      * @author 仇仇天
      */
-    public static function getSpecDataInfo()
+    public static function getSpecDataAll()
     {
-        $goodsClassData = rcache(self::$cacheName, '', ['module' => 'b2b2c']);
-        return $goodsClassData;
-    }
-
-    /**
-     * 根据字段获取类型信息(取缓存)
-     * @author 仇仇天
-     * @param $value 值
-     * @param string $field 字段 默认id
-     * @return array
-     */
-    public static function getSpecInfo($value,$field = 'type_id')
-    {
-        $data  = self::getSpecDataInfo();
-        $resData = [];
-        foreach ($data as $v){
-            if($v[$field] == $value){
-                $resData = $v;
-            }
-        }
-        return $resData;
+        $data = rcache(self::$cacheName, '', ['module' => 'b2b2c']);
+        return $data;
     }
 
     /**
@@ -53,7 +33,8 @@ class B2b2cSpec extends Model
     public static function del($where = [])
     {
         if(false !== self::where($where)->delete()){
-            self::delCache(); // 删除缓存
+            // 删除缓存
+            self::delCache();
             return true;
         }else{
             return false;

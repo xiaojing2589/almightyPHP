@@ -1,9 +1,18 @@
 <?php
+use \think\facade\Lang;
 
+// 加载模块下的自定义方法
+$dirsModeuleArr = array_map('basename', glob(think\facade\Env::get('app_path') . '*', GLOB_ONLYDIR));
+foreach ($dirsModeuleArr as $modeuleKey=>$modeuleValue){
+    $fileModeuleArr = array_map('basename', glob(think\facade\Env::get('app_path').$modeuleValue.'/function/' . '*'));
+    foreach ($fileModeuleArr as $fileKey=>$fileValue){
+        include_once think\facade\Env::get('app_path').$modeuleValue. '/function/'.$fileValue;
+    }
+}
 
-// 加载自定义公共文件
-if (is_file(think\facade\Env::get('app_path') . 'function.php')) {
-    include_once think\facade\Env::get('app_path') . 'function.php';
+function predBUG($v){
+    print_R($v);
+    exit;
 }
 
 /**
@@ -198,7 +207,7 @@ function getFilesize($num)
  * @return bool
  * @throws Exception
  */
-function action_log($action = null, $params = [])
+function actionLog($params = [])
 {
     // 获取当前域名
     $domain = request()->domain();
@@ -225,47 +234,71 @@ function action_log($action = null, $params = [])
     $param = request()->param();
 
     // 全部日志
-    $action_info_log = think\facade\Log::getLog();
+    $actionInfoLog = think\facade\Log::getLog();
 
-    // 获取行为缓存
-    $action_info = rcache('action_config.' . $action);
+    // 当前节点信息
+    $currentMenu = strtolower($module.'/'.$controller.'/'.$actions);
 
-    // 写入数据库
-    $data = [
-        // 行为名称
-        'action_name'   => $action_info['name'],
-        // 执行者用户名
-        'user_name'     => empty($params['username']) ? '游客' : $params['username'],
-        // 执行者用户id
-        'user_id'       => empty($params['userid'])  ?  '' : $params['userid'],
-        // 执行者用户ip
-        'action_ip'     => $ip,
-        // 资源类型
-        'rq_type'       => $type,
-        // 获取当前域名
-        'rq_domain'     => $domain,
-        // 入口文件
-        'rq_basefile'   => $baseFile,
-        // 模块
-        'rq_module'     => $module,
-        // 控制器
-        'rq_controller' => $controller,
-        // 方法
-        'rq_action'     => $actions,
-        // 参数
-        'rq_param'      => json_encode($param, JSON_UNESCAPED_UNICODE),
-        // 详细日志
-        'rq_log_info'   => json_encode($action_info_log, JSON_UNESCAPED_UNICODE),
-        // 时间
-        'create_time'   => request()->time()
-    ];
+    // 操作者id
+    $uid = 0;
 
-    // 判断是否开启系统日志功能
-    $res_status = app\common\model\AdminLog::insert($data);
-    if ($res_status !== false) {
-        return true;
-    } else {
-        return false;
+    $username = '';
+
+
+    // 是否后台操作
+    if($module == 'admin'){
+
+        // 获取后天节点缓存
+        $adminMenuData = app\admin\model\AdminMenu::getMenuValuesAll();
+
+        // 设置操作者id
+        $uid = session('admin_user_info.uid');
+
+        // 设置操作者账号
+        $username = session('admin_user_info.username');
+
+        if(!empty($adminMenuData[$currentMenu])){
+
+            // 获取对应节点数据
+            $menuData = $adminMenuData[$currentMenu];
+        }
+    }
+
+
+    if(!empty($menuData) && $menuData['is_log'] == 1 && !empty($param['is_log'])){
+
+        // 写入数据库
+        $data = [
+            // 行为名称
+            'title'   => $menuData['location'],
+            // 执行者用户名
+            'user_name'     => empty($username) ? '游客' : $username,
+            // 执行者用户id
+            'user_id'       => empty($uid)  ?  '' : $uid,
+            // 执行者用户ip
+            'action_ip'     => $ip,
+            // 资源类型
+            'rq_type'       => $type,
+            // 获取当前域名
+            'rq_domain'     => $domain,
+            // 入口文件
+            'rq_basefile'   => $baseFile,
+            // 模块
+            'rq_module'     => $module,
+            // 控制器
+            'rq_controller' => $controller,
+            // 方法
+            'rq_action'     => $actions,
+            // 参数
+            'rq_param'      => json_encode($param, JSON_UNESCAPED_UNICODE),
+            // 详细日志
+            'rq_log_info'   => json_encode($actionInfoLog, JSON_UNESCAPED_UNICODE),
+            // 时间
+            'create_time'   => request()->time()
+        ];
+        // 判断是否开启系统日志功能
+        app\admin\model\AdminLog::insert($data);
+
     }
 
 }
@@ -283,6 +316,7 @@ function queueS($param = [], $module = 'common', $function = 'fire')
 {
     // 当前任务将由哪个类来负责处理。当轮到该任务时，系统将生成一个该类的实例，并调用其 fire 方法
     $jobHandlerClassName = 'app\\' . $module . '\\model\\QueueS@' . $function;
+
     // 立即执行入列
     if (empty($param['later'])) {
         // 即时执行，将该任务推送到消息队列，等待对应的消费者去执行
@@ -292,9 +326,232 @@ function queueS($param = [], $module = 'common', $function = 'fire')
         // 延迟执行，将该任务推送到消息队列，等待对应的消费者去执行
         $isPushed = think\Queue::later($param['later'], $jobHandlerClassName, $param);
     }
+
     // database 驱动时，返回值为 1|false  ;   redis 驱动时，返回值为 随机字符串|false
-    return ($isPushed !== false) ? true : false;
+//    return ($isPushed !== false) ? true : false;
+    return $isPushed;
 }
+
+/**
+ * 规范数据返回函数
+ * @author 仇仇天
+ * @param bool $state true=正确 false=错误
+ * @param string $msg 提示信息
+ * @param array $data 附加数据
+ * @return array
+ */
+function callback($state = true, $msg = '', $data = []) {
+    return ['state' => $state, 'msg' => $msg, 'data' => $data];
+}
+
+/**
+ * 清除两端指定字符串
+ * @author 仇仇天
+ * @param $str 源字符
+ * @param string $list 待清除字符
+ * @return bool|string
+ */
+function trimStr($str, $list='') {
+
+    $list = (string) $list;
+    if (!isset($list[0])) return trim($str);
+    $len1 = strlen($str);
+    $len2 = strlen($list);
+    if ($len2 > $len1) return trim($str);
+    $str = ltrimStr($str, $list);
+    $str = rtrimStr($str, $list);
+    return $str;
+}
+
+/**
+ * 清除左侧指定字符串
+ * @author 仇仇天
+ * @param $str 源字符
+ * @param string $list 待清除字符
+ * @return bool|string
+ */
+function ltrimStr($str, $list='') {
+
+    $list = (string) $list;
+    if (!isset($list[0])) return ltrim($str);
+    $len1 = strlen($str);
+    $len2 = strlen($list);
+    if ($len2 > $len1) return ltrim($str);
+
+    $s = '';
+    do {
+        $s = substr($str, 0, $len2);
+        if ($s == $list) $str = substr($str, $len2);
+    } while($s == $list);
+
+    return $str;
+
+}
+
+/**
+ * 清除右侧指定字符串
+ * @author 仇仇天
+ * @param $str 源字符
+ * @param string $list 待清除字符
+ * @return bool|string
+ */
+function rtrimStr($str, $list='') {
+    $list = (string) $list;
+    if (!isset($list[0])) return rtrim($str);
+    $len1 = strlen($str);
+    $len2 = strlen($list);
+    if ($len2 > $len1) return rtrim($str);
+    $s = '';
+    do {
+        $s = substr($str, -$len2);
+        if ($s == $list) $str = substr($str, 0, -$len2);
+    } while($s == $list);
+
+    return $str;
+}
+
+/**
+ * 翻译
+ * @author 仇仇后天
+ * @param $text
+ * @param string $to zh-CN:翻译为中文  en:翻译为英文
+ * @return string
+ */
+function gtranslate($text,$to='zh-CN'){
+    $entext = urlencode($text);
+    $url = 'https://translate.google.cn/translate_a/single?client=gtx&dt=t&ie=UTF-8&oe=UTF-8&sl=auto&tl='.$to.'&q='.$entext;
+    set_time_limit(0);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_MAXREDIRS,20);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 40);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    $result = json_decode($result);
+    if(!empty($result)){
+        foreach($result[0] as $k){
+            $v[] = $k[0];
+        }
+        return implode(" ", $v);
+    }
+}
+
+/**
+ * 读取缓存
+ * @author 仇仇天
+ * @param $field_name  缓存字段名
+ * @param string $Identification 缓存标识
+ * @param array $extend_param 扩展参数
+ * @return bool|mixed|string
+ */
+function rcache($field_name, $Identification = '', $extend_param = [])
+{
+    try {
+        // 解析层级
+        $fieldNameArr = explode('.', $field_name);
+        // 配置名
+        $field_name     = $fieldNameArr[0];
+    } catch (Exception $e) {
+        // 配置名
+        $field_name     = $field_name;
+    }
+
+
+    // 获取缓存配置
+    $config         = app\admin\model\AdminCache::getByAdminCache($field_name);
+
+    if (!empty($config)) {
+        // 查询缓存
+        $value = think\facade\Cache::connect($config)->get($field_name . $Identification);
+
+        // 如果不存在
+        if ($value === false || $value == '') {
+            // 查询自动创建缓存函数是否存在
+            if (!method_exists(new app\common\model\ExtendCache, $field_name)) {
+                // 是否是模块缓存
+                if (!empty($extend_param['module'])) {
+                    $class    = "app\\{$extend_param['module']}\\model\\ExtendCache";
+
+                    // 调用字段相应的函数
+                    $callback = [new $class, $field_name];
+                    // 回调行数
+                    $value    = call_user_func($callback, $Identification, $extend_param);
+                }
+                if ($value === false || $value == '') $value = '';
+            } else {
+                // 调用字段相应的函数
+                $callback = [new app\common\model\ExtendCache, $field_name];
+                // 回调行数
+                $value    = call_user_func($callback, $Identification, $extend_param);
+            }
+            // 写入
+            wkcache($field_name, $value, $Identification);
+        }
+
+        // 获取层级数据
+        $fvalue = $value;
+        if (count($fieldNameArr) > 1) {
+            foreach ($fieldNameArr as $keys => $values) {
+                if ($keys > 0) {
+                    if (!empty($fvalue[$values])) {
+                        $fvalue = $fvalue[$values];
+                    } else {
+                        return '';
+                    }
+                }
+            }
+            return $fvalue;
+        }
+        return $value;
+    }
+}
+
+/**
+ * 写入缓存
+ * @author 仇仇天
+ * @param $field_name 字段名称
+ * @param $value 数据
+ * @param string $Identification 标识
+ * @return bool
+ */
+function wkcache($field_name, $value, $Identification = '')
+{
+    // 获取缓存配置
+    $config = app\admin\model\AdminCache::getByAdminCache($field_name);
+
+    if (!empty($config)) {
+        $value = think\facade\Cache::connect($config)->set($field_name . $Identification, $value);
+        return $value;
+    }
+    return false;
+}
+
+/**
+ * 删除缓存
+ * @author 仇仇天
+ * @param $field_name 字段名称
+ * @param string $Identification 标识
+ * @return bool|mixed
+ */
+function dkcache($field_name, $Identification = '')
+{
+    // 获取缓存配置
+    $config         = app\admin\model\AdminCache::getByAdminCache($field_name);
+
+    if (!empty($config)) {
+        // 设置缓存
+        $value = think\facade\Cache::connect($config)->pull($field_name . $Identification);
+        return $value;
+    }
+    return false;
+}
+
 
 /**
  * 通知邮件/通知消息 内容转换函数
@@ -487,230 +744,235 @@ function extend_form_item($form = [], $_layout = [])
     }
 }
 
-
-
-
 /**
- * 导入Excel数据表格
+ * excel 导出
  * @author 仇仇天
- * @param string $fileName 文件名
- * @param int $line 读取几行，默认全部读取
- * @param int $offset 从第几行开始读，默认从第一行读取
- * @return bool|array
+ * @param array $param
+ *                  export_path 存储路径
+ *                  filename 文件名（浏览器下载有效）
+ *                  creator 设置文件的创建者
+ *                  modified 设置最后修改者
+ *                  title 设置标题
+ *                  subject 设置主题
+ *                  description 设置备注
+ *                  keywords 设置标记
+ *                  category 设置类别
+ *                  cell 设置单元格
+ *                      title 标题
+ *                      height 高度
+ *                      width 宽度
+ *                      size 字号
+ *                      word_colour 文字颜色
+ *                      horizontal 水平对齐方式
+ *                      vertical 垂直对齐方式
+ *                      bold 是否加粗
+ *                   data 数据
  */
-function importCsv($fileName, $line = 0, $offset = 0)
-{
-    // 防止超时
-    set_time_limit(0);
+function exportExcel($param = []){
 
-    // 防止内存溢出
-    ini_set("memory_limit", "512M");
+    $objPHPExcel = new \PHPExcel();
 
-    $handle = fopen($fileName, 'r');
-    if (!$handle) {
-        return '文件打开失败';
+    /******************************设置excel的属性*****************************/
+    // 创建人
+    if(!empty($param['creator'])){
+        $objPHPExcel->getProperties()->setCreator($param['creator']);
     }
 
-    $i   = 0;
-    $j   = 0;
-    $arr = [];
-    while ($data = fgetcsv($handle)) {
-        //小于偏移量则不读取,但$i仍然需要自增
-        if ($i < $offset && $offset) {
-            $i++;
-            continue;
-        }
-        //大于读取行数则退出
-        if ($i > $line && $line) {
-            break;
-        }
-
-        foreach ($data as $key => $value) {
-            $content   = iconv("gbk", "utf-8//IGNORE", $value);//转化编码
-            $arr[$j][] = $content;
-        }
-        $i++;
-        $j++;
+    // 最后修改人
+    if(!empty($param['modified'])){
+        $objPHPExcel->getProperties()->setLastModifiedBy($param['modified']);
     }
-    return $arr;
-}
 
-/**
- * 导出Excel数据表格
- * @author 仇仇天
- * @param array $dataList 要导出的数组格式的数据
- * @param array $headList 导出的Excel数据第一列表头
- * @param string $fileName 输出Excel表格文件名
- * @param string $exportUrl 直接输出到浏览器or输出到指定路径文件下
- * @return bool|false|string
- */
-function exportCsv($dataList, $headList, $fileName, $exportUrl = 'php://output')
-{
-    // 防止超时
-    set_time_limit(0);
+    // 标题
+    if(!empty($param['title'])){
+        $objPHPExcel->getProperties()->setTitle($param['title']);
+    }
 
-    // 防止内存溢出
-    ini_set("memory_limit", "512M");
+    // 主题
+     if(!empty($param['subject'])){
+         $objPHPExcel->getProperties()->setSubject($param['subject']);
+     }
 
-    // 完整文件名
-    $file_name = $fileName.'.csv';
+    // 描述
+    if(!empty($param['description'])){
+        $objPHPExcel->getProperties()->setDescription($param['description']);
+    }
 
-    // 打开PHP文件句柄,php://output 表示直接输出到浏览器,$exportUrl表示输出到指定路径文件下
-    if($exportUrl == 'php://output'){
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="' . $fileName . '.csv"');
-        header('Cache-Control: max-age=0');
-        $fp = fopen($exportUrl, 'a');
+    // 关键字
+    if(!empty($param['keywords'])){
+        $objPHPExcel->getProperties()->setKeywords($param['keywords']);
+    }
+
+    // 种类
+    if(!empty($param['category'])){
+        $objPHPExcel->getProperties()->setCategory($param['category']);
+    }
+
+    /******************************设置excel的单元格*****************************/
+
+    if (!empty($param['cell'])) {
+        $cellLetter = 'A';
+        foreach ($param['cell'] as $value) {
+
+            // 设置标题
+            $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellLetter.'1', $value['title']);
+
+            // 冻结
+            if(!empty($value['freeze_pane'])){
+                $objPHPExcel->getActiveSheet()->freezePane($cellLetter.'1');
+            }
+
+            // 设置高度
+            if(!empty($value['height'])){
+                $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight($value['height']);
+            }
+
+            // 设置宽度 在office中有效在wps中无效
+            if(!empty($value['width'])){
+                $objPHPExcel->getActiveSheet()->getColumnDimension($cellLetter)->setWidth($value['width']);
+            }
+
+            // 设置文字大小
+            if(!empty($value['size'])){
+                $objPHPExcel->getActiveSheet()->getStyle($cellLetter.'1')->getFont()->setSize($value['size']);
+            }
+
+            // 设置是否加粗
+            if(!empty($value['bold'])){
+                $objPHPExcel->getActiveSheet()->getStyle($cellLetter.'1')->getFont()->setBold($value['bold']);
+            }
+
+            // 设置文字颜色
+            if(!empty($value['word_colour'])){
+                $objPHPExcel->getActiveSheet()->getStyle($cellLetter.'1')->getFont()->getColor()->setARGB($value['word_colour']);
+            }
+
+            // 设置文字水平对齐方式 居左=left 中=center 右=right
+            if(!empty($value['horizontal'])){
+                $objPHPExcel->getActiveSheet()->getStyle($cellLetter.'1')->getAlignment()->setHorizontal($value['horizontal']);
+            }
+
+            // 设置文字垂直对齐方式 顶部=top 中=center 底部=bottom 证明=justify 分散=distributed
+            if(!empty($value['vertical'])){
+                $objPHPExcel->getActiveSheet()->getStyle($cellLetter.'1')->getAlignment()->setVertical($value['vertical']);
+            }
+
+
+            $cellLetter++;
+        }
+    }
+
+    // 冻结首列
+//    $objPHPExcel->getActiveSheet()->freezePaneByColumnAndRow(1,1);
+
+    /******************************设置excel的单元格数据*****************************/
+    if(!empty($param['data'])){
+        $count = count($param['cell']);
+        $startRow = 1;
+        foreach ($param['data'] as $value){
+            $dataLetter = 'A';
+            $startRow++;
+            for($i=0;$i<$count;$i++) {
+                $findData = $value[$param['cell'][$i]['find']];
+
+
+                // 设置值
+                $objPHPExcel->setActiveSheetIndex(0)->setCellValue($dataLetter . $startRow, $findData['value']);
+
+                // 冻结
+                if(!empty($findData['freeze_pane'])){
+                    $objPHPExcel->getActiveSheet()->freezePane($dataLetter . $startRow);
+                }
+
+                // 设置高度
+                if(!empty($findData['height'])){
+                    $objPHPExcel->getActiveSheet()->getRowDimension($startRow)->setRowHeight($findData['height']);
+                }
+
+                // 设置宽度 在office中有效在wps中无效
+                if(!empty($findData['width'])){
+                    $objPHPExcel->getActiveSheet()->getColumnDimension($dataLetter)->setWidth($findData['width']);
+                }
+
+                // 设置文字大小
+                if(!empty($findData['size'])){
+                    $objPHPExcel->getActiveSheet()->getStyle($dataLetter . $startRow)->getFont()->setSize($findData['size']);
+                }
+
+                // 设置是否加粗
+                if(!empty($findData['bold'])){
+                    $objPHPExcel->getActiveSheet()->getStyle($dataLetter . $startRow)->getFont()->setBold($findData['bold']);
+                }
+
+                // 设置文字颜色
+                if(!empty($findData['word_colour'])){
+                    $objPHPExcel->getActiveSheet()->getStyle($dataLetter . $startRow)->getFont()->getColor()->setARGB($findData['word_colour']);
+                }
+
+                // 设置文字水平对齐方式 居左=left 中=center 右=right
+                if(!empty($findData['horizontal'])){
+                    $objPHPExcel->getActiveSheet()->getStyle($dataLetter . $startRow)->getAlignment()->setHorizontal($findData['horizontal']);
+                }
+
+                // 设置文字垂直对齐方式 顶部=top 中=center 底部=bottom 证明=justify 分散=distributed
+                if(!empty($findData['vertical'])){
+                    $objPHPExcel->getActiveSheet()->getStyle($dataLetter . $startRow)->getAlignment()->setVertical($findData['vertical']);
+                }
+
+                $dataLetter++;
+            }
+        }
+    }
+
+
+
+    /******************************设置excel的导出*****************************/
+    $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+
+    if(!empty($param['export_path'])){
+        // 保存文件
+        $objWriter->save($param['export_path']);
     }else{
-        $fp = fopen($exportUrl.$file_name, 'a');
+        //导出execl
+        $filename = empty($param['filename']) ? time() : $param['filename'];
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        ob_end_clean();
+        $objWriter->save('php://output');
+        exit;
     }
 
-    //输出Excel列名信息
-    foreach ($headList as $key => $value) {
-        $headList[$key] = iconv('utf-8', 'gbk', $value); //CSV的Excel支持GBK编码，一定要转换，否则乱码
-    }
 
-    // 将数据通过fputcsv写到文件句柄
-    fputcsv($fp, $headList);
-
-    // 计数器
-    $num   = 0;
-
-    // 每隔$limit行，刷新一下输出buffer，不要太大，也不要太小
-    $limit = 100000;
-    // 逐行取出数据，不浪费内存
-    $count = count($dataList);
-
-    for ($i = 0; $i < $count; $i++) {
-        $num++;
-        //刷新一下输出buffer，防止由于数据过多造成问题
-        if ($limit == $num) {
-            ob_flush();
-            flush();
-            $num = 0;
-        }
-        $row = $dataList[$i];
-        foreach ($row as $key => $value) {
-//            $row[$key] = iconv('utf-8', 'gbk', $value);
-            $row[$key] = mb_convert_encoding($value,"GBK","UTF-8");
-
-        }
-        fputcsv($fp, $row);
-    }
-
-    return $fileName;
 }
 
-
 /**
- * 读取缓存
- * @author 仇仇天
- * @param $field_name 字段名
- * @param string $Identification 标识
- * @param array $extend_param 扩展参数
- * @return bool|mixed|string
+ * 返回以原数组某个值为下标的新数据
+ *
+ * @param array $array 原数组
+ * @param string $key  下标
+ * @param int $type 1一维数组2二维数组
+ * @return array
  */
-function rcache($field_name, $Identification = '', $extend_param = [])
-{
-    // 解析层级
-    $field_name_arr = explode('.', $field_name);
-
-    // 配置名
-    $field_name     = $field_name_arr[0];
-
-    // 获取缓存配置
-    $config         = app\common\model\ExtendCache::getCacheConfig($field_name);
-
-    if (!empty($config)) {
-
-        // 查询缓存
-        $value = think\facade\Cache::connect($config)->get($field_name . $Identification);
-
-        // 如果不存在
-        if ($value === false || $value == '') {
-
-            // 查询自动创建缓存函数是否存在
-            if (!method_exists(new app\common\model\ExtendCache, $field_name)) {
-
-                // 是否是模块缓存
-                if (!empty($extend_param['module'])) {
-
-                    $class    = "app\\{$extend_param['module']}\\model\\ExtendCache";
-
-                    // 调用字段相应的函数
-                    $callback = [new $class, $field_name];
-
-                    // 回调行数
-                    $value    = call_user_func($callback, $Identification, $extend_param);
-                }
-                if ($value === false || $value == '') $value = '';
-            } else {
-
-                // 调用字段相应的函数
-                $callback = [new app\common\model\ExtendCache, $field_name];
-
-                // 回调行数
-                $value    = call_user_func($callback, $Identification, $extend_param);
+function arrayUnderReset($array, $key, $type=1){
+    if (is_array($array)){
+        $tmp = array();
+        foreach ($array as $v) {
+            if ($type === 1){
+                $tmp[$v[$key]] = $v;
+            }elseif($type === 2){
+                $tmp[$v[$key]][] = $v;
             }
-            // 写入
-            wkcache($field_name, $value, $Identification);
         }
-
-        // 获取层级数据
-        $fvalue = $value;
-        if (count($field_name_arr) > 1) {
-            foreach ($field_name_arr as $keys => $values) {
-                if ($keys > 0) {
-                    if (!empty($fvalue[$values])) {
-                        $fvalue = $fvalue[$values];
-                    } else {
-                        return '';
-                    }
-                }
-            }
-            return $fvalue;
-        }
-        return $value;
+        return $tmp;
+    }else{
+        return $array;
     }
 }
 
-/**
- * 写入缓存
- * @author 仇仇天
- * @param $field_name 字段名称
- * @param $value 数据
- * @param string $Identification 标识
- * @return bool
- */
-function wkcache($field_name, $value, $Identification = '')
-{
-    $config = app\common\model\ExtendCache::getCacheConfig($field_name); // 获取缓存配置
-    if (!empty($config)) {
-        $value = think\facade\Cache::connect($config)->set($field_name . $Identification, $value);
-        return $value;
-    } else {
-        throw new \Exception('Cannot fetch cache object!');
-    }
-}
 
-/**
- * 缓存删
- * @author 仇仇天
- * @param $field_name 字段名称
- * @param string $Identification 标识
- * @return bool|mixed
- */
-function dkcache($field_name, $Identification = '')
-{
-    $config = app\common\model\ExtendCache::getCacheConfig($field_name); // 获取缓存配置
-    if (!empty($config)) {
-        // 设置缓存
-        $value = think\facade\Cache::connect($config)->pull($field_name . $Identification);
-        return $value;
-    } else {
-        return false;
-    }
-}
+
 
 
 
@@ -787,7 +1049,7 @@ function attaAdd($file, $file_path, $param = [])
     // 配置存储驱动
     $config_driver = config('upload_driver');
 
-    $storage_config = app\common\model\PStorage::getStorageConfigVlue($config_driver);
+    $storage_config = app\admin\model\PStorage::getStorageConfigVlue($config_driver);
 
     // 插件类文件路径
     $obj = DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . $config_driver . DIRECTORY_SEPARATOR . 'Storage';
@@ -827,7 +1089,7 @@ function attaDel($file_name, $param = [])
     // 配置存储驱动
     $config_driver = config('upload_driver');
 
-    $storage_config = app\common\model\PStorage::getStorageConfigVlue($config_driver);
+    $storage_config = app\admin\model\PStorage::getStorageConfigVlue($config_driver);
 
     // 插件类文件路径
     $obj = DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . $config_driver . DIRECTORY_SEPARATOR . 'Storage';
@@ -861,15 +1123,19 @@ function attaDel($file_name, $param = [])
  */
 function attaUrl($file_name, $param = [])
 {
-    // 配置存储驱动
+    // 获取存储驱动类型
     $config_driver = config('upload_driver');
 
-    $storage_config = app\common\model\PStorage::getStorageConfigVlue($config_driver);
+    // 获取存储驱动配置
+    $storageConfig = app\admin\model\PStorage::getStorageConfigVlue($config_driver);
 
-    $obj = DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . $config_driver . DIRECTORY_SEPARATOR . 'Storage'; // 插件类文件路径
+    // 存储驱动类路径
+    $obj = DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . $config_driver . DIRECTORY_SEPARATOR . 'Storage';
 
-    $storage_obj = new $obj($storage_config);
+    // 获取存储驱动对象
+    $storage_obj = new $obj($storageConfig);
 
+    // 返回错误
     if (!empty($storage_obj->error)) return $storage_obj->error;
 
     $url = $storage_obj->getUrl($file_name, $param);
@@ -891,7 +1157,7 @@ function attachExists($file_name, $param = [])
     // 配置存储驱动
     $config_driver = config('upload_driver');
 
-    $storage_config = app\common\model\PStorage::getStorageConfigVlue($config_driver);
+    $storage_config = app\admin\model\PStorage::getStorageConfigVlue($config_driver);
 
     $obj = DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . $config_driver . DIRECTORY_SEPARATOR . 'Storage'; // 插件类文件路径
 
@@ -1003,12 +1269,12 @@ function get_plugin_class($name)
 /**
  * 检查插件控制器是否存在某操作
  * @author 仇仇天
- * @param string $name 插件名
+ * @param string $name       插件名
  * @param string $controller 控制器
- * @param string $action 动作
+ * @param string $action     动作
  * @return bool
  */
-function plugin_action_exists($name = '', $controller = '', $action = '')
+function checkPluginControllerExists($name = '', $controller = '', $action = '')
 {
     if (strpos($name, '/')) {
         list($name, $controller, $action) = explode('/', $name);
@@ -1019,13 +1285,13 @@ function plugin_action_exists($name = '', $controller = '', $action = '')
 /**
  * 执行插件动作,也可以用这种方式调用：plugin_action('插件名/控制器/动作', [参数1,参数2...])
  * @author 仇仇天
- * @param string $name 插件名
+ * @param string $name       插件名
  * @param string $controller 控制器
- * @param string $action 动作
- * @param mixed $params 参数
+ * @param string $action     动作
+ * @param mixed $params      参数d
  * @return mixed
  */
-function plugin_action($name = '', $controller = '', $action = '', $params = [])
+function pluginAction($name = '', $controller = '', $action = '', $params = [])
 {
     if (strpos($name, '/')) {
         $params = is_array($controller) ? $controller : (array)$controller;
@@ -1040,47 +1306,14 @@ function plugin_action($name = '', $controller = '', $action = '', $params = [])
 }
 
 /**
- * 获取或设置某个插件配置参数
- * @author 仇仇天
- * @param string $name 插件名.配置名
- * @param string $value 设置值
- * @return mixed
- */
-function plugin_config($name = '', $value = '')
-{
-    if ($value === '') {
-        // 获取插件配置
-        if (strpos($name, '.')) {
-            list($name, $item) = explode('.', $name);
-            return model('common/AdminPlugin')->getConfig($name, $item);
-        } else {
-            return model('common/AdminPlugin')->getConfig($name);
-        }
-    } else {
-        return model('admin/plugin')->setConfig($name, $value);
-    }
-}
-
-/**
  * 检查插件模型是否存在
  * @author 仇仇天
  * @param string $name 插件名
  * @return bool
  */
-function plugin_model_exists($name = '')
+function checkPluginModelExists($name)
 {
     return class_exists("plugins\\{$name}\\model\\{$name}");
-}
-
-/**
- * 检查插件验证器是否存在
- * @author 仇仇天
- * @param string $name 插件名
- * @return bool
- */
-function plugin_validate_exists($name = '')
-{
-    return class_exists("plugins\\{$name}\\validate\\{$name}");
 }
 
 /**
@@ -1089,10 +1322,21 @@ function plugin_validate_exists($name = '')
  * @param string $name 插件名
  * @return object
  */
-function get_plugin_model($name)
+function getPluginModel($name)
 {
     $class = "plugins\\{$name}\\model\\{$name}";
     return new $class;
+}
+
+/**
+ * 检查插件验证器是否存在
+ * @author 仇仇天
+ * @param string $name 插件名
+ * @return bool
+ */
+function checkPluginValidateExists($name)
+{
+    return class_exists("plugins\\{$name}\\validate\\{$name}");
 }
 
 /**
@@ -1101,7 +1345,7 @@ function get_plugin_model($name)
  * @param string $name 插件名
  * @return mixed
  */
-function get_plugin_validate($name = '')
+function getPluginValidate($name)
 {
     $class = "plugins\\{$name}\\validate\\{$name}";
     return new $class;
@@ -1115,7 +1359,7 @@ function get_plugin_validate($name = '')
  * @param string $module  模块名，admin需要登录验证，index不需要登录验证
  * @return string
  */
-function plugin_url($url = '', $param = [], $module = 'admin')
+function pluginUrl($url = '', $param = [], $module = 'admin')
 {
     $params = [];
     $url    = explode('/', $url);
@@ -1143,10 +1387,10 @@ function plugin_url($url = '', $param = [], $module = 'admin')
  * @param array $param 参数
  * @return string
  */
-function public_url($url = '', $param = [])
+function publicPluginUrl($url = '', $param = [])
 {
     // 返回url地址
-    return plugin_url($url, $param, 'index');
+    return pluginUrl($url, $param, 'index');
 }
 
 

@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 use app\common\controller\Common;
-use app\common\model\AdminMenu as AdminMenuModel;
+use app\admin\model\AdminMenu as AdminMenuModel;
 
 /**
  * 用于处理ajax请求的控制器
@@ -11,11 +11,8 @@ class Ajax extends Common
 {
     /**
      * 获取侧栏菜单
-     * @param string $module_id 模块id
-     * @param string $module 模型名
-     * @param string $controller 控制器名
      * @author 仇仇天
-     * @return string
+     * @param string $mark
      */
     public function getSidebarMenu($mark = '')
     {
@@ -32,9 +29,6 @@ class Ajax extends Common
             // 锁定状态 0=未锁定 1=锁定
             'lock_status'=>0
         ];
-
-        // 获取后台登录用户信息
-        $userInfo = session('admin_user_info');
 
         // 用户锁定状态
         $data['lock_status'] = locksTatus();

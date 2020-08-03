@@ -6,14 +6,11 @@ use think\Model;
 
 /**
  * 店铺相册图片模型
- * Class Advert
- * @package app\b2b2c\model
  */
 class B2b2cAlbumPic extends Model
 {
-    protected $name = 'b2b2c_album_pic';// 设置当前模型对应的完整数据表名称
-
-    protected static $cacheName = 'b2b2c_album_pic'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'b2b2c_album_pic';
 
     /**
      * 获取所有店铺相册图片数据(取缓存)
@@ -29,16 +26,18 @@ class B2b2cAlbumPic extends Model
      * 删除（包括重置缓存）
      * @author 仇仇天
      * @param array $where 条件
-     * @throws \Exception
+     * @return bool
      */
     public static function del($where = [])
     {
         $data = self::where($where)->select();
         if(!empty($data)){
             if(false !== self::where($where)->delete()){
-                self::delCache(); // 删除缓存
+                // 删除缓存
+                self::delCache();
                 foreach ($data as $value){
-                    attaDel($value['apic_cover']); // 删除图片
+                    // 删除图片
+                    attaDel($value['apic_cover']);
                 }
                 return true;
             }else{

@@ -5,13 +5,10 @@ use think\Model;
 
 /**
  * 图标模型
- * @package app\common\model
+ * @package app\admin\model
  */
 class AdminIcon extends Model
 {
-    // 设置当前模型对应的完整数据表名称
-    protected $name = 'admin_icon';
-
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
 

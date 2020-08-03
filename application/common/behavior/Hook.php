@@ -4,13 +4,11 @@ namespace app\common\behavior;
 
 /**
  * 注册钩子
+ * Class Hook
+ * @package app\common\behavior
  */
 class Hook
 {
-    /**
-     * 执行行为 run方法是Behavior唯一的接口
-     * @author 仇仇天
-     */
     public function run()
     {
         // 如果是安装操作，直接返回

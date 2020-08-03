@@ -1,12 +1,4 @@
 <?php
-
-
-
-
-
-
-
-
 namespace app\index\controller;
 
 /**
@@ -31,9 +23,9 @@ class Plugin extends Home
             $this->error('没有指定插件名称、控制器名称或操作名称');
         }
 
-        if (!plugin_action_exists($plugin, $controller, $action)) {
+        if (!checkPluginControllerExists($plugin, $controller, $action)) {
             $this->error("找不到方法：{$plugin}/{$controller}/{$action}");
         }
-        return plugin_action($plugin, $controller, $action, $params);
+        return pluginAction($plugin, $controller, $action, $params);
     }
 }

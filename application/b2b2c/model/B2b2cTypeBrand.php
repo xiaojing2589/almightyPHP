@@ -11,9 +11,9 @@ use think\Model;
  */
 class B2b2cTypeBrand extends Model
 {
-    protected $name = 'b2b2c_type_brand';// 设置当前模型对应的完整数据表名称
 
-    protected static $cacheName = 'b2b2c_type_brand'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'b2b2c_type_brand';
 
     /**
      * 获取所有类型关联品牌数据(取缓存)

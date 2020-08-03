@@ -263,7 +263,7 @@ class Builder extends ZBuilder
             case 'add':
                 $config = [
                     // 标题
-                    'title'        => empty($parameter_config['title']) ? '新增' : $parameter_config['title'],
+                    'title'        => empty($parameter_config['title']) ? lang('Add'): $parameter_config['title'],
                     // 图标
                     'icon'         => empty($parameter_config['icon']) ? 'fa fa-plus-circle' : $parameter_config['icon'],
                     // 类名
@@ -300,7 +300,7 @@ class Builder extends ZBuilder
             case 'enable':
                 $config = [
                     // 标题
-                    'title'        => empty($parameter_config['title']) ? '启用' : $parameter_config['title'],
+                    'title'        => empty($parameter_config['title']) ? lang('Enable'): $parameter_config['title'],
                     // 图标
                     'icon'         => empty($parameter_config['icon']) ? 'fa fa-check-circle-o' : $parameter_config['icon'],
                     // 类名
@@ -338,7 +338,7 @@ class Builder extends ZBuilder
             case 'disable':
                 $config = [
                     // 标题
-                    'title'        => empty($parameter_config['title']) ? '禁用' : $parameter_config['title'],
+                    'title'        => empty($parameter_config['title']) ? lang('Disable') : $parameter_config['title'],
                     // 图标
                     'icon'         => empty($parameter_config['icon']) ? 'fa fa-ban' : $parameter_config['icon'],
                     // 类名
@@ -375,7 +375,7 @@ class Builder extends ZBuilder
             case 'delete':
                 $config = [
                     // 标题
-                    'title'        => empty($parameter_config['title']) ? '删除' : $parameter_config['title'],
+                    'title'        => empty($parameter_config['title']) ? lang('Delete') : $parameter_config['title'],
                     // 图标
                     'icon'         => empty($parameter_config['icon']) ? 'fa fa-trash' : $parameter_config['icon'],
                     // 类名
@@ -1014,28 +1014,32 @@ javascript;
                                 // 类名
                                 $btn_class = !empty($btn_value['class']) ? 'btn-danger btn-elevate ' . $btn_value['class'] : 'btn-danger btn-elevate hide_d';
                                 // 图标
-                                $btn_ico = !empty($btn_value['ico']) ? $btn_value['ico'] : '<i class="fa fa-trash"></i>';
+//                                $btn_ico = !empty($btn_value['ico']) ? $btn_value['ico'] : '<i class="fa fa-trash"></i>';
+                                $btn_ico = '';
                                 // 文字
-                                $btn_text = !empty($btn_value['text']) ? $btn_value['text'] : '删除';
+                                $btn_text = !empty($btn_value['text']) ? $btn_value['text'] : lang('Delete');
                             } elseif ($btn_value['field'] == 'u') {  // 编辑
                                 // 类名
                                 $btn_class = !empty($btn_value['class']) ? 'btn-info btn-elevate hide_u ' . $btn_value['class'] : 'btn-info btn-elevate hide_u';
                                 // 图标
-                                $btn_ico = !empty($btn_value['ico']) ? $btn_value['ico'] : '<i class="fa fa-edit"></i>';
+//                                $btn_ico = !empty($btn_value['ico']) ? $btn_value['ico'] : '<i class="fa fa-edit"></i>';
+                                $btn_ico = '';
                                 // 文字
-                                $btn_text = !empty($btn_value['text']) ? $btn_value['text'] : '编辑';
+                                $btn_text = !empty($btn_value['text']) ? $btn_value['text'] : lang('Edit');
                             } elseif ($btn_value['field'] == 's') { // 查看
                                 // 类名
                                 $btn_class = !empty($btn_value['class']) ? 'btn-success hide_s ' . $btn_value['class'] : 'btn-success hide_s';
                                 // 图标
-                                $btn_ico = !empty($btn_value['ico']) ? $btn_value['ico'] : '<i class="fa fa-eye"></i>';
+//                                $btn_ico = !empty($btn_value['ico']) ? $btn_value['ico'] : '<i class="fa fa-eye"></i>';
+                                $btn_ico = '';
                                 // 文字
-                                $btn_text = !empty($btn_value['text']) ? $btn_value['text'] : '查看';
+                                $btn_text = !empty($btn_value['text']) ? $btn_value['text'] : lang('See');
                             } elseif ($btn_value['field'] == 'c') { // 自定义
                                 // 类名
                                 $btn_class = !empty($btn_value['class']) ? 'btn-success' . $btn_value['class'] : '';
                                 // 图标
-                                $btn_ico = !empty($btn_value['ico']) ? '<i class="' . $btn_value['ico'] . '"></i>' : '<i class="fa fa-eye"></i>';
+//                                $btn_ico = !empty($btn_value['ico']) ? '<i class="' . $btn_value['ico'] . '"></i>' : '<i class="fa fa-eye"></i>';
+                                $btn_ico = '';
                                 // 文字
                                 $btn_text = !empty($btn_value['text']) ? $btn_value['text'] : '';
                             }
@@ -1203,7 +1207,7 @@ javascript;
                             var html = ''
                             var _jsonData = {$jsonData};
                             $.each(_jsonData,function(i,v){
-                                if(value == v.value){        
+                                if(value == v.value){
                                  html =  '<span class="label '+v.colour+'"> '+v.text+' </span>';
                                 }                           
                             });          
@@ -1345,7 +1349,7 @@ javascript;
 
         // 色湖之树表格相关配置
         $this->_vars['_treeTableConfig'] = <<<javascript
-        
+
         tableinfo.treeShowField = '{$configd['treeShowField']}';
         tableinfo.idField = '{$configd['idField']}';
         tableinfo.onPostBody = function () {

@@ -3,19 +3,26 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 use app\common\builder\ZBuilder;
-use app\common\model\AdminLog as LogModel;
+
 use util\PHPZip;
 use util\File;
 
+use app\admin\model\AdminLog as AdminLogModel;
+
+
 /**
  * 系统日志控制器
+ * Class Log
+ * @package app\admin\controller
  */
 class Log extends Admin
 {
     /**
      * 日志列表
-     * @author 仇仇天
+     * @author  仇仇天
      * @return mixed
+     * @throws \think\Exception
+     * @throws \think\exception\DbException
      */
     public function index()
     {
@@ -41,35 +48,31 @@ class Log extends Admin
 
             // 执行者id
             if (!empty($requrest_data['user_id'])){
-                $where[] = ['a.user_id', '=', $requrest_data['user_id']];
+                $where[] = ['user_id', '=', $requrest_data['user_id']];
             }
 
             // 执行者账号
             if (!empty($requrest_data['user_name'])){
-                $where[] = ['a.user_name', 'like', "%".$requrest_data['user_name']."%"];
+                $where[] = ['user_name', 'like', "%".$requrest_data['user_name']."%"];
             }
 
             // 执行者ip
             if (!empty($requrest_data['action_ip'])){
-                $where[] = ['a.action_ip', 'like', "%".$requrest_data['action_ip']."%"];
+                $where[] = ['action_ip', 'like', "%".$requrest_data['action_ip']."%"];
             }
 
             // 行为名称
             if (!empty($requrest_data['title'])){
-                $where[] = ['b.title', 'like', "%".$requrest_data['title']."%"];
+                $where[] = ['title', 'like', "%".$requrest_data['title']."%"];
             }
 
-            // 所属模块名称
-            if (!empty($requrest_data['cmodule'])){
-                $where[] = ['c.name', 'like', "%".$requrest_data['cmodule']."%"];
-            }
             // 创建时间
             if (!empty($requrest_data['create_time[]'])){
                 $time      = $requrest_data['create_time[]'];
                 $statrTime = strtotime(trim($time[0]));
                 $endTime   = strtotime(trim($time[1]));
-                $where[] = ['a.create_time', '>=', $statrTime];
-                $where[] = ['a.create_time', '<=', $endTime];
+                $where[] = ['create_time', '>=', $statrTime];
+                $where[] = ['create_time', '<=', $endTime];
             }
 
             //  排序字段
@@ -79,17 +82,13 @@ class Log extends Admin
             $orderMode = $requrest_data['order'];
 
             // 拼接排序语句
-            $order = 'a.'.$orderSort . ' ' . $orderMode;
+            $order = $orderSort . ' ' . $orderMode;
 
             // 拼接排序语句
-            $order = empty($orderSort) ? 'a.create_time DESC' : $order;
+            $order = empty($orderSort) ? 'create_time DESC' : $order;
 
             // 数据列表
-            $data_list = LogModel::alias('a')
-                ->field('a.*,b.title,c.title AS ctitle')
-                ->join('admin_action b','a.action_name = b.name')
-                ->join('admin_module c','b.module = c.name')
-                ->where($where)
+            $data_list = AdminLogModel::where($where)
                 ->order($order)
                 ->paginate($requrest_data['list_rows']);
 
@@ -102,14 +101,14 @@ class Log extends Admin
         }
 
         // 设置页面标题
-        $view->setPageTitle('角色管理');
+        $view->setPageTitle('后台日志');
 
         // 设置搜索框
         $view->setSearch([
-            ['title' => '行为名称', 'field' => 'b.title', 'condition' => 'like', 'default' => true],
-            ['title' => '执行者ID', 'field' => 'a.user_id', 'condition' => 'like', 'default' => false],
-            ['title' => '执行者', 'field' => 'a.user_name', 'condition' => '=', 'default' => false],
-            ['title' => '执行者IP', 'field' => 'a.action_ip', 'condition' => 'like', 'default' => false]
+            ['title' => '行为名称', 'field' => 'title', 'condition' => 'like', 'default' => true],
+            ['title' => '执行者ID', 'field' => 'user_id', 'condition' => 'like', 'default' => false],
+            ['title' => '执行者', 'field' => 'user_name', 'condition' => '=', 'default' => false],
+            ['title' => '执行者IP', 'field' => 'action_ip', 'condition' => 'like', 'default' => false]
         ]);
 
         // 设置高级搜索
@@ -117,7 +116,7 @@ class Log extends Admin
             [
                 'field'     => 'title',
                 'name'      => 'title',
-                'title'     => '行为名称',
+                'title'     => '操作',
                 'form_type' => 'text'
             ],
             [
@@ -139,15 +138,9 @@ class Log extends Admin
                 'form_type' => 'text'
             ],
             [
-                'field'     => 'cmodule',
-                'name'      => 'cmodule',
-                'title'     => '所属模块',
-                'form_type' => 'text'
-            ],
-            [
                 'field'     => 'create_time',
                 'name'      => 'create_time',
-                'title'     => '执行时间',
+                'title'     => '创建时间',
                 'form_type' => 'daterange'
             ]
         ]);
@@ -188,12 +181,6 @@ class Log extends Admin
                 'width'=>80
             ],
             [
-                'field' => 'ctitle',
-                'title' => '所属模块',
-                'align'=>'center',
-                'width'=>100
-            ],
-            [
                 'field' => 'rq_module',
                 'title' => '模块',
                 'align'=>'center'
@@ -222,7 +209,7 @@ class Log extends Admin
                 'btn'=>[
                     [
                         'field'=>'s',
-                        'url'=>url('log/details'),
+                        'url'=>url('details'),
                         'query_data'=>'{"field":["id"]}'
                     ]
                 ]
@@ -238,17 +225,17 @@ class Log extends Admin
      * @author 仇仇天
      * @param null $id 日志id
      * @return mixed
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      */
     public function details($id = null)
     {
         if ($id === null) $this->error('缺少参数');
 
         // 数据列表
-        $info = LogModel::alias('a')
-            ->field('a.*,b.title,c.title AS ctitle')
-            ->join('admin_action b','a.action_name = b.name')
-            ->join('admin_module c','b.module = c.name')
-            ->where(['a.id'=>$id])
+        $info = AdminLogModel::where(['id'=>$id])
             ->order('id DESC')
             ->find();
 
@@ -289,12 +276,6 @@ class Log extends Admin
                 'name'=>'action_ip',
                 'form_type'=>'static',
                 'title'=>'执行者ip'
-            ],
-            [
-                'field'=>'ctitle',
-                'name'=>'ctitle',
-                'form_type'=>'static',
-                'title'=>'所属模块'
             ],
             [
                 'field'=>'title',
@@ -363,6 +344,7 @@ class Log extends Admin
     /**
      * 导出
      * @author 仇仇天
+     * @throws \think\exception\DbException
      */
     public function export(){
 
@@ -438,7 +420,7 @@ class Log extends Admin
         $order = empty($orderSort) ? 'create_time DESC' : $order;
 
         // 查询
-        $data_list = LogModel::field('
+        $data_list = AdminLogModel::field('
                                 id,
                                 action_name,
                                 user_id,

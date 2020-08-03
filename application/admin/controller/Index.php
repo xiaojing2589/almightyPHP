@@ -2,11 +2,7 @@
 namespace app\admin\controller;
 
 use app\common\controller\Admin;
-use app\common\model\AdminUser as UserModel;
 use think\facade\Cache;
-use think\facade\Env;
-use think\helper\Hash;
-use app\common\builder\ZBuilder;
 
 /**
  * 后台默认控制器
@@ -21,7 +17,6 @@ class Index extends Admin
      */
     public function index()
     {
-
         return $this->fetch();
     }
 

@@ -59,6 +59,7 @@
                 {foreach name="form_hidden_data" item="form_data_value" key="form_data_key" }
                 <input name="{$form_data_value.name}" value="{$form_data_value.value}" type="hidden">
                 {/foreach}
+                <input name="is_log" value="1" type="hidden">
 
                 <div class="kt-portlet__body use-kt-portlet__body">
                     {notempty name="group"}
@@ -405,7 +406,7 @@
         {// 后置代码块}
         {$extra_postposition_block_js_code|raw}
     });
-
+a
     {// 额外JS代码}
     {$extra_js_code|raw}
 </script>

@@ -12,19 +12,52 @@ use util\Tree;
  */
 class B2b2cGoodsClass extends Model
 {
-    protected $name = 'b2b2c_goods_class'; // 设置当前模型对应的完整数据表名称
-
-    protected static $cacheName = 'b2b2c_goods_class'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'b2b2c_goods_class';
 
     /**
      * 获取所有商品分类数据(取缓存)
      * @author 仇仇天
      */
-    public static function getGoodsClassDataInfo()
+    public static function getGoodsClassDataAll()
     {
-        $goodsClassData = rcache(self::$cacheName, '', ['module' => 'b2b2c']);
-        return $goodsClassData;
+        $data = rcache(self::$cacheName, '', ['module' => 'b2b2c']);
+        return $data;
     }
+
+    /**
+     * 获取所有商品分类树数据(取缓存)
+     * @author 仇仇天
+     */
+    public static function getGoodsClassTreeDataAll(){
+        $data = self::getGoodsClassDataAll();
+        if(!empty($data)){
+            $treeConfig = ['id' => 'gc_id', 'pid' => 'gc_parent_id', 'title' => 'gc_name'];
+            $Tree       = Tree::config($treeConfig);
+            $data      = $Tree::toList($data);
+        }
+        return to_arrays($data);
+    }
+
+    /**
+     * 获取所有商品分类树数据(取缓存)
+     * @author 仇仇天
+     */
+    public static function getGoodsClassTopData(){
+        $data = self::getGoodsClassDataAll();
+        $resData = [];
+        foreach ($data as $value){
+            if($value['gc_parent_id'] == 0){
+                $resData[] = $value;
+            }
+        }
+        return $resData;
+    }
+
+
+
+
+
 
     /**
      * 根据字段获取分类信息(取缓存)
@@ -35,7 +68,7 @@ class B2b2cGoodsClass extends Model
      */
     public static function getGoodsClassInfo($value, $field = 'gc_id')
     {
-        $data    = self::getGoodsClassDataInfo();
+        $data    = self::getGoodsClassDataAll();
         $resData = [];
         foreach ($data as $v) {
             if ($v[$field] == $value) {

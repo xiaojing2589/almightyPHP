@@ -3,11 +3,15 @@
 namespace app\admin\controller;
 
 use app\common\controller\Admin;
-use app\common\model\PSmsTpl as PSmsTplModel;
 use app\common\builder\ZBuilder;
 
+use app\admin\model\PSmsTpl as PSmsTplModel;
+
+
 /**
- *  短信模板控制器
+ * 短信模板控制器
+ * Class SmsTpl
+ * @package app\admin\controller
  */
 class SmsTpl extends Admin
 {
@@ -156,9 +160,6 @@ class SmsTpl extends Admin
                 // 删除缓存
                 PSmsTplModel::delCache();
 
-                // 日志
-                adminActionLog('admin.sms_tpl_add');
-
                 $this->success('新增成功', url('index'));
             } else {
                 $this->error('新增失败');
@@ -246,9 +247,6 @@ class SmsTpl extends Admin
                 // 删除缓存
                 PSmsTplModel::delCache();
 
-                // 记录行为
-                adminActionLog('admin.sms_tpl_edit');
-
                 $this->success('编辑成功', url('index'));
             } else {
                 $this->error('编辑失败');
@@ -321,8 +319,6 @@ class SmsTpl extends Admin
         }
 
         if (false !== PSmsTplModel::del($where)) {
-            // 记录日志
-            adminActionLog('admin.sms_tpl_del');
 
             $this->success('操作成功');
         } else {

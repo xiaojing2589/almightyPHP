@@ -9,10 +9,9 @@ use think\Model;
  */
 class AdminConfig extends Model
 {
-    // 设置当前模型对应的完整数据表名称
-    protected $name = 'admin_config';
 
-    protected static $cacheName = 'system_config_info'; // 缓存名称
+    // 缓存名称
+    protected static $cacheName = 'system_config_info';
 
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;

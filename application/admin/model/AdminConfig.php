@@ -11,10 +11,88 @@ use think\Model;
 class AdminConfig extends Model
 {
     // 缓存名称
-    protected static $cacheName = 'system_config_info';
+    protected static $cacheName = 'admin_config_data';
 
     // 自动写入时间戳
     protected $autoWriteTimestamp = true;
+
+    /**
+     * 获取所有配置信息
+     */
+    public static function getConfigAll(){
+        return rcache(self::$cacheName,'',['module'=>'admin']);
+    }
+
+    /**
+     * 获取所有开启的配置信息
+     */
+    public static function getConfigOpenAll(){
+        // 获取所有数据
+        $data = self::getConfigAll();
+        $dataStatusArr = [];
+        foreach ($data as $key=>$value){
+            if($value['status'] == 1){
+                $dataStatusArr[$key] = $value;
+            }
+        }
+        return $dataStatusArr;
+    }
+
+    /**
+     * 根据name获取某个配置信息
+     * @param $name
+     * @return bool|mixed
+     */
+    public static function getByNameConfig($name){
+        $data = self::getConfigOpenAll();
+        if(!empty($data[$name])){
+            return $data[$name];
+        }
+        return false;
+    }
+
+    /**
+     * 获取某个配置信息
+     * @param $idOrName 配置id/配置名称字段
+     */
+    public static function getByConfig($idOrName){
+        $data = self::getConfigOpenAll();
+        foreach ($data as $key=>$value){
+            if($value['id'] == $idOrName || $value['name'] == $idOrName){
+                return $value;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 删除（包括重置缓存）
+     * @author 仇仇天
+     * @param array $where 条件
+     * @throws \Exception
+     */
+    public static function del($where = [])
+    {
+        if(false !== self::where($where)->delete()){
+            self::delCache(); // 删除缓存
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 删除缓存
+     * @author 仇仇天
+     */
+    public static function delCache()
+    {
+        dkcache(self::$cacheName);
+    }
+
+
+
+
 
     /**
      * 获取所有配置信息数据(取缓存)
@@ -25,7 +103,7 @@ class AdminConfig extends Model
      */
     public static function getConfigDataInfo($field = '',$valueField='',$status = false)
     {
-        $data = rcache(self::$cacheName);
+        $data = self::getConfigOpenAll();
         $resArr = [];
         foreach ($data as $key=>$value){
             if($field != '' && $valueField !=''){
@@ -60,28 +138,4 @@ class AdminConfig extends Model
         return $data[$name][$field];
     }
 
-    /**
-     * 删除（包括重置缓存）
-     * @author 仇仇天
-     * @param array $where 条件
-     * @throws \Exception
-     */
-    public static function del($where = [])
-    {
-        if(false !== self::where($where)->delete()){
-            self::delCache(); // 删除缓存
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    /**
-     * 删除类型缓存
-     * @author 仇仇天
-     */
-    public static function delCache()
-    {
-        dkcache(self::$cacheName);
-    }
 }

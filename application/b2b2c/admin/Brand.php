@@ -5,7 +5,6 @@ namespace app\b2b2c\admin;
 use app\common\controller\Admin;
 use app\common\builder\ZBuilder;
 use app\b2b2c\model\B2b2cBrand as B2b2cBrandModel;
-use app\b2b2c\model\B2b2cTypeBrand as B2b2cTypeBrandModel;
 use app\b2b2c\model\B2b2cGoodsClass as B2b2cGoodsClassModel;
 
 /**
@@ -15,13 +14,12 @@ use app\b2b2c\model\B2b2cGoodsClass as B2b2cGoodsClassModel;
  */
 class Brand extends Admin
 {
-
     /**
      * 列表
+     * @author 仇仇天
      * @return mixed
      * @throws \think\Exception
      * @throws \think\exception\DbException
-     * @author 仇仇天
      */
     public function index()
     {
@@ -30,17 +28,20 @@ class Brand extends Admin
 
         if ($this->request->isAjax()) {
 
-            // 关键词搜索字段名
-            $search_field = input('param.searchField/s', '', 'trim');
-
-            // 搜索关键词
-            $keyword = input('param.searchKeyword/s', '', 'trim');
+            // 传递数据
+            $data = input();
 
             // 筛选参数设置
-            $map = [];
+            $where = [];
 
-            // 普通搜索筛选
-            if ($search_field != '' && $keyword !== '') $map[] = [$search_field, 'like', "%" . $keyword . "%"];
+            // 快捷筛选 关键词
+            if ((!empty($data['searchKeyword']) && $data['searchKeyword'] !== '') && !empty($data['searchField']) && !empty($data['searchCondition'])) {
+                if ($data['searchCondition'] == 'like') {
+                    $where[] = [$data['searchField'], 'like', "%" . $data['searchKeyword'] . "%"];
+                } else {
+                    $where[] = [$data['searchField'], $data['searchCondition'], $data['searchKeyword']];
+                }
+            }
 
             //  排序字段
             $orderSort = input('sort/s', '', 'trim');
@@ -52,13 +53,15 @@ class Brand extends Admin
             $order = $orderSort . ' ' . $orderMode;
 
             // 拼接排序语句
-            $order = empty($orderSort) ? 'brand_apply ASC brand_sort ASC' : $order;
-
-            // 每页显示多少条
-            $list_rows = input('list_rows');
+            $order = empty($orderSort) ? 'a.brand_apply ASC a.brand_sort ASC' : $order;
 
             // 数据列表
-            $data_list = B2b2cBrandModel::where($map)->order($order)->paginate($list_rows);
+            $data_list = B2b2cBrandModel::alias('a')
+                ->field('a.*,b.gc_name')
+                ->join('b2b2c_goods_class b', 'a.gc_id = b.gc_id', 'LEFT')
+                ->where($where)
+                ->order($order)
+                ->paginate($data['list_rows']);
 
             foreach ($data_list as $key => $value) {
                 $data_list[$key]['brand_pic'] = getB2b2cImg($value['brand_pic'], ['type' => 'brand']);
@@ -76,9 +79,9 @@ class Brand extends Admin
 
         // 设置搜索框
         $view->setSearch([
-            ['title' => 'ID', 'field' => 'brand_id', 'default' => false],
-            ['title' => '品牌名称', 'field' => 'brand_name', 'default' => true],
-            ['title' => '品牌首字母', 'field' => 'brand_initial', 'default' => false]
+            ['title' => '编号', 'field' => 'a.brand_id', 'condition' => '=', 'default' => false],
+            ['title' => '品牌名称', 'field' => 'a.brand_name', 'condition' => 'like', 'default' => true],
+            ['title' => '品牌首字母', 'field' => 'a.brand_initial', 'condition' => '=', 'default' => false]
         ]);
 
         // 提示信息
@@ -94,23 +97,6 @@ class Brand extends Admin
         // 设置行内编辑地址
         $view->editableUrl(url('edit'));
 
-        // 商品分类数据
-        $goodsClassData      = B2b2cGoodsClassModel::getGoodsClassDataInfo();
-        $goodsClassDataArr   = [];
-        $goodsClassDataArr[] = ['text' => '无', 'id' => 0, 'title_prefix' => ''];
-        foreach ($goodsClassData AS $key => $value) {
-            $goodsClassDataArr[] = ['text' => $value['gc_name'], 'id' => $value['gc_id'], 'title_prefix' => $value['title_prefix']];
-        }
-
-        // 设置展示
-        $goodsClassDataSelect2 = <<<javascript
-                function(repo){
-                    console.log(repo);
-                    return  $('<span>' + repo.title_prefix + repo.text + '</span>');
-                }
-javascript;
-        $view->setJsFunctionArr([['name' => 'goodsClassDataSelect2', 'value' => $goodsClassDataSelect2]]);
-
         // 设置列
         $view->setColumn([
             [
@@ -121,7 +107,7 @@ javascript;
             ],
             [
                 'field'    => 'brand_id',
-                'title'    => 'ID',
+                'title'    => '编号',
                 'align'    => 'center',
                 'sortable' => true,
                 'width'    => 50
@@ -160,18 +146,10 @@ javascript;
                 ]
             ],
             [
-                'field'    => 'gc_id',
-                'title'    => '所属分类',
-                'align'    => 'center',
-                'width'    => 100,
-                'editable' => [
-                    'type'    => 'select2',
-                    'select2' => [
-                        'templateResult'    => 'goodsClassDataSelect2',
-                        'templateSelection' => 'goodsClassDataSelect2'
-                    ],
-                    'source'  => $goodsClassDataArr,
-                ]
+                'field' => 'gc_id',
+                'title' => '所属分类',
+                'align' => 'center',
+                'width' => 100
             ],
             [
                 'field'    => 'brand_sort',
@@ -213,8 +191,8 @@ javascript;
                 'width'       => 50,
                 'show_type'   => 'status',
                 'show_config' => [
-                    ['value' => 0, 'text' => '未审核', 'colour' => 'label-danger'],
-                    ['value' => 1, 'text' => '通过', 'colour' => 'label-info']
+                    ['value' => 0, 'text' => '未审核', 'colour' => 'kt-font-warning'],
+                    ['value' => 1, 'text' => '通过', 'colour' => 'kt-font-success']
                 ]
             ],
             [
@@ -271,7 +249,6 @@ javascript
             ]
         ]);
 
-
         return $view->fetch();
     }
 
@@ -307,9 +284,7 @@ javascript
 
                 // 验证提示报错
                 if (true !== $result) $this->error($result);
-            }
-
-            // 普通编辑
+            } // 普通编辑
             else {
 
                 // 需要上传的文件
@@ -361,11 +336,8 @@ javascript
             }
             if (false !== B2b2cBrandModel::update($save_data, ['brand_id' => $brand_id])) {
 
-                // 记录行为
-                action_log('b2b2c.b2b2c_brand_edit');
-
-                // 刷新缓存
-                $this->refreshCache();
+                // 删除缓存
+                B2b2cBrandModel::delCache();
 
                 $this->success('编辑成功', url('index'));
             } else {
@@ -395,16 +367,16 @@ javascript
         $form->setFormUrl(url('edit'));
 
         // 分列数
-        $form->listNumber(2);
+//        $form->listNumber(2);
 
         // 设置隐藏表单数据
         $form->setFormHiddenData([['name' => 'brand_id', 'value' => $brand_id]]);
 
         // 商品分类数据
-        $pids                = B2b2cGoodsClassModel::getGoodsClassDataInfo();
+        $goodsClassTopData   = B2b2cGoodsClassModel::getGoodsClassTreeDataAll();
         $goodsClassDataArr   = [];
         $goodsClassDataArr[] = ['title' => '无', 'value' => 0];
-        foreach ($pids AS $key => $value) {
+        foreach ($goodsClassTopData AS $key => $value) {
             $goodsClassDataArr[] = ['title' => $value['title_display'], 'value' => $value['gc_id']];
         }
 
@@ -551,11 +523,8 @@ javascript
 
             if (false !== B2b2cBrandModel::insert($save_data)) {
 
-                // 记录行为
-                action_log('b2b2c.b2b2c_brand_add');
-
-                // 刷新缓存
-                $this->refreshCache();
+                // 删除缓存
+                B2b2cBrandModel::delCache();
 
                 $this->success('新增成功', url('index'));
             } else {
@@ -576,13 +545,13 @@ javascript
         $form->setFormUrl(url('add'));
 
         // 分列数
-        $form->listNumber(2);
+//        $form->listNumber(2);
 
         // 商品分类数据
-        $pids                = B2b2cGoodsClassModel::getGoodsClassDataInfo();
+        $goodsClassTopData              = B2b2cGoodsClassModel::getGoodsClassTreeDataAll();
         $goodsClassDataArr   = [];
         $goodsClassDataArr[] = ['title' => '无', 'value' => 0];
-        foreach ($pids AS $key => $value) {
+        foreach ($goodsClassTopData AS $key => $value) {
             $goodsClassDataArr[] = ['title' => $value['title_display'], 'value' => $value['gc_id']];
         }
 
@@ -691,11 +660,8 @@ javascript
 
         if (false !== B2b2cBrandModel::update(['brand_apply' => 1], ['brand_id' => $brand_id])) {
 
-            // 记录行为
-            action_log('b2b2c.b2b2c_brand_examine');
-
-            // 刷新缓存
-            $this->refreshCache();
+            // 删除缓存
+            B2b2cBrandModel::delCache();
 
             $this->success('审核成功', url('index'));
         } else {
@@ -706,8 +672,7 @@ javascript
     /**
      * 删除/批量删除
      * @author 仇仇天
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
+     * @throws \Exception
      */
     public function del()
     {
@@ -728,8 +693,6 @@ javascript
             ];
         }
         if (false !== B2b2cBrandModel::del($map)) {
-            B2b2cTypeBrandModel::del($map); // 类型关联品牌
-            action_log('b2b2c.b2b2c_brand_del');
             $this->success('删除成功');
         } else {
             $this->error('操作失败，请重试');
@@ -742,6 +705,7 @@ javascript
      */
     private function refreshCache()
     {
-        B2b2cBrandModel::delCache();// 删除缓存
+        // 删除缓存
+        B2b2cBrandModel::delCache();
     }
 }

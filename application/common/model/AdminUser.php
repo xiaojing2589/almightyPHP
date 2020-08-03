@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-use app\common\model\AdminRole as AdminRoleModel;
+use app\admin\model\AdminRole as AdminRoleModel;
 
 use think\Model;
 use think\helper\Hash;
@@ -30,22 +30,12 @@ class AdminUser extends Model
     }
 
     /**
-     * 获取注册ip
-     * @author 仇仇天
-     * @return mixed
-     */
-    public function setSignupIpAttr()
-    {
-        return get_client_ip(1);
-    }
-
-    /**
      * 用户登录
+     * @author 仇仇天
      * @param string $username 用户名
      * @param string $password 密码
      * @param bool $rememberme 记住登录 true=记住 false=相反
      * @return bool|mixed
-     * @author 仇仇天
      */
     public function login($username = '', $password = '', $rememberme = false)
     {
@@ -84,10 +74,9 @@ class AdminUser extends Model
                 $user['last_login_time'] = request()->time();
 
                 // 登录ip
-                $user['last_login_ip'] = request()->ip(1);
+                $user['last_login_ip'] = request()->ip();
 
                 if ($user->save()) {
-
                     // 设置自动登录
                     return $this->autoLogin($this::get($uid), $rememberme);
                 } else {
@@ -136,12 +125,10 @@ class AdminUser extends Model
         session('admin_user_auth_sign', data_auth_sign($user_info));
 
         // 角色非超级管理员
-        if ($user->role != 1) {
+        if ($user->role > 2) {
 
             // 角色菜单权限
-            $menu_auth = AdminRoleModel::where('id', session('admin_user_info.role'))->value('menu_auth');
-
-            $menu_auth = json_decode($menu_auth, true);
+            $menu_auth = AdminRoleModel::where('id', $user->role )->value('menu_auth');
 
             if (!$menu_auth) {
 
@@ -156,7 +143,6 @@ class AdminUser extends Model
 
                 return false;
             }
-
         }
 
         // 记住登录

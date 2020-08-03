@@ -4,9 +4,10 @@ namespace app\admin\controller;
 
 use app\common\controller\Admin;
 
-use app\common\model\PPay as PPayModel;
 use app\common\builder\ZBuilder;
 use think\facade\Env;
+
+use app\admin\model\PPay as PPayModel;
 
 /**
  * 支付控制器
@@ -231,9 +232,10 @@ javascript
         ];
 
         if (false !== PPayModel::insert($allowField)) {
-            // 记录行为
-            adminActionLog('admin.pay_install');
-            $this->refreshCache();
+
+            // 删除缓存
+            PPayModel::delCache();
+
             $this->success('支付安装成功', 'index');
         } else {
             $this->error('安装失败！');
@@ -287,8 +289,10 @@ javascript
                 if (!empty($updateAll)) {
                     PPayModel::where('mark', '<>', $mark)->update($updateAll);
                 }
-                adminActionLog('admin.pay_edit');// 记录行为
-                $this->refreshCache();
+
+                // 删除缓存
+                PPayModel::delCache();
+
                 $this->success('设置成功', url('index'));
             } else {
                 $this->error('设置失败');
@@ -349,27 +353,14 @@ javascript
 
         if (false !== PPayModel::del(['mark' => $mark])) {
 
-            // 记录行为
-            adminActionLog('admin.pay_uninstall');
-
-            // 刷新缓存
-            $this->refreshCache();
+            // 删除缓存
+            PPayModel::delCache();
 
             $this->success('卸载成功', url('index'));
         } else {
 
             $this->error('卸载失败');
         }
-    }
-
-    /**
-     * 刷新缓存
-     * @throws \Exception
-     * @author 仇仇天
-     */
-    private function refreshCache()
-    {
-        PPayModel::delCache();
     }
 
 }

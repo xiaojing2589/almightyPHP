@@ -1,6 +1,6 @@
 <?php
 
-namespace app\common\validate;
+namespace app\admin\validate;
 
 use think\Validate;
 
@@ -14,11 +14,11 @@ class User extends Validate
     // 定义验证规则
     protected $rule = [
         'username|用户名' => 'require|alphaNum|unique:admin_user',
-        'nickname|昵称'  => 'require|unique:admin_user',
-        'role|角色'      => 'require',
-        'email|邮箱'     => 'email|unique:admin_user',
-        'password|密码'  => 'require|length:6,20',
-        'mobile|手机号'   => 'regex:^1\d{10}|unique:admin_user',
+        'nickname|昵称'   => 'require|unique:admin_user',
+        'role|角色'       => 'require',
+        'email|邮箱'      => 'email|unique:admin_user',
+        'password|密码'   => 'require|length:6,20',
+        'mobile|手机号'   => 'regex:^1\d{10}|unique:admin_user'
     ];
 
     // 定义验证提示

@@ -4,18 +4,20 @@ namespace app\b2b2c\admin;
 
 use app\common\controller\Admin;
 use app\common\builder\ZBuilder;
-use app\b2b2c\model\B2b2cGoodsClass as B2b2cGoodsClassModel;
-use app\common\model\AdminConfig as AdminConfigModel;
-use app\b2b2c\model\B2b2cGoods as B2b2cGoodsModel;
-use app\b2b2c\model\B2b2cGoodsCommon as B2b2cGoodsCommonModel;
+
 use util\PHPZip;
 use util\File;
+
+use app\admin\model\AdminConfig as AdminConfigModel;
+
+use app\b2b2c\model\B2b2cGoodsClass as B2b2cGoodsClassModel;
+use app\b2b2c\model\B2b2cGoods as B2b2cGoodsModel;
+use app\b2b2c\model\B2b2cGoodsCommon as B2b2cGoodsCommonModel;
+use app\b2b2c\model\Product as ProductModel;
 
 
 /**
  * 商品
- * Class Advert
- * @package app\b2b2c\admin
  */
 class Goods extends Admin
 {
@@ -23,8 +25,6 @@ class Goods extends Admin
      * 列表
      * @author 仇仇天
      * @return mixed
-     * @throws \think\Exception
-     * @throws \think\exception\DbException
      */
     public function index()
     {
@@ -34,7 +34,7 @@ class Goods extends Admin
         if ($this->request->isAjax()) {
 
             // 表单数据
-            $data  = $this->request->get();
+            $data = $this->request->get();
 
             $where = [];
 
@@ -69,9 +69,11 @@ class Goods extends Admin
             $data_list = B2b2cGoodsCommonModel::where($where)->order($order)->paginate($list_rows);
 
             foreach ($data_list as &$value) {
+                // 商品主图
                 $value['goods_image'] = getB2b2cImg($value['goods_image'], ['type' => 'goods']);
 
-                $value['goods_storage'] = B2b2cGoodsCommonModel::calculateStorage($value['goods_commonid']);
+                // 库存
+                $value['goods_storage'] = ProductModel::calculateStorage($value['goods_commonid']);
             }
 
             $view->setRowList($data_list);// 设置表格数据
@@ -123,14 +125,14 @@ class Goods extends Admin
 
         // 设置分组标签
         $view->setGroup([
-            ['title' => '商品管理', 'value' => 'goods', 'url' => url('index'),'default'=>true],
-            ['title' => '商品设置', 'value' => 'goods_setting', 'url' => url('goodssetting'),'default'=>false]
+            ['title' => '商品管理', 'value' => 'goods', 'url' => url('index'), 'default' => true],
+            ['title' => '商品设置', 'value' => 'goods_setting', 'url' => url('goodssetting'), 'default' => false]
         ]);
 
         //  违规
         $state10 = config('b2b2c.STATE10');
 
-        // STATE1
+        // 出售中
         $state1 = config('b2b2c.STATE1');
 
         // 审核通过
@@ -139,17 +141,17 @@ class Goods extends Admin
         // 设置列
         $view->setColumn([
             [
-                'field' => 'goods_commonid',
-                'title' => 'SPU',
-                'width' => 50,
+                'field'    => 'goods_commonid',
+                'title'    => 'SPU',
+                'width'    => 50,
                 'sortable' => true,
-                'align' => 'center'
+                'align'    => 'center'
             ],
             [
-                'field' => 'goods_name',
-                'title' => '商品名称',
-                'align' => 'center',
-                'formatter'=><<<javascript
+                'field'     => 'goods_name',
+                'title'     => '商品名称',
+                'align'     => 'center',
+                'formatter' => <<<javascript
                    var html = '<div class="media-list">'+
                                 '<div class="media">'+
                                     '<a class="pull-left" href="javascript:;">'+
@@ -179,12 +181,12 @@ javascript
                 'align' => 'center'
             ],
             [
-                'field'  => 'type_name',
-                'title'  => '价格/运费(元)',
-                'align'  => 'left',
-                'valign' => 'top',
-                'width'  => '140',
-                'formatter'=><<<javascript
+                'field'     => 'type_name',
+                'title'     => '价格/运费(元)',
+                'align'     => 'left',
+                'valign'    => 'top',
+                'width'     => '140',
+                'formatter' => <<<javascript
                     var html  = '';                       
                                 
                     html += '<div><span class="caption-subject bold uppercase">市场价：</span>';
@@ -231,67 +233,67 @@ javascript
 javascript
             ],
             [
-                'field'    => 'goods_state',
-                'title'    => '状态',
-                'align'    => 'center',
-                'sortable' => true,
-                'width'    => 50,
+                'field'       => 'goods_state',
+                'title'       => '状态',
+                'align'       => 'center',
+                'sortable'    => true,
+                'width'       => 100,
                 'show_type'   => 'status',
                 'show_config' => [
-                    ['value' => 0, 'text' => '仓库中', 'colour' => 'label-warning'],
-                    ['value' => 1, 'text' => '出售中', 'colour' => 'label-info'],
-                    ['value' => 10, 'text' => '出售中', 'colour' => 'label-danger']
+                    ['value' => 0, 'text' => '仓库中', 'colour' => 'kt-font-warning'],
+                    ['value' => 1, 'text' => '出售中', 'colour' => 'kt-font-success'],
+                    ['value' => 10, 'text' => '违规下架', 'colour' => 'kt-font-danger kt-font-bold']
                 ]
             ],
             [
-                'field'    => 'goods_verify',
-                'title'    => '审核',
-                'align'    => 'center',
-                'sortable' => true,
-                'width' => 50,
+                'field'       => 'goods_verify',
+                'title'       => '审核',
+                'align'       => 'center',
+                'sortable'    => true,
+                'width'       => 100,
                 'show_type'   => 'status',
                 'show_config' => [
-                    ['value' => 0, 'text' => '未通过', 'colour' => 'label-danger'],
-                    ['value' => 1, 'text' => '出售中', 'colour' => 'label-info'],
-                    ['value' => 10, 'text' => '审核中', 'colour' => 'label-warning']
+                    ['value' => 0, 'text' => '未通过', 'colour' => 'kt-font-danger kt-font-bold'],
+                    ['value' => 1, 'text' => '出售中', 'colour' => 'kt-font-success'],
+                    ['value' => 10, 'text' => '审核中', 'colour' => 'kt-font-warning']
                 ]
             ],
             [
-                'field'    => 'is_virtual',
-                'title'    => '虚拟商品',
-                'align'    => 'center',
-                'sortable' => true,
-                'width' => 50,
+                'field'       => 'is_virtual',
+                'title'       => '虚拟商品',
+                'align'       => 'center',
+                'sortable'    => true,
+                'width'       => 50,
                 'show_type'   => 'status',
                 'show_config' => [
-                    ['value' => 0, 'text' => '否', 'colour' => 'label-danger'],
-                    ['value' => 1, 'text' => '是', 'colour' => 'label-info']
+                    ['value' => 0, 'text' => '否', 'colour' => 'kt-font-danger kt-font-bold'],
+                    ['value' => 1, 'text' => '是', 'colour' => 'kt-font-success']
                 ]
             ],
             [
-                'field'    => 'is_own_shop',
-                'title'    => '自营',
-                'align'    => 'center',
-                'sortable' => true,
-                'width' => 30,
+                'field'       => 'is_own_shop',
+                'title'       => '自营',
+                'align'       => 'center',
+                'sortable'    => true,
+                'width'       => 30,
                 'show_type'   => 'status',
                 'show_config' => [
-                    ['value' => 0, 'text' => '否', 'colour' => 'label-danger'],
-                    ['value' => 1, 'text' => '是', 'colour' => 'label-info']
+                    ['value' => 0, 'text' => '否', 'colour' => 'kt-font-danger kt-font-bold'],
+                    ['value' => 1, 'text' => '是', 'colour' => 'kt-font-success']
                 ]
             ],
             [
-                'field'    => 'level',
-                'title'    => '库存',
-                'align'    => 'center',
-                'width'    => 70,
-                'formatter'=><<<javascript
+                'field'     => 'level',
+                'title'     => '库存',
+                'align'     => 'center',
+                'width'     => 70,
+                'formatter' => <<<javascript
                     var html  = '';
                     if(row.goods_storage <= 0){
-                        html += '<span class="caption-subject font-red-sunglo bold uppercase">'+row.goods_storage+'</span>';
+                        html += '<span class="kt-font-danger kt-font-bold">'+row.goods_storage+'</span>';
                     }
                     if(row.goods_storage > 0){
-                        html += '<span class="caption-subject font-blue-sharp bold uppercase">'+row.goods_storage+'</span>';
+                        html += '<span class="kt-font-success">'+row.goods_storage+'</span>';
                     }
                     return html;
 javascript
@@ -323,7 +325,7 @@ javascript
                     ],
                     [
                         'field'      => 'c',
-                        'text'       => '下架',
+                        'text'       => '违规下架',
                         'ico'        => 'fa fa-ban',
                         'class'      => 'btn btn-xs btn-primary hide_state',
                         'url'        => url('state'),
@@ -371,6 +373,8 @@ javascript
     /**
      * 查看spu
      * @author 仇仇天
+     * @param int $goods_commonid
+     * @return mixed
      */
     public function seeSpu($goods_commonid = 0)
     {
@@ -380,24 +384,42 @@ javascript
 
         if ($this->request->isAjax()) {
 
-            $goodsCommonInfo = B2b2cGoodsCommonModel::getGoodsCommonInfo($goods_commonid); // 获取商品公共内容信息
-            if (empty($goodsCommonInfo)) $this->error('参数错误', url('index'));
-            $spec_name = array_values(json_decode($goodsCommonInfo['spec_name'], true)); // 规格
-            $map       = [];// 筛选参数设置
-            $map []    = ['goods_commonid', '=', $goods_commonid];
-            $order     = 'goods_storage DESC'; // 排序设置
-            $list_rows = input('list_rows'); // 每页显示多少条
-            $data_list = B2b2cGoodsModel::where($map)->order($order)->paginate($list_rows);  // 数据列表
+            // 获取商品公共内容信息
+//            $goodsCommonInfo = B2b2cGoodsCommonModel::getGoodsCommonInfo($goods_commonid);
+
+//            if (empty($goodsCommonInfo)) $this->error('参数错误', url('index'));
+
+            // 规格
+//            $spec_name = array_values(json_decode($goodsCommonInfo['spec_name'], true));
+
+            // 筛选参数设置
+            $map = [];
+
+            $map [] = ['goods_commonid', '=', $goods_commonid];
+
+            // 排序设置
+            $order = 'goods_storage DESC';
+
+            // 每页显示多少条
+            $list_rows = input('list_rows');
+
+            // 数据列表
+            $data_list = B2b2cGoodsModel::where($map)->order($order)->paginate($list_rows);
+
             foreach ($data_list as &$value) {
-                $value['goods_image'] = ggetB2b2cImg($value['goods_image'], ['type' => 'goods']);// 设置头像图片地址
+                // 设置图片地址
+                $value['goods_image'] = getB2b2cImg($value['goods_image'], ['type' => 'goods']);
             }
-            $view->setRowList($data_list);// 设置表格数据
+
+            // 设置表格数据
+            $view->setRowList($data_list);
         }
 
-        //设置头部按钮
-        $view->setPageTitle('商品SKU列表'); // 设置页面标题
+        // 设置页面标题
+        $view->setPageTitle('商品SKU列表');
 
-        $view->setReturnUrl(url('index')); // 设置返回地址
+        // 设置返回地址
+        $view->setReturnUrl(url('index'));
 
         // 设置列
         $view->setColumn([
@@ -434,8 +456,10 @@ javascript
     }
 
     /**
-     * 下架操作
+     * 违规下架操作
      * @author 仇仇天
+     * @param int $goods_commonid 商品公共id
+     * @return mixed
      */
     public function state($goods_commonid = 0)
     {
@@ -445,27 +469,20 @@ javascript
         if ($this->request->isPost()) {
 
             // 表单数据
-            $data                           = $this->request->post();
+            $data = $this->request->post();
 
             // 需要更新的字段
-            $save_data                      = [];
-            $save_data['goods_stateremark'] = $data['goods_stateremark'];
+            $saveData                      = [];
+            $saveData['goods_stateremark'] = $data['goods_stateremark'];
 
             // 验证
-            $result                         = $this->validate($save_data, 'GoodsCommon.goods_stateremark');
+            $result = $this->validate($saveData, 'GoodsCommon.goods_stateremark');
 
             // 验证提示报错
             if (true !== $result) $this->error($result);
 
-            $B2b2cGoodsCommonModel = new B2b2cGoodsCommonModel();
-
-            if (false !== $B2b2cGoodsCommonModel->editGoodsLockUp($save_data, ['goods_commonid' => $goods_commonid])) {
-
-                // 记录行为
-                action_log('b2b2c.b2b2c_goods_state');
-
-                // 刷新缓存
-                $this->refreshCache();
+            // 违规下架
+            if (false !== ProductModel::editProducesLockUp(['goods_commonid' => $goods_commonid],$saveData)) {
 
                 $this->success('新增成功', url('index'));
             } else {
@@ -477,7 +494,7 @@ javascript
         $form = ZBuilder::make('forms');
 
         // 设置页面标题
-        $form->setPageTitle('商品 - 下架');
+        $form->setPageTitle('商品 - 违规下架');
 
         // 设置返回地址
         $form->setReturnUrl(url('index'));
@@ -489,7 +506,7 @@ javascript
         $form->setFormHiddenData([['name' => 'goods_commonid', 'value' => $goods_commonid]]);
 
         // 获取商品公共内容信息
-        $info = B2b2cGoodsCommonModel::where(['goods_commonid'=>$goods_commonid])->find();
+        $info = B2b2cGoodsCommonModel::where(['goods_commonid' => $goods_commonid])->find();
 
         if (empty($info)) $this->error('该信息不存在', url('index'));
 
@@ -523,8 +540,8 @@ javascript
 
     /**
      * 审核
-     * @author 仇仇天
      * @param int $goods_commonid 公共商品id
+     * @author 仇仇天
      */
     public function verify($goods_commonid = 0)
     {
@@ -532,19 +549,22 @@ javascript
         if (empty($goods_commonid)) $this->error('参数错误', url('index'));
 
         if ($this->request->isPost()) {
+
             // 表单数据
             $data                            = $this->request->post();
-            $save_data                       = [];
-            $save_data['goods_verify']       = $data['goods_verify'];
-            $save_data['goods_verifyremark'] = $data['goods_verifyremark'];
-            if ($save_data['goods_verify'] == config('b2b2c.VERIFY0') && empty($save_data['goods_verifyremark'])) $this->error('请填写审核不通过原因');// 验证提示报错
-            $B2b2cGoodsCommonModel = new B2b2cGoodsCommonModel();
-            if (false !== $B2b2cGoodsCommonModel->editProducesVerifyFail($save_data, ['goods_commonid' => $goods_commonid])) {
-                action_log('b2b2c.b2b2c_goods_verify');// 记录行为
-                $this->refreshCache();
-                $this->success('新增成功', url('index'));
+            $saveData                       = [];
+            $saveData['goods_verify']       = $data['goods_verify'];
+            $saveData['goods_verifyremark'] = ($data['goods_verify'] == config('b2b2c.VERIFY0')) ? $data['goods_verifyremark'] : '';
+
+            // 验证提示报错
+            if ($saveData['goods_verify'] == config('b2b2c.VERIFY0') && empty($saveData['goods_verifyremark'])){
+                $this->error('请填写审核不通过原因');
+            }
+
+            if (false !== ProductModel::editProducesVerifyFail(['goods_commonid' => $goods_commonid],$saveData)) {
+                $this->success('审核成功', url('index'));
             } else {
-                $this->error('新增失败');
+                $this->error('审核失败');
             }
         }
 
@@ -564,7 +584,7 @@ javascript
         $form->setFormHiddenData([['name' => 'goods_commonid', 'value' => $goods_commonid]]);
 
         // 获取商品公共内容信息
-        $info   = B2b2cGoodsCommonModel::where(['goods_commonid'=>$goods_commonid])->find();
+        $info = B2b2cGoodsCommonModel::where(['goods_commonid' => $goods_commonid])->find();
 
         if (empty($info)) $this->error('该信息不存在', url('index'));
 
@@ -612,6 +632,36 @@ javascript
     }
 
     /**
+     * 删除/批量删除
+     * @author 仇仇天
+     * @throws \Exception
+     */
+    public function del()
+    {
+        $data = $this->request->post();
+        $id   = $this->request->isPost() ? input('post.brand_id/a') : input('param.brand_id');
+        if (!empty($data['action']) && $data['action'] == 'delete_batch') {
+            $inValue = [];
+            foreach ($data['batch_data'] as $value) {
+                $inValue[] = $value['brand_id'];
+            }
+            $where = [
+                ['brand_id', 'in', $inValue]
+            ];
+        } else {
+            $inValue = $id;
+            $where     = [
+                ['brand_id', 'in', $inValue]
+            ];
+        }
+        if (false !== B2b2cGoodsCommonModel::del($where)) {
+            $this->success('删除成功');
+        } else {
+            $this->error('操作失败，请重试');
+        }
+    }
+
+    /**
      * 商品设置
      * @author 仇仇天
      */
@@ -619,11 +669,10 @@ javascript
     {
         if ($this->request->isPost()) {
             // 表单数据
-            $data               = $this->request->post();
+            $data               = input();
             $save_data          = [];
             $save_data['value'] = $data['b2b2c_goods_verify'];
             if (false !== AdminConfigModel::where(['name' => 'b2b2c_goods_verify'])->update($save_data)) {
-                action_log('b2b2c.b2b2c_goods_setting');// 记录行为
                 AdminConfigModel::delCache();
                 $this->success('设置成功', url('goodssetting'));
             } else {
@@ -632,13 +681,13 @@ javascript
         }
 
         // 获取配置
-        $data_config_info = rcache('system_config_info.b2b2c_goods_verify');
+        $goodsVerifyConfig = AdminConfigModel::getByNameConfig('b2b2c_goods_verify');
 
         // 解析配置
-        $options          = json_decode($data_config_info['options'], true);
+        $options = json_decode($goodsVerifyConfig['options'], true);
 
         // 使用ZBuilder快速创建表单
-        $form             = ZBuilder::make('forms');
+        $form = ZBuilder::make('forms');
 
         // 设置页面标题
         $form->setPageTitle('商品 - 设置');
@@ -648,8 +697,8 @@ javascript
 
         // 设置分组标签
         $form->setGroup([
-            ['title' => '商品管理', 'value' => 'goods', 'url' => url('index'),'default'=>false],
-            ['title' => '商品设置', 'value' => 'goods_setting', 'url' => url('goodssetting'),'default'=>true]
+            ['title' => '商品管理', 'value' => 'goods', 'url' => url('index'), 'default' => false],
+            ['title' => '商品设置', 'value' => 'goods_setting', 'url' => url('goodssetting'), 'default' => true]
         ]);
 
         // 设置表单项
@@ -659,10 +708,10 @@ javascript
                 'name'      => 'b2b2c_goods_verify',
                 'form_type' => 'switch',
                 'title'     => '商品是否需要审核',
-                'value'     => $data_config_info['value'],
+                'value'     => $goodsVerifyConfig['value'],
                 'option'    => $options,
-                'tips'      => $data_config_info['tips']
-            ],
+                'tips'      => $goodsVerifyConfig['tips']
+            ]
         ]);
 
         return $form->fetch();
@@ -674,6 +723,9 @@ javascript
      */
     public function export()
     {
+
+        // 导出参数
+        $exportExcelParam = [];
 
         $list_rows = input('list_rows');
 
@@ -701,7 +753,6 @@ javascript
         // 检查目录是否存在
         if (!is_dir($storage_path)) {
             mkdir($storage_path, 0777, true);
-
         }
         if (!empty($download)) {
             if ($page == 1) {
@@ -718,74 +769,284 @@ javascript
             }
         }
 
-        $data_list = B2b2cGoodsCommonModel::paginate($list_rows);
+        $exportExcelParam['export_path'] = $storage_path . '/' . $filename;
 
-        $percentage = round(100 * ($page / $data_list->lastPage()), 1);
+        // 获取数据
+        $dataList = B2b2cGoodsCommonModel::paginate($list_rows);
 
-
-        $title_config = []; // 列头设置
+        // 分页
+        $percentage = round(100 * ($page / $dataList->lastPage()), 1);
 
         // 列头设置标题
-        $title_config['data'] = [
-            'SPU',
-            '商品名称',
-            '商品价格(元)',
-            '市场价格(元)',
-            '成本价格(元)',
-            '运费(元)',
-            '商品状态',
-            '审核状态',
-            '商品图片',
-            '广告词',
-            '分类ID',
-            '店铺ID',
-            '店铺名称',
-            '店铺类型',
-            '品牌ID',
-            '品牌名称',
-            '发布时间',
-            '库存',
-            '虚拟商品',
-            '有效期',
-            '过期允许退款',
-        ];
-        foreach ($title_config['data'] as $typeValue) {
-            $title_config['type'][] = 'string'; // 列头设置类型
-        }
+        $exportExcelParam['cell'] = [
+            ['title' => 'SPU', 'find' => 'goods_commonid', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '商品名称', 'find' => 'goods_name', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '商品价格(元)', 'find' => 'goods_price', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '市场价格(元)', 'find' => 'goods_marketprice', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '成本价格(元)', 'find' => 'goods_costprice', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '运费(元)', 'find' => 'goods_freight', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '商品状态', 'find' => 'goods_state', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '审核状态', 'find' => 'goods_verify', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '商品图片', 'find' => 'goods_image', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '广告词', 'find' => 'goods_jingle', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '分类ID', 'find' => 'gc_id', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '店铺ID', 'find' => 'store_id', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '店铺名称', 'find' => 'store_name', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '品牌ID', 'find' => 'brand_id', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '品牌名称', 'find' => 'brand_name', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '发布时间', 'find' => 'create_time', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '库存', 'find' => 'goods_storage', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '虚拟商品', 'find' => 'is_virtual', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '有效期', 'find' => 'virtual_indate', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '过期允许退款', 'find' => 'virtual_invalid_refund', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => '', 'Bold' => true, 'freeze_pane' => true],
+            ['title' => '是否自营', 'find' => 'is_own_shop', 'height' => '', 'width' => '', 'size' => '', 'word_colour' => '', 'horizontal' => 'center', 'vertical' => 'center', 'Bold' => true, 'freeze_pane' => true]
 
-        $data     = to_arrays($data_list)['data']; // 设置数据
-        $dataList = [];
+        ];
+
+        // 设置数据
+        $data        = to_arrays($dataList)['data'];
+        $dataListArr = [];
         foreach ($data as $value) {
-            $dataList[] = [
-                'goods_commonid'         => $value['goods_commonid'],
-                'goods_name'             => $value['goods_name'],
-                'goods_price'            => ncPriceFormat($value['goods_price']),
-                'goods_marketprice'      => ncPriceFormat($value['goods_marketprice']),
-                'goods_costprice'        => ncPriceFormat($value['goods_costprice']),
-                'goods_freight'          => $value['goods_freight'] == 0 ? '免运费' : ncPriceFormat($value['goods_freight']),
-                'goods_state'            => $value['goods_state'],
-                'goods_verify'           => $value['goods_verify'],
-                'goods_image'            => etB2b2cGoodsImg($value['goods_image']),
-                'goods_jingle'           => htmlspecialchars($value['goods_jingle']),
-                'gc_id'                  => $value['gc_id'],
-                'store_id'               => $value['store_id'],
-                'store_name'             => $value['store_name'],
-                'is_own_shop'            => $value['is_own_shop'] == 1 ? '平台自营' : '入驻商户',
-                'brand_id'               => $value['brand_id'],
-                'brand_name'             => $value['brand_name'],
-                'goods_addtime'          => date('Y-m-d', $value['goods_addtime']),
-                'goods_storage'          => B2b2cGoodsCommonModel::calculateStorage($value['goods_commonid']),
-                'is_virtual'             => $value['is_virtual'] == '1' ? '是' : '否',
-                'virtual_indate'         => $value['is_virtual'] == '1' && $value['virtual_indate'] > 0 ? date('Y-m-d', $value['virtual_indate']) : '--',
-                'virtual_invalid_refund' => $value['is_virtual'] == '1' ? ($value['virtual_invalid_refund'] == 1 ? '是' : '否') : '--'
+            $dataListArr[] = [
+                'goods_commonid'         => [
+                    'value'       => $value['goods_commonid'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_name'             => [
+                    'value'       => $value['goods_name'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_price'            => [
+                    'value'       => ncPriceFormat($value['goods_price']),
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_marketprice'      => [
+                    'value'       => ncPriceFormat($value['goods_marketprice']),
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_costprice'        => [
+                    'value'       => ncPriceFormat($value['goods_costprice']),
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_freight'          => [
+                    'value'       => $value['goods_freight'] == 0 ? '免运费' : ncPriceFormat($value['goods_freight']),
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_state'            => [
+                    'value'       => $value['goods_state'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_verify'           => [
+                    'value'       => $value['goods_verify'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_image'            => [
+                    'value'       => getB2b2cImg($value['goods_image'], ['type' => 'goods']),
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_jingle'           => [
+                    'value'       => htmlspecialchars($value['goods_jingle']),
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'gc_id'                  => [
+                    'value'       => $value['gc_id'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'store_id'               => [
+                    'value'       => $value['store_id'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'store_name'             => [
+                    'value'       => $value['store_name'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'is_own_shop'            => [
+                    'value'       => $value['is_own_shop'] == 1 ? '平台自营' : '入驻商户',
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'brand_id'               => [
+                    'value'       => $value['brand_id'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'brand_name'             => [
+                    'value'       => $value['brand_name'],
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'create_time'            => [
+                    'value'       => date('Y-m-d', $value['create_time']),
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'goods_storage'          => [
+                    'value'       => ProductModel::calculateStorage($value['goods_commonid']),
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'is_virtual'             => [
+                    'value'       => $value['is_virtual'] == '1' ? '是' : '否',
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'virtual_indate'         => [
+                    'value'       => $value['is_virtual'] == '1' && $value['virtual_indate'] > 0 ? date('Y-m-d', $value['virtual_indate']) : '--',
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ],
+                'virtual_invalid_refund' => [
+                    'value'       => $value['is_virtual'] == '1' ? ($value['virtual_invalid_refund'] == 1 ? '是' : '否') : '--',
+                    'height'      => '',
+                    'width'       => '',
+                    'size'        => '',
+                    'word_colour' => '',
+                    'horizontal'  => 'center',
+                    'vertical'    => 'center',
+                    'Bold'        => false,
+                    'freeze_pane' => false
+                ]
             ];
         }
+        $exportExcelParam['data'] = $dataListArr;
 
-        $data_style = ['height' => 16];// 设置行样式
+        // 生成文件
+        exportExcel($exportExcelParam);
 
-        exportExcel($storage_path . '/' . $filename, $title_config, ['data' => $dataList, 'styles' => $data_style]); // 生成文件
-
-        if ($page == $data_list->lastPage()) {
+        if ($page == $dataList->lastPage()) {
             $this->success('操作成功', '', ['status' => 2, 'percentage' => $percentage, 'temp' => $temp]);
         } else {
             $this->success('操作成功', '', ['status' => 1, 'percentage' => $percentage, 'temp' => $temp]);
@@ -794,7 +1055,7 @@ javascript
     }
 
     /**
-     * 商品选择
+     * 商品选择(测试中)
      * @author 仇仇天
      */
     public function choice()
@@ -805,8 +1066,8 @@ javascript
         if (!empty($data['action'])) {
 
             // 页面所需要js & css
-            $_js_files = ['bootstraptable_js','select2_js'];
-            $_css_files = ['bootstraptable_css','select2_css'];
+            $_js_files  = ['bootstraptable_js', 'select2_js'];
+            $_css_files = ['bootstraptable_css', 'select2_css'];
             $this->assign('_js_files', $_js_files);
             $this->assign('_css_files', $_css_files);
 
@@ -820,33 +1081,33 @@ javascript
             $this->assign('goodsClassDataArr', $goodsClassDataArr);
 
             // 指定类型
-            if(!empty($data['appoint_type'])){
+            if (!empty($data['appoint_type'])) {
                 $this->assign('appoint_type', $data['appoint_type']);
             }
 
             // 指定分类
-            if(!empty($data['appoint_gc_id'])){
+            if (!empty($data['appoint_gc_id'])) {
                 $this->assign('gc_id', $data['appoint_gc_id']);
             }
 
             // 指定分类1
-            if(!empty($data['appoint_gc_id_1'])){
+            if (!empty($data['appoint_gc_id_1'])) {
                 $this->assign('gc_id_1', $data['appoint_gc_id_1']);
             }
 
             // 指定分类2
-            if(!empty($data['appoint_gc_id_2'])){
+            if (!empty($data['appoint_gc_id_2'])) {
                 $this->assign('gc_id_2', $data['appoint_gc_id_2']);
             }
 
             // 指定分类3
-            if(!empty($data['appoint_gc_id_3'])){
+            if (!empty($data['appoint_gc_id_3'])) {
                 $this->assign('gc_id_3', $data['appoint_gc_id_3']);
             }
 
             // 已选商品
-           if(!empty($data['ids']) && is_array($data['ids'])){
-                $ids = json_encode($data['ids'],JSON_NUMERIC_CHECK);
+            if (!empty($data['ids']) && is_array($data['ids'])) {
+                $ids = json_encode($data['ids'], JSON_NUMERIC_CHECK);
                 $this->assign('goods_ids', $ids);
             }
 
@@ -855,33 +1116,24 @@ javascript
 
 
         $where = [];
-        if (isset($data['search_goods_class']) && !empty($data['search_goods_class'])){
-            if(empty($data['appoint_gc_id']) && empty($data['appoint_gc_id_1']) && empty($data['appoint_gc_id_2']) && empty($data['appoint_gc_id_3']) ){
+        if (isset($data['search_goods_class']) && !empty($data['search_goods_class'])) {
+            if (empty($data['appoint_gc_id']) && empty($data['appoint_gc_id_1']) && empty($data['appoint_gc_id_2']) && empty($data['appoint_gc_id_3'])) {
                 $where[] = ['gc_id', '=', $data['search_goods_class']];
             }
         }
         if (isset($data['search_goods_name']) && !empty($data['search_goods_name'])) $where[] = ['goods_name', 'like', "%" . $data['search_goods_name'] . "%"];
 
 
-        $data_list   = B2b2cGoodsModel::where($where)->paginate($data['list_rows']);
-        $res         = [];
-        $res['code'] = 200; // 状态
-        $res['data'] = to_arrays($data_list->items()); // 数据
+        $data_list    = B2b2cGoodsModel::where($where)->paginate($data['list_rows']);
+        $res          = [];
+        $res['code']  = 200; // 状态
+        $res['data']  = to_arrays($data_list->items()); // 数据
         $res['total'] = $data_list->total(); // 总条数
         foreach ($res['data'] as &$value) {
             $value['goods_image'] = getB2b2cImg($value['goods_image'], ['type' => 'goods']);
         }
         echo json_encode($res);
         exit;
-    }
-
-    /**
-     * 刷新缓存
-     * @author 仇仇天
-     */
-    private function refreshCache()
-    {
-        B2b2cGoodsClassModel::delCache();
     }
 
 }

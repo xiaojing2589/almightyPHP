@@ -3,13 +3,17 @@
 namespace app\admin\controller;
 
 use app\common\controller\Admin;
-use app\common\model\PSms as PSmsModel;
-use app\common\model\AdminConfig as AdminConfigModel;
 use app\common\builder\ZBuilder;
 use think\facade\Env;
 
+use app\admin\model\PSms as PSmsModel;
+use app\admin\model\AdminConfig as AdminConfigModel;
+
+
 /**
- * 短信控制器
+ * 短信
+ * Class Sms
+ * @package app\admin\controller
  */
 class Sms extends Admin
 {
@@ -220,8 +224,6 @@ javascript
         ];
 
         if (false !== PSmsModel::insert($allowField)) {
-            // 记录行为
-            adminActionLog('admin.sms_install');
             $this->refreshCache();
             $this->success('插件安装成功', 'index');
         } else {
@@ -275,7 +277,6 @@ javascript
                 if (!empty($updateAll)) {
                     PSmsModel::where('mark', '<>', $mark)->update($updateAll);
                 }
-                adminActionLog('admin.sms_edit');// 记录行为
                 $this->refreshCache();
                 $this->success('设置成功', url('index'));
             } else {
@@ -337,8 +338,6 @@ javascript
 
         if (false !== PSmsModel::del(['mark' => $mark])) {
 
-            // 记录行为
-            adminActionLog('admin.sms_uninstall');
 
             // 刷新缓存
             $this->refreshCache();
@@ -362,8 +361,6 @@ javascript
             $save_data          = [];
             $save_data['value'] = $data['sms_driver'];
             if (false !== AdminConfigModel::where(['name' => 'sms_driver'])->update($save_data)) {
-                // 记录行为
-                adminActionLog('admin.sms_setting');
                 AdminConfigModel::delCache();
                 $this->success('设置成功', url('smssetting'));
             } else {
